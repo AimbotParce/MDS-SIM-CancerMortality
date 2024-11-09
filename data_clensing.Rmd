@@ -1,0 +1,113 @@
+# Data Cleansing
+```{r, echo=FALSE}
+library(crayon)
+```
+
+
+```{r}	
+df <- read.csv("data/train.csv")
+```
+
+## 1. Checking variable types
+
+All variables but the geography should be numeric. Only one variable requires
+any change, "binnedinc" is a string variable right now, but we can create a
+new inc_capita that will take the midpoint in the bin as its value.
+
+```{r}
+# Use regex to remove the [,],( and ) from the rows:
+inc.midpoints.text <- gsub("[\\[\\]()]", "", df$binnedinc, perl = T)
+# Separate them into two numbers
+inc.midpoints.text.sep <- strsplit(inc.midpoints.text, ",")
+# Convert them to numbers and apply a mean between them to find the midpoint
+df$inc_capita <- sapply(inc.midpoints.text.sep, function(x) mean(as.numeric(x)))
+```
+
+## 2. Checking for data duplication
+
+Check if there is any duplicated data
+```{r}
+duplicated_row_count <- sum(duplicated(df))
+if (duplicated_row_count > 0) {
+    print(sprintf("There are %d duplicated rows.", duplicated_row_count))
+    df <- unique(df)
+}
+```
+
+## 3. Handling missing data
+
+Let's see if we have any missing data.
+
+```{r}
+for (colname in colnames(df)) {
+    na.count <- sum(is.na(df[[colname]]))
+    if (na.count > 0) {
+        cat(sprintf("%s has %s\n", colname, red(sprintf("%d N/As", sum(is.na(df[colname]))))))
+    }
+}
+```
+
+### pctemployed16_over 
+
+In our current data, there's 82 N/As in pctemployed16_over . Our first intuition
+would be for this value to have exactly a -1 correlation with variable
+pctunemployed16_over, which somehow has no missing rows. Let's check that.
+
+```{r}
+cor(df$pctemployed16_over, df$pctunemployed16_over, use = "complete.obs")
+```
+
+Somehow they are not that closely related as we hopped.
+
+### Imputation of the missing data
+
+We couldn't easily impute the missing data from the `pctemployed16_over`, thus,
+for now, we won't be imputing any of the missing data. We'll leave that to be
+decided afterwards, because depending on what we want to do we might not want to
+have non-real data roaming around.
+
+## 4. Handling outliers
+
+We will, however, find outliers in the data, then we'll asses them and determine
+whether they should or should not be removed.
+
+```{r}
+# Only search in numeric columns for single-variable outliers
+is_mild_outlier_df <- df
+is_mild_outlier_df[] <- NA
+is_severe_outlier_df <- df
+is_severe_outlier_df[] <- NA
+has_severe_outliers <- c()
+for (colname in colnames(Filter(is.numeric, df))) {
+    column <- df[[colname]]
+    summ <- summary(column)
+    q1 <- summ["1st Qu."]
+    q3 <- summ["3rd Qu."]
+    iqr <- q3 - q1
+
+    mild_top <- q3 + 1.5 * iqr
+    mild_bot <- q1 - 1.5 * iqr
+    seve_top <- q3 + 3 * iqr
+    seve_bot <- q1 - 3 * iqr
+
+    is_severe_outlier_df[[colname]] <- column > seve_top | column < seve_bot
+    is_severe_outlier_df[[colname]][is.na(is_severe_outlier_df[[colname]])] <- FALSE
+    is_mild_outlier_df[[colname]] <- ((column > mild_top | column < mild_bot) & !is_severe_outlier_df[[colname]])
+    is_mild_outlier_df[[colname]][is.na(is_mild_outlier_df[[colname]])] <- FALSE
+
+    if (any(is_mild_outlier_df[[colname]])) {
+        mild_text <- yellow(sprintf("%d mild outliers", sum(is_mild_outlier_df[[colname]], na.rm = T)))
+    } else {
+        mild_text <- green("0 mild outliers")
+    }
+
+    if (any(is_severe_outlier_df[[colname]])) {
+        seve_text <- red(sprintf("%d severe outliers", sum(is_severe_outlier_df[[colname]], na.rm = T)))
+        has_severe_outliers <- c(has_severe_outliers, colname)
+    } else {
+        seve_text <- green("0 severe outliers")
+    }
+
+    cat(sprintf("Column %s has %s and %s\n", colname, mild_text, seve_text))
+}
+```
