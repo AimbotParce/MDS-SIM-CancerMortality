@@ -34,7 +34,115 @@ if (duplicated_row_count > 0) {
 }
 ```
 
-## 3. Handling missing data
+## 3. Handling outliers
+
+We will, however, find outliers in the data, then we'll asses them and determine
+whether they should or should not be removed.
+
+```{r}
+compute_outliers <- function(df) {
+    severe <- list()
+    severe$outliers <- list()
+    severe$limits <- list()
+
+    mild <- list()
+    mild$outliers <- list()
+    mild$limits <- list()
+
+    for (colname in colnames(Filter(is.numeric, df))) {
+        col <- df[[colname]]
+
+        summ <- summary(col)
+        q1 <- summ["1st Qu."]
+        q3 <- summ["3rd Qu."]
+        iqr <- q3 - q1
+
+        severe$limits[[colname]] <- list(top = q3 + 3 * iqr, bot = q1 - 3 * iqr)
+        mild$limits[[colname]] <- list(top = q3 + 1.5 * iqr, bot = q1 - 1.5 * iqr)
+
+        severe$outliers[[colname]] <- which(col > severe$limits[[colname]]$top | col < severe$limits[[colname]]$bot)
+        mild$outliers[[colname]] <- which(
+            (col > mild$limits[[colname]]$top & col < severe$limits[[colname]]$top) |
+                (col < mild$limits[[colname]]$bot & col > severe$limits[[colname]]$bot)
+        )
+    }
+    return(list(mild = mild, severe = severe))
+}
+
+o <- compute_outliers(df)
+
+for (colname in colnames(Filter(is.numeric, df))) {
+    mild_col <- if (length(o$mild$outliers[[colname]]) > 0) yellow else green
+    seve_col <- if (length(o$severe$outliers[[colname]]) > 0) red else green
+    mild_text <- mild_col(sprintf("%d mild outliers", length(mild_outliers[[colname]])))
+    seve_text <- seve_col(sprintf("%d severe outliers", length(severe_outliers[[colname]])))
+    cat(sprintf("Column %s has %s and %s\n", colname, mild_text, seve_text))
+}
+```
+
+Let's visualize it with a multi-box-plot.
+
+```{r}
+boxplot_outliers <- function(df, severe_outliers, mild_outliers, severe_limits, mild_limits) {
+    numeric_cols <- colnames(Filter(is.numeric, df))
+    par(mfrow = c(2, ceiling(length(numeric_cols) / 2)), cex.main = 1.5, cex.axis = 1.5)
+    for (colname in numeric_cols) {
+        severe_points <- df[[colname]][severe_outliers[[colname]]]
+        mild_points <- df[[colname]][mild_outliers[[colname]]]
+        title_col <- if (length(severe_points) > 0) "red" else "black"
+        boxplot(df[[colname]], main = colname, col.main = title_col, cex = 1.5)
+        abline(h = severe_limits[[colname]]$top, col = "red")
+        abline(h = severe_limits[[colname]]$bot, col = "red")
+        abline(h = mild_limits[[colname]]$top, col = "orange")
+        abline(h = mild_limits[[colname]]$top, col = "orange")
+        points(x = rep(1, length(severe_points)), y = severe_points, col = "red", cex = 1.5, pch = 19)
+        points(x = rep(1, length(mild_points)), y = mild_points, col = "orange", cex = 1.5, pch = 19)
+    }
+}
+
+png("images/boxplot_outliers.png", width = 2300, height = 1200)
+boxplot_outliers(df, o$severe$outliers, o$mild$outliers, o$severe$limits, o$mild$limits)
+dev.off()
+```
+
+We can see that by the criteria chosen, too many data points must be set to NA.
+There's, however, only five variables whose outliers I would consider removing:
+We'll be removing outliers from `target_deathrate`, because not only it's the 
+target, but also it contains a single severe outlier quite far from the rest of
+the data points.
+
+Also, outliers from `incidencerate`, `pctbachdeg25_over` and 
+`pctunemployed16_over`, we'll also remove, as they are very few, and are well 
+outside their range to be considered for the study.
+
+Finally, one variable raised our suspicions: `medianage`, which has 18 outliers
+that are somehow clustered really far from the rest. Also, given that this 
+column represents median ages, we know as a fact that 300+ years makes no sense.
+
+```{r}
+outlier_remove_columns <- c(
+    "target_deathrate", "incidencerate", "pctbachdeg25_over",
+    "pctunemployed16_over", "medianage"
+)
+
+for (colname in outlier_remove_columns) {
+    df[[colname]][o$severe$outliers[[colname]]] <- NA
+}
+```
+
+We can repeat the previous plot to see how it changed:
+
+
+```{r}
+o <- compute_outliers(df)
+
+png("images/boxplot_outliers_after.png", width = 2300, height = 1200)
+boxplot_outliers(df, o$severe$outliers, o$mild$outliers, o$severe$limits, o$mild$limits)
+dev.off()
+```
+
+
+## 4. Handling missing data
 
 Let's see if we have any missing data.
 
@@ -65,49 +173,3 @@ We couldn't easily impute the missing data from the `pctemployed16_over`, thus,
 for now, we won't be imputing any of the missing data. We'll leave that to be
 decided afterwards, because depending on what we want to do we might not want to
 have non-real data roaming around.
-
-## 4. Handling outliers
-
-We will, however, find outliers in the data, then we'll asses them and determine
-whether they should or should not be removed.
-
-```{r}
-# Only search in numeric columns for single-variable outliers
-is_mild_outlier_df <- df
-is_mild_outlier_df[] <- NA
-is_severe_outlier_df <- df
-is_severe_outlier_df[] <- NA
-has_severe_outliers <- c()
-for (colname in colnames(Filter(is.numeric, df))) {
-    column <- df[[colname]]
-    summ <- summary(column)
-    q1 <- summ["1st Qu."]
-    q3 <- summ["3rd Qu."]
-    iqr <- q3 - q1
-
-    mild_top <- q3 + 1.5 * iqr
-    mild_bot <- q1 - 1.5 * iqr
-    seve_top <- q3 + 3 * iqr
-    seve_bot <- q1 - 3 * iqr
-
-    is_severe_outlier_df[[colname]] <- column > seve_top | column < seve_bot
-    is_severe_outlier_df[[colname]][is.na(is_severe_outlier_df[[colname]])] <- FALSE
-    is_mild_outlier_df[[colname]] <- ((column > mild_top | column < mild_bot) & !is_severe_outlier_df[[colname]])
-    is_mild_outlier_df[[colname]][is.na(is_mild_outlier_df[[colname]])] <- FALSE
-
-    if (any(is_mild_outlier_df[[colname]])) {
-        mild_text <- yellow(sprintf("%d mild outliers", sum(is_mild_outlier_df[[colname]], na.rm = T)))
-    } else {
-        mild_text <- green("0 mild outliers")
-    }
-
-    if (any(is_severe_outlier_df[[colname]])) {
-        seve_text <- red(sprintf("%d severe outliers", sum(is_severe_outlier_df[[colname]], na.rm = T)))
-        has_severe_outliers <- c(has_severe_outliers, colname)
-    } else {
-        seve_text <- green("0 severe outliers")
-    }
-
-    cat(sprintf("Column %s has %s and %s\n", colname, mild_text, seve_text))
-}
-```
