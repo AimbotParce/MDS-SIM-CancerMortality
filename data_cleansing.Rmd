@@ -1,6 +1,12 @@
 # Data Cleansing
 ```{r, echo=FALSE}
 library(crayon)
+library(car)
+library(FactoMineR)
+library(chemometrics)
+library(corrplot)
+library(RColorBrewer)
+library(PerformanceAnalytics)
 ```
 
 
@@ -38,6 +44,8 @@ if (duplicated_row_count > 0) {
 
 We will, however, find outliers in the data, then we'll asses them and determine
 whether they should or should not be removed.
+
+### Univariate outliers
 
 ```{r}
 compute_outliers <- function(df) {
@@ -132,7 +140,6 @@ for (colname in outlier_remove_columns) {
 
 We can repeat the previous plot to see how it changed:
 
-
 ```{r}
 o <- compute_outliers(df)
 
@@ -141,6 +148,17 @@ boxplot_outliers(df, o$severe$outliers, o$mild$outliers, o$severe$limits, o$mild
 dev.off()
 ```
 
+### Multivariate outliers
+
+We'll use a 95% quantile for the mahalanobis distance to detect multivariate
+outliers. Calling function `Moutlier` directly throws an error. Let's search for
+which two columns are causing it.
+
+```{r}
+png("images/correlation_chart.png", width = 1080, height = 1080)
+chart.Correlation(Filter(is.numeric, df), histogram = TRUE, pch = 19, method = "pearson", use = "na.or.complete")
+dev.off()
+```
 
 ## 4. Handling missing data
 
