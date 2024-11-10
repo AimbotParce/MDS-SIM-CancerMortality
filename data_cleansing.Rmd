@@ -151,14 +151,24 @@ dev.off()
 ### Multivariate outliers
 
 We'll use a 95% quantile for the mahalanobis distance to detect multivariate
-outliers. Calling function `Moutlier` directly throws an error. Let's search for
-which two columns are causing it.
+outliers. Calling function `Moutlier` directly throws an error. Looks like 
+column `studypercap` is causing some problems.
+
+```{r}
+# Moutlier(Filter(is.numeric, df)[, -8], quantile = 0.95)
+```
+
+This still throws an error!!!! (TO-DO)
+
+Let's investigate the correlations between the different variables.
 
 ```{r}
 png("images/correlation_chart.png", width = 1080, height = 1080)
 chart.Correlation(Filter(is.numeric, df), histogram = TRUE, pch = 19, method = "pearson", use = "na.or.complete")
 dev.off()
 ```
+
+
 
 ## 4. Handling missing data
 
