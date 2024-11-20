@@ -30,6 +30,11 @@ jobs:
     - name: Install dependencies
       run: Rscript .github/scripts/install_packages.R
 
+    - name: Install Pandoc
+      run: |
+        choco install pandoc -y
+        pandoc --version
+
     - name: Render Rmd to md
       run: Rscript -e 'rmarkdown::render("CancerMortality.Rmd")'
 

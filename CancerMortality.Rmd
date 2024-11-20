@@ -48,7 +48,6 @@ report , profiling and imputation if needed.
 colnames(df)
 ```
 
-
 ### Variable 1 - avganncount
 
 This is a continuous ratio variable. The data does not look normally 
