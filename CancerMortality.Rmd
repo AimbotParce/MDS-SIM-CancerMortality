@@ -34,8 +34,7 @@ modifications.
 
 ```{r}	
 par(mfrow=c(1,1))
-df <- read_csv("Desktop/MDS-SIM-CancerMortality/data/train.csv")
-#df <- read.csv("data/train.csv")
+df <- read.csv("data/train.csv")
 ```
 
 
