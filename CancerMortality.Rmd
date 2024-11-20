@@ -2,9 +2,20 @@
 output:
   pdf_document: default
   html_document: default
+  md_document:
+    variant: markdown_github
 editor_options:
   chunk_output_type: console
 ---
+
+<!-- README.md is generated from CancerMortality.Rmd. Please edit that file. -->
+
+```{r opts, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.path = "images/"
+)
+```
+
 # Data Preparation
 ```{r, echo=FALSE}
 library(crayon)
