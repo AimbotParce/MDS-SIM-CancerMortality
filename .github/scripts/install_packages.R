@@ -1,5 +1,5 @@
 required_packages <- c(
-    "crayon", "car", "FactoMineR", "chemometrics", "corrplot",
+    "crayon", "car", "FactoMineR", "chemometrics", "corrplot", "readr",
     "RColorBrewer", "PerformanceAnalytics", "mice", "dplyr", "rmarkdown"
 )
 

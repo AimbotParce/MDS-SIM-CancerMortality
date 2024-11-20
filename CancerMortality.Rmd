@@ -27,6 +27,7 @@ library(RColorBrewer)
 library(PerformanceAnalytics)
 library(mice)
 library(dplyr)
+library(readr)
 ```
 
 First we import the data and save it as the variable "df" for future 
@@ -34,7 +35,7 @@ modifications.
 
 ```{r}	
 par(mfrow=c(1,1))
-df <- read.csv("data/train.csv")
+df <- read_csv("data/train.csv")
 ```
 
 
