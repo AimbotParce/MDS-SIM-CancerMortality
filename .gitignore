@@ -1,7 +1,11 @@
+# IDE:
+*.Rproj
+.vscode/
+
+
 # Output file
 *.pdf
 
-*.Rproj
 
 # History files
 .Rhistory
