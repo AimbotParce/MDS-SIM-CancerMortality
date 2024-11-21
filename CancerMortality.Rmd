@@ -79,10 +79,12 @@ birthrate               | N           | Number of live births relative to number
 ## Variable Types
 
 All variables but `geography` should be numeric. Only one variable requires
-any change: `binnedinc` is a string variable right now, but it can be made to 
-instead hold each bin's midpoint as a number.
+any change: `binnedinc` is a string variable right now, but two things can be
+created from it: a factor variable (`f.binnedinc`), and a numeric variable 
+holding the midpoint of each bin, which we'll conviniently call `binnedinc`.
 
 ```{r}
+df$f.binnedinc <- as.factor(df$binnedinc)
 # Use regex to remove the [,],( and ) from the rows:
 inc.midpoints.text <- gsub("[\\[\\]()]", "", df$binnedinc, perl = T)
 # Separate them into two numbers
@@ -263,25 +265,38 @@ quantile).
 
 # Exploratory Data Analysis
 
-## Variable analysis
+This section will be devided in two parts: single-variable analysis and
+multi-variable analysis.
 
-We perform descriptive analysis for each variable of this data, a data quality 
-report, profiling and imputation if needed. 
+## Single-Variable analysis
+
+This sub-section presents an analysis for each variable of the data set as a 
+standalone sample.
+
+We'll be performing lots of discretisation of continuous variables based on 
+their quartiles, so let's create a function to do that.
 
 ```{r}
-colnames(df)
+discretize_quartiles <- function(column, label_name) {
+  res <- cut(column, breaks = quantile(column, probs = seq(0, 1, 0.25)), 
+    include.lowest = T,
+    labels=c(
+      sprintf("Low%s", label_name),
+      sprintf("LowMid%s", label_name),
+      sprintf("HighMid%s", label_name),
+      sprintf("High%s", label_name)
+    )
+  )
+  print(table(res)) # Print the table
+  return(res)
+}
 ```
 
 ### Variable 1 - avganncount
 
 This is a continuous ratio variable. The data does not look normally 
 distributed, which is confirmed by the near-null p-value of the shapiro 
-normallity test. A histogram is used to visualize the data. The variable 
-contains no missing values thus imputation is not needed. It contains 273 
-outliers (out of which 252 severe), all on the higher end of the spectrum. We 
-create an additional ordinal factor “f.avganncount” to create a discretisation 
-according to the quartiles. 
-
+normallity test. A histogram is used to visualize the data. 
 
 ```{r}
 summary(df$avganncount)
@@ -290,31 +305,20 @@ hist(df$avganncount, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$avganncount), sd(df$avganncount)), add = T)
 
 shapiro.test(df$avganncount)
-
-sum(is.na(df$avganncount))
-
-Boxplot(df$avganncount)
-
-length(Boxplot(df$avganncount, id = list(n=Inf)))
-
-sevout_avganncount = (quantile(df$avganncount,0.25)+(3*((quantile(df$avganncount,0.75)-quantile(df$avganncount,0.25)))))
-length(which(df$avganncount > sevout_avganncount))
-
-df$f.avganncount <- ifelse(df$avganncount <= 80.0, 1, ifelse(df$avganncount > 80.0 & df$avganncount <= 175.0, 2, ifelse(df$avganncount > 175.0 & df$avganncount <= 509.0, 3, ifelse(df$avganncount > 509.0, 4,0))))
-df$f.avganncount <- factor(df$f.avganncount, labels=c("LowCaseCount","LowMidCaseCount","HighMidCaseCount","HighCaseCount"), order = T, levels=c(1,2,3,4))
-table(df$f.avganncount)
 ```
 
+An additional factor `f.avganncount` is created to discretize the data according
+to the quartiles.
+
+```{r}
+df$f.avganncount <- discretize_quartiles(df$avganncount, "CaseCount")
+```
 
 ### Variable 2 - avgdeathsperyear
 
 This is also a continuous ratio variable similar to variable 1. The data does 
 not look normally distributed, which is confirmed by the near-null p-value of 
-the shapiro normallity test. Again a histogram is used to visualize the data. 
-The variable contains no missing values thus imputation is not needed. It 
-contains 225 outliers (out of which 178 severe), all on the higher end of the 
-spectrum. We create an additional ordinal factor “f.avgdeathsperyear” to create 
-a discretisation according to the quartiles. 
+the shapiro normallity test. Again a histogram is used to visualize the data.
 
 
 ```{r}
@@ -324,30 +328,20 @@ hist(df$avgdeathsperyear, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$avgdeathsperyear), sd(df$avgdeathsperyear)), add = T)
 
 shapiro.test(df$avgdeathsperyear)
-
-sum(is.na(df$avgdeathsperyear))
-
-Boxplot(df$avgdeathsperyear)
-
-length(Boxplot(df$avgdeathsperyear, id = list(n=Inf)))
-
-sevout_avgdeathsperyear = (quantile(df$avgdeathsperyear,0.25)+(3*((quantile(df$avgdeathsperyear,0.75)-quantile(df$avgdeathsperyear,0.25)))))
-length(which(df$avgdeathsperyear > sevout_avgdeathsperyear))
-
-df$f.avgdeathsperyear <- ifelse(df$avgdeathsperyear <= 29.0, 1, ifelse(df$avgdeathsperyear > 29.0 & df$avgdeathsperyear <= 62.0, 2, ifelse(df$avgdeathsperyear > 62.0 & df$avgdeathsperyear <= 140.5, 3, ifelse(df$avgdeathsperyear > 140.5, 4,0))))
-df$f.avgdeathsperyear <- factor(df$f.avgdeathsperyear, labels=c("LowMortCount","LowMidMortCount","HighMidMortCount","HighMortCount"), order = T, levels=c(1,2,3,4))
-table(df$f.avgdeathsperyear)
 ```
 
+An additional factor `f.avgdeathsperyear` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.avgdeathsperyear <- discretize_quartiles(df$avgdeathsperyear, "MortCount")
+```
 
 ### Variable 3 - target_deathrate
 
 This is the response variable. This is also a continuous ratio variable similar 
 to the previous variables. The data looks normally distributed, but it is not 
-and will be further discussed in the next section. It contains no missing values 
-thus imputation is not needed. It contains 35 outliers (out of which 11 severe). 
-We create an additional ordinal factor “f.deathrate” to create a discretisation 
-according to the quartiles. 
+and will be further discussed in the next section. 
 
 ```{r}
 summary(df$target_deathrate)
@@ -356,29 +350,19 @@ hist(df$target_deathrate, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$target_deathrate), sd(df$target_deathrate)), add = T)
 
 shapiro.test(df$target_deathrate)
-
-sum(is.na(df$target_deathrate))
-
-Boxplot(df$target_deathrate)
-
-length(Boxplot(df$target_deathrate, id = list(n=Inf)))
-
-sevout_deathrate = (quantile(df$target_deathrate,0.25)+(3*((quantile(df$target_deathrate,0.75)-quantile(df$target_deathrate,0.25)))))
-length(which(df$target_deathrate > sevout_deathrate))
-
-df$f.deathrate <- ifelse(df$target_deathrate <= 161.3, 1, ifelse(df$target_deathrate > 161.3 & df$target_deathrate <= 178.3, 2, ifelse(df$target_deathrate > 178.3 & df$target_deathrate <= 195.3, 3, ifelse(df$target_deathrate > 195.3, 4,0))))
-df$f.deathrate <- factor(df$f.deathrate, labels=c("LowDeathrate","LowMidDeathrate","HighMidDeathrate","HighDeathrate"), order = T, levels=c(1,2,3,4))
-table(df$f.deathrate)
 ```
 
+An additional factor `f.target_deathrate` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.target_deathrate <- discretize_quartiles(df$target_deathrate, "DeathRate")
+```
 
 ### Variable 4 - incidencerate
 
 We have another continuous ratio variable similar to the previous variables. It 
-is not normally distributed according to the Shapiro test. It contains no 
-missing values thus imputation is not needed. It contains 60 outliers (out of 
-which 3 severe) in both the higher and the lower ends of the spectrum. We create 
-an additional ordinal factor “f.incidencerate”. 
+is not normally distributed according to the Shapiro test.
 
 ```{r}
 summary(df$incidencerate)
@@ -387,27 +371,19 @@ hist(df$incidencerate, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$incidencerate), sd(df$incidencerate)), add = T)
 
 shapiro.test(df$incidencerate)
-
-sum(is.na(df$incidencerate))
-
-Boxplot(df$incidencerate)
-
-length(Boxplot(df$incidencerate, id = list(n=Inf)))
-
-sevout_incidencerate = (quantile(df$incidencerate,0.25)+(3*((quantile(df$incidencerate,0.75)-quantile(df$incidencerate,0.25)))))
-length(which(df$incidencerate > sevout_incidencerate))
-
-df$f.incidencerate <- ifelse(df$incidencerate <= 421.4, 1, ifelse(df$incidencerate > 421.4 & df$incidencerate <= 453.5, 2, ifelse(df$incidencerate > 453.5 & df$incidencerate <= 481.3, 3, ifelse(df$incidencerate > 481.3, 4,0))))
-df$f.incidencerate <- factor(df$f.incidencerate, labels=c("LowDiagnPerCap","LowMidDiagnPerCap","HighMidDiagnPerCap","HighDiagnPerCap"), order = T, levels=c(1,2,3,4))
-table(df$f.incidencerate)
 ```
 
+An additional factor `f.incidencerate` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.incidencerate <- discretize_quartiles(df$incidencerate, "DiagnPerCap")
+```
 
 ### Variable 5 - medincome
 
 Very similar to all the previous variables we have a continuous ratio variable 
-not normally distributed with 0 missing values, 69 outliers (44 of them severe), 
-all on the higher end. We create an additional ordinal factor “f.medincome”. 
+not normally distributed.
 
 ```{r}
 summary(df$medincome)
@@ -416,27 +392,18 @@ hist(df$medincome, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$medincome), sd(df$medincome)), add = T)
 
 shapiro.test(df$medincome)
-
-sum(is.na(df$medincome))
-
-Boxplot(df$medincome)
-
-length(Boxplot(df$medincome, id = list(n=Inf)))
-
-sevout_medincome = (quantile(df$medincome,0.25)+(3*((quantile(df$medincome,0.75)-quantile(df$medincome,0.25)))))
-length(which(df$medincome > sevout_medincome))
-
-df$f.medincome <- ifelse(df$medincome <= 39031, 1, ifelse(df$medincome > 39031 & df$medincome <= 45454, 2, ifelse(df$medincome > 45454 & df$medincome <= 52612, 3, ifelse(df$medincome > 52612, 4,0))))
-df$f.medincome <- factor(df$f.medincome, labels=c("LowMedianInc","LowMidMedianInc","HighMidMedianInc","HighMedianInc"), order = T, levels=c(1,2,3,4))
-table(df$f.medincome)
 ```
 
+An additional factor `f.medincome` is created to discretize the data according
+to the quartiles.
+
+```{r}
+df$f.medincome <- discretize_quartiles(df$medincome, "MedianInc")
+```
 
 ### Variable 6 - popest2015
 
-Another continuous ratio variable not normally distributed with 0 missing 
-values, 252 outliers (210 of them severe), all on the higher end. We create an 
-additional ordinal factor “f.popest2015”. 
+Another continuous ratio variable not normally distributed.
 
 ```{r}
 summary(df$popest2015)
@@ -445,27 +412,18 @@ hist(df$popest2015, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$popest2015), sd(df$popest2015)), add = T)
 
 shapiro.test(df$popest2015)
-
-sum(is.na(df$popest2015))
-
-Boxplot(df$popest2015)
-
-length(Boxplot(df$popest2015, id = list(n=Inf)))
-
-sevout_popest2015 = (quantile(df$popest2015,0.25)+(3*((quantile(df$popest2015,0.75)-quantile(df$popest2015,0.25)))))
-length(which(df$popest2015 > sevout_popest2015))
-
-df$f.popest2015 <- ifelse(df$popest2015 <= 12191, 1, ifelse(df$popest2015 > 12191 & df$popest2015 <= 27158, 2, ifelse(df$popest2015 > 27158 & df$popest2015 <= 66880, 3, ifelse(df$popest2015 > 66880, 4,0))))
-df$f.popest2015 <- factor(df$f.popest2015, labels=c("LowPop","LowMidPop","HighMidPop","HighPop"), order = T, levels=c(1,2,3,4))
-table(df$f.popest2015)
 ```
 
+An additional factor `f.popest2015` is created to discretize the data according
+to the quartiles.
+
+```{r}
+df$f.popest2015 <- discretize_quartiles(df$popest2015, "MidPop")
+```
 
 ### Variable 7 - povertypercent
 
-Another continuous ratio variable not normally distributed with 0 missing 
-values, 42 outliers (18 of them severe), all on the higher end. We create an 
-additional ordinal factor “f.Pov%”. 
+Another continuous ratio variable not normally distributed. 
 
 ```{r}
 summary(df$povertypercent)
@@ -474,30 +432,20 @@ hist(df$povertypercent, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$povertypercent), sd(df$povertypercent)), add = T)
 
 shapiro.test(df$povertypercent)
-
-sum(is.na(df$povertypercent))
-
-Boxplot(df$povertypercent)
-
-length(Boxplot(df$povertypercent, id = list(n=Inf)))
-
-sevout_povertypercent = (quantile(df$povertypercent,0.25)+(3*((quantile(df$povertypercent,0.75)-quantile(df$povertypercent,0.25)))))
-length(which(df$povertypercent > sevout_povertypercent))
-
-df$f.povertypercent <- ifelse(df$povertypercent <= 12.15, 1, ifelse(df$povertypercent > 12.15 & df$povertypercent <= 15.70, 2, ifelse(df$povertypercent > 15.70 & df$povertypercent <= 20.40, 3, ifelse(df$povertypercent > 20.40, 4,0))))
-df$f.povertypercent <- factor(df$f.povertypercent, labels=c("LowPov%","LowMidPov%","HighMidPov%","HighPov%"), order = T, levels=c(1,2,3,4))
-table(df$f.povertypercent)
 ```
 
+An additional factor `f.povertypercent` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.povertypercent <- discretize_quartiles(df$povertypercent, "Pov%")
+```
 
 ### Variable 8 - studypercap
 
 Another continuous ratio variable. This variable has the peculiarity of having a 
 lot of 0s (median is also 0 so more than half of the counties don't perform 
-cancer related clinical trials). It is not normally distributed and has 0 
-missing values, 307 outliers (281 of them severe), all on the higher end. We 
-create an additional ordinal factor “f.studypercap” grouping the counties with 0 
-clinical trials and splitting the rest by half. 
+cancer related clinical trials). It is not normally distributed.
 
 ```{r}
 summary(df$studypercap)
@@ -506,65 +454,39 @@ hist(df$studypercap, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$studypercap), sd(df$studypercap)), add = T)
 
 shapiro.test(df$studypercap)
+```
 
-sum(is.na(df$studypercap))
+An additional factor `f.studypercap` is created to discretize the data, this 
+time groupping the data in only 3 groups: 0, and the two median splits of the
+non-zero values.
 
-Boxplot(df$studypercap)
+```{r}
+non_zero_median <- median(df$studypercap[df$studypercap > 0])
 
-length(Boxplot(df$studypercap, id = list(n=Inf)))
-
-sevout_studypercap = (quantile(df$studypercap,0.25)+(3*((quantile(df$studypercap,0.75)-quantile(df$studypercap,0.25)))))
-length(which(df$studypercap > sevout_studypercap))
-
-studypercapNot0 <- df$studypercap[df$studypercap > 0]
-summary(studypercapNot0)
-
-df$f.studypercap <- ifelse(df$studypercap == 0, 1, ifelse(df$studypercap > 0 & df$studypercap <= 162.13, 2, ifelse(df$studypercap > 162.13 , 3, 0 )))
-df$f.studypercap <- factor(df$f.studypercap, labels=c("NoTrials","MidTrials","HighTrials"), order = T, levels=c(1,2,3))
+df$f.studypercap <- cut(df$studypercap, breaks = c(-Inf, 0, non_zero_median, Inf),
+    include.lowest = T,
+    labels=c("NoTrials", "MidTrials", "HighTrials")
+  )
 table(df$f.studypercap)
 ```
 
-
 ### Variable 9 - binnedinc
 
-This is a string variable right now, but we can convert it to numerical by 
-taking the midpoint in the bin as its value. Then we can treat it as a 
-continuous ratio variable and analyze it. It has no missing values and the only 
-outliers come from the same bin (the highest bin) which amount to 186 counties 
-(all of them considered severe outliers). We create a factor variable 
-"f.binnedinc" according to the quartiles. 
+After having converted it from a string representation of the bin into a numeric
+variable, analyzing its normality with Shapiro Test, we can safely say it's not
+a normally-distributed variable.
 
 ```{r}
-summary(df$binnedinc)
-# Use regex to remove the [,],( and ) from the rows:
-inc.midpoints.text <- gsub("[\\[\\]()]", "", df$binnedinc, perl = T)
-# Separate them into two numbers
-inc.midpoints.text.sep <- strsplit(inc.midpoints.text, ",")
-# Convert them to numbers and apply a mean between them to find the midpoint
-df$binnedinc <- sapply(inc.midpoints.text.sep, function(x) mean(as.numeric(x)))
 summary(df$binnedinc)
 
 hist(df$binnedinc, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$binnedinc), sd(df$binnedinc)), add = T)
 
 shapiro.test(df$binnedinc)
-
-sum(is.na(df$binnedinc))
-
-Boxplot(df$binnedinc)
-
-length(Boxplot(df$binnedinc, id = list(n=Inf)))
-
-sevout_binnedinc = (quantile(df$binnedinc,0.25)+(3*((quantile(df$binnedinc,0.75)-quantile(df$binnedinc,0.25)))))
-length(which(df$binnedinc > sevout_binnedinc))
-
-df$f.binnedinc <- ifelse(df$binnedinc <= 38888, 1, ifelse(df$binnedinc > 38888 & df$binnedinc <= 46611, 2, ifelse(df$binnedinc > 46611 & df$binnedinc <= 52796, 3, ifelse(df$binnedinc > 52796, 4,0))))
-df$f.binnedinc <- factor(df$f.binnedinc, labels=c("LowIncPerCap","LowMidIncPerCap","HighMidIncPerCap","HighIncPerCap"), order = T, levels=c(1,2,3,4))
-table(df$f.binnedinc)
-
-
 ```
 
+No further discretisation is needed for this variable, as it is already
+categorised.
 
 ### Variable 10 - medianage
 
