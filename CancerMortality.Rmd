@@ -76,48 +76,128 @@ pctmarriedhouseholds    | N           | Percent of married households
 birthrate               | N           | Number of live births relative to number of women in county
 
 
+## Variable Types
+
+All variables but `geography` should be numeric. Only one variable requires
+any change: `binnedinc` is a string variable right now, but it can be made to 
+instead hold each bin's midpoint as a number.
+
+```{r}
+# Use regex to remove the [,],( and ) from the rows:
+inc.midpoints.text <- gsub("[\\[\\]()]", "", df$binnedinc, perl = T)
+# Separate them into two numbers
+inc.midpoints.text.sep <- strsplit(inc.midpoints.text, ",")
+# Convert them to numbers and apply a mean between them to find the midpoint
+df$binnedinc <- sapply(inc.midpoints.text.sep, function(x) mean(as.numeric(x)))
+```
+
+Note how `geography`, altough being non-numeric, it's not a factor variable.
+This can be shown by looking at the number of unique values in the column.
+
+```{r}
+nrow(df); length(unique(df$geography))
+```
+
+Because the number of unique values is the same as the number of rows, we can
+safely assume that `geography` is a unique identifier for each row. It won't be
+removed yet, because, as proven in a later section, a factor variable can be
+derived from it.
+
+## Duplicated Data Points
+
+Before proceeding with the analysis, we should check if there are any duplicated
+rows in the data set. If there are, we shall remove them.
+
+```{r}
+duplicated_row_count <- sum(duplicated(df))
+if (duplicated_row_count > 0) {
+    print(sprintf("There are %d duplicated rows.", duplicated_row_count))
+    df <- unique(df)
+}
+```
+
+No duplicated rows were found in the data set.
+
 ## Missing data
 
-There is only one variable left with missing data, pctemployed16_over with 82 
-NAs. Since the number is low and a priori this variable can be useful so we will 
-fix missing data using the mice method. We will also update 
-"f.pctemployed16_over" with the new imputed data but the same quartile limits as 
-before. 
+Glancing over the data set, one can see that there are some missing values:
 
 ```{r}
+for (colname in colnames(df)) {
+    na.count <- sum(is.na(df[[colname]]))
+    if (na.count > 0) {
+        cat(sprintf("%s has %s\n", colname, red(sprintf("%d N/As", sum(is.na(df[colname]))))))
+    }
+}
+```
+
+* Column `pctsomecol18_24` has 1376 N/As, which makes for more than 75% of the
+  data. Due to that, it would most likely provide little to no meaningful
+  information, so a decision was made to remove it from the study.
+* Column `pctemployed16_over` has 82 N/As, which is a manageable amount. They
+  can easily be imputed using the MICE method.
+* Column `pctprivatecoveragealone` has 356 N/As, which acounts for less than 20%
+  of the rows. This is a small enough amount to be imputed using the MICE 
+  method. Nontheless, this column will be removed from the study later on, for
+  reasons explained in the exploratory data analysis section.
+
+```{r}
+# Drop the column with too many missing values
+df <- subset(df, select = -c(pctsomecol18_24))
+
+# Impute missing values
 res.mice <- mice(df)
-df$pctemployed16_over <- complete(res.mice, action = 1)$pctemployed16_over
-
-df$f.pctemployed16_over <- ifelse(df$pctemployed16_over <= 48.60, 1, ifelse(df$pctemployed16_over > 48.60 & df$pctemployed16_over <= 54.50, 2, ifelse(df$pctemployed16_over > 54.50 & df$pctemployed16_over <= 60.30, 3, ifelse(df$pctemployed16_over > 60.30, 4,0))))
-df$f.pctemployed16_over <- factor(df$f.pctemployed16_over, labels=c("LowEmploy%","LowMidEmploy%","HighMidEmploy%","HighEmploy%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctemployed16_over)
+complete_df = complete(res.mice, action = 1)
 ```
 
-
-## Duplicate Removal
-
-Since we have a variable with unique values for each row (geography), we can 
-check for duplicates easily by counting unique values for geography and 
-comparing with the number of observations of our data. Since there is no 
-difference there are no duplicates. 
+Before substituting the missing values, let's check the deciles of the variables
+to see if the imputation makes sense.
 
 ```{r}
-nrow(df)
-length(unique(df$geography))
+quantile(df$pctemployed16_over, na.rm = TRUE, probs = seq(0, 1, 0.1))
+quantile(df$pctprivatecoveragealone, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
+Now let's substitute the missing values in the original data set. And check that
+the deciles are still roughly the same. 
 
-## Outliers
+```{r}
+df$pctemployed16_over <- complete_df$pctemployed16_over
+df$pctprivatecoveragealone <- complete_df$pctprivatecoveragealone
 
-For each observation we will count how many times it is an outlier of a 
-numerical variable. We will add the count to a new variable called 
-"univariate_outlier_count". If we look at the individuals that are outliers in 
-10 or more variables we have a total of 8 counties. All of them have high 
-percentages of non-white population, both black and asian, a low median age, a 
-high mortality count and a high bias towards private and employee health 
-coverage. Of these 8 counties, 6 are wealthy (Low poverty percent) and 2 are 
-poor. It is chosen to delete these 
-outliers from the data set for the rest of the project.
+quantile(df$pctemployed16_over, na.rm = TRUE, probs = seq(0, 1, 0.1))
+quantile(df$pctprivatecoveragealone, na.rm = TRUE, probs = seq(0, 1, 0.1))
+```
+
+Which they are.
+
+## Univariate Outliers
+
+Column-wise, we can count how many univariate outliers each numeric variable 
+has:
+
+```{r}
+for (colname in colnames(Filter(is.numeric, df))) {
+  col = df[[colname]]
+  q1 <- quantile(col, 0.25)
+  q3 <- quantile(col, 0.75)
+  iqr <- q3 - q1
+
+  severe <- list(top = q3 + 3 * iqr, bot = q1 - 3 * iqr)
+  mild <- list(top = q3 + 1.5 * iqr, bot = q1 - 1.5 * iqr)
+
+  severe_out <- sum(col > severe$top | col < severe$bot)
+  mild_out <- sum((col > mild$top & col < severe$top) | (col < mild$bot & col > severe$bot))
+  if (mild_out > 0 | severe_out > 0) {
+    cat(sprintf("Column %s has %d mild outliers and %d severe outliers\n", colname, mild_out, severe_out))
+  }
+}
+```
+
+Row-wise, we'll count the numeric variables in which each data point is an 
+outlier, and create a new object called `univariate_outlier_count`. As a 
+gut-driven criterion, we shall consider a row to be an outlier if it is an
+outlier in 10 or more variables. Based on this criterion, only 9 counties are.
 
 ```{r}
 count_outliers <- function(data) {
@@ -136,14 +216,17 @@ count_outliers <- function(data) {
     mutate(outlier_count = rowSums(sapply(., is_outlier), na.rm = TRUE))
 }
 
-df$univariate_outlier_count <- count_outliers(df[, c(1:12, 14:31)])$outlier_count
-table(df$univariate_outlier_count)
-
-df[which(df$univariate_outlier_count >= 10),]
-
-#df = df[-which(df$univariate_outlier_count >= 10),] Crec que no s'han de treure els outliers
+univariate_outlier_count <- count_outliers(Filter(is.numeric, df))$outlier_count
+df[which(univariate_outlier_count >= 10),]
 ```
 
+All of them have high percentages of non-white population, both black and asian,
+a low median age, a high mortality count and a high bias towards private and
+employee health coverage. Of these 9 counties, 7 are wealthy (Low poverty
+percent) and 2 have a large poor population (over 20%).
+
+Outliers can sometimes provide valuable information, so they won't be removed
+from the data set just yet.
 
 ## Multivariate Outliers
 
@@ -155,29 +238,28 @@ threshold is chosen (0.00005%) because even using this threshold we get a
 significant amount of multivariate outliers, 4% of the total sample. Lowering 
 the threshold even further doesn't change much the amount of outliers and rising 
 it higher makes the amount of outliers rise too much (10% outliers at 0.1% 
-significance level). We also choose to delete these outliers from the data set 
-for the rest of the project. 
-
+significance level).
 
 ```{r}
-par(mar = c(1, 1, 1, 1))
-res.out = Moutlier(df[, c(1:7,9:12,14:31)], quantile = 0.9999995, col="green")
-which((res.out$md > res.out$cutoff)&(res.out$rd > res.out$cutoff))
+numeric.df <- Filter(is.numeric, df)
+numeric.df <- numeric.df[, !colnames(numeric.df) %in% c("studypercap")]
 
-length(which((res.out$md > res.out$cutoff)&(res.out$rd > res.out$cutoff))
-)/1823
+res.out_95 <- Moutlier(numeric.df, quantile = 0.95, plot=F)
+multi_outliers_95 = which((res.out_95$md > res.out_95$cutoff)&(res.out_95$rd > res.out_95$cutoff))
+length(multi_outliers_95)
 
-plot( res.out$md, res.out$rd )
+res.out <- Moutlier(numeric.df, quantile = 0.9999995, plot=F)
+multi_outliers = which((res.out$md > res.out$cutoff)&(res.out$rd > res.out$cutoff))
+length(multi_outliers)
+
+par(mfrow = c(1,1))
+plot(res.out$rd, res.out$md )
 abline(h=res.out$cutoff, col="red")
 abline(v=res.out$cutoff, col="red")
-
-summary(df[which((res.out$md > res.out$cutoff)&(res.out$rd > res.out$cutoff)),])
-
-summary(df)
-
-df = df[-which((res.out$md > res.out$cutoff)&(res.out$rd > res.out$cutoff)),]
 ```
 
+There are 91 multivariate outliers in the data set (265 if we take a 95% 
+quantile).
 
 # Exploratory Data Analysis
 
@@ -1180,9 +1262,6 @@ df$f.birthrate <- ifelse(df$birthrate <= 4.528, 1, ifelse(df$birthrate > 4.528 &
 df$f.birthrate <- factor(df$f.birthrate, labels=c("LowBirth%","LowMidBirth%","HighMidBirth%","HighBirth%"), order = T, levels=c(1,2,3,4))
 table(df$f.birthrate)
 ```
-
-
-
 
 
 
