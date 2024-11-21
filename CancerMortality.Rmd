@@ -501,7 +501,6 @@ df$f.percentmarried <- factor(df$f.percentmarried, labels=c("LowMarriage%","LowM
 table(df$f.percentmarried)
 ```
 
-
 ### Variable 14 - pctnohs18_24
 
 Another continuous ratio variable not normally distributed with 0 missing 
@@ -564,7 +563,6 @@ df$f.pcths18_24 <- ifelse(df$pcths18_24 <= 29.2, 1, ifelse(df$pcths18_24 > 29.2 
 df$f.pcths18_24 <- factor(df$f.pcths18_24, labels=c("LowHighsc%","LowMidHighsc%","HighMidHighsc%","HighHighsc%"), order = T, levels=c(1,2,3,4))
 table(df$f.pcths18_24)
 ```
-
 
 ### Variable 16 - pctsomecol18_24
 
@@ -1145,12 +1143,43 @@ df = df[-which((res.out$md > res.out$cutoff)&(res.out$rd > res.out$cutoff)),]
 ```
 
 
+# Autocorrelation
+
+```{r}
+acf(df$target_deathrate)
+```
+
+
 # Profiling
-# Check multicolinearity and low correlation with the target (remove or combine 
-variables) 
+```{r}
+ res.con = condes(df[, c(1:7, 9:12, 14:31)],3)
+
+correlation_matrix <- res.con$quanti
+correlation_values <- correlation_matrix[, "correlation"]
+variable_names <- rownames(correlation_matrix)
+
+correlation_df <- data.frame(
+  variable = variable_names,
+  correlation = correlation_values
+)
+
+filtered_correlation_df <- correlation_df[abs(correlation_df$correlation) > 0.35, ]
+
+sorted_correlation_df <- filtered_correlation_df[order(abs(filtered_correlation_df$correlation), decreasing = TRUE), ]
+
+print(sorted_correlation_df[,"variable"])
+
+```
+
+# Check multicolinearity and low correlation with the target (remove or combine variables)
+
+First,we must identify those variables that are very correlated and combine 
+them. We do so because high correlations (close to 1 or -1) between two or more 
+predictors indicate potential multicollinearity. Initially, we combine or 
+eliminate those variables with a correlation above 0.8 or below -0.8. 
+
 ```{r}
 
-#First,we must identify those variables that are very corelated and combine them. We do so because high correlations (close to 1 or -1) between two or more predictors indicate potential multicollinearity. Initially, we combien those variables with a correlation above 0.8 or below -0.8
 cor_matrix <- cor(df[, c(1:7, 9:12, 14:31)])
 
 corrplot(cor_matrix, method = "circle")
@@ -1167,16 +1196,19 @@ for(i in 1:ncol(cor_matrix)){
   }
 }
 
-
 high_corr_vars <- unique(high_corr_vars)
+print("Highly multicollinearity variables")
 print(high_corr_vars)
+print("Varialbes highly corralated with the target")
+print(high_correlation)
+
+#binnedinc highly corralated with medincome
+
+#Medianage, medianagemale, medianagefemale can be treated as the same value as their correlation is very high. They are almost the same variable. Also all three of them very poorly correlated with the target
 
 #Remove non-correlated variables with the target variable
 cor_with_target <- cor_matrix[, "target_deathrate"]
-non_significant_vars <- names(cor_with_target[abs(cor_with_target) < 0.1])
-
-# Combine the lists of variables to remove
-vars_to_remove <- union(high_corr_vars, non_significant_vars)
+vars_to_remove <- names(cor_with_target[abs(cor_with_target) < 0.1])
 
 #Remove these variables from the dataset
 df_cleaned <- df[, !(colnames(df) %in% vars_to_remove)]
@@ -1188,7 +1220,7 @@ df_cleaned$pcths <- (df$pcths18_24 + df$pcths25_over) / 2
 # pctbachdeg18_24 with pctbachdeg25_over
 df_cleaned$pctbach <- (df$pctbachdeg18_24 + df$pctbachdeg25_over) / 2
 
-df_cleaned <- df_cleaned[, !colnames(df) %in% c("pcths18_24", "pcths25_over", "pctbachdeg18_24", "pctbachdeg25_over")]
+df_cleaned <- df_cleaned[, !colnames(df_cleaned) %in% c("pcths18_24", "pcths25_over", "pctbachdeg18_24", "pctbachdeg25_over")]
 
 #Combine Income-Related Variables
 #df_cleaned$pctincome <- df_cleaned$binnedinc
@@ -1207,12 +1239,11 @@ df_cleaned <- df_cleaned[, !colnames(df) %in% c("pcths18_24", "pcths25_over", "p
 
 #df_cleaned <- df_cleaned[, !(colnames(df_cleaned) %in% c("medianage", "medianagemale"))]
 
-new_cor_matrix <- cor(df_cleaned[, c(1:6, 8:22)])
+new_cor_matrix <- cor(df_cleaned[, c(1:8, 10:21)])
 new_cor_matrix[, "target_deathrate"]
 corrplot(new_cor_matrix, method = "circle")
 
 ```
-
 
 ```{r}
 #Most corralated +incidencerate  -medincome +povertypercent  +pcths25_over -pctemployed16_over pctunemployed16_over  pctprivatecoverage pctpubliccoverage pctpubliccoveragealone
@@ -1232,14 +1263,13 @@ lm_stepwise <- step(model, direction = "both", trace = 0)
 
 vif(lm_stepwise)  
 
-
 summary(lm_stepwise)
 ```
 
 
 
-
 #Analyze behaviour of what seem to be the main predictors
+
 ```{r}
 #Boxplot most relevant predictors
 boxplot(target_deathrate ~ f.incidencerate, data = df_cleaned, main = "Death Rate vs. Incidence Rate")
@@ -1278,10 +1308,9 @@ oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df_cleaned)
 
 ```
 
+# No-interaction models
 
-#No-interaction models
 ```{r}
-
 # Linear model: target_deathrate ~ f.percentmarried --> 5.47%
 lm_percentmarried <- lm(target_deathrate ~ f.percentmarried, data = df_cleaned)
 summary(lm_percentmarried)
@@ -1299,44 +1328,76 @@ lm_pcths18_24 <- lm(target_deathrate ~ f.pcths18_24, data = df_cleaned)
 summary(lm_pcths18_24)
 
 # Linear model: target_deathrate ~ f.pctpubliccoverage --> 15%
-lm_percentmarried <- lm(target_deathrate ~ f.pctpubliccoverage, data = df_cleaned) 
-summary(lm_percentmarried)
+lm_pctpubliccoverage <- lm(target_deathrate ~ f.pctpubliccoverage, data = df_cleaned) 
+summary(lm_pctpubliccoverage)
 
 # Linear model: target_deathrate ~ f.pctpubliccoveragealone --> 18.85%
-lm_percentmarried <- lm(target_deathrate ~ f.pctpubliccoveragealone, data = df_cleaned) 
-summary(lm_percentmarried)
+lm_pctpubliccoveragealone <- lm(target_deathrate ~ f.pctpubliccoveragealone, data = df_cleaned) 
+summary(lm_pctpubliccoveragealone)
 
 
 ```
 
+# Interaction models 
 
-#Interaction models 
 ```{r}
-m1 <- lm(target_deathrate ~ f.medincome , data = df_cleaned)
-m2 <- lm(target_deathrate ~ f.medincome + f.incidencerate, data= df_cleaned)
+m1 <- lm(target_deathrate ~ f.medincome, data = df)
 summary(m1)
+par(mar = c(5, 5, 4, 2)) 
+boxcox(target_deathrate ~ f.medincome , data=df) #No transformation of the target needed
+
+m2 <- lm(target_deathrate ~ f.medincome + f.incidencerate, data= df)
+boxcox(target_deathrate ~ f.medincome + f.incidencerate, data=df) #No transformation of the target needed
 summary(m2)
+t <- summary(m2)
+vif(m2)
+1/(1-t$r.squared)
+  
 anova(m1,m2)
 
-m3 <- lm(target_deathrate ~ f.medincome + f.incidencerate + f.pctpubliccoverage + f.pctpubliccoveragealone, data= df_cleaned)
+#########################Fins aquí estic bastant segur que está be, no hi ha collinearity i el imporvement es considerable#########
+
+m3 <- lm(target_deathrate ~ medincome + incidencerate + pctpubliccoveragealone, data= df)
 summary(m3)
-anova(m2,m3)
 
-m4 <- lm(target_deathrate ~ f.medincome + f.incidencerate + f.pctpubliccoverage*f.pctpubliccoveragealone , data= df_cleaned)
+anova(m1,m3)
+
+m4 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone, data= df)
 summary(m4)
-anova(m3,m4)
 
-m5 <- lm(target_deathrate ~ f.medincome + f.incidencerate + f.pctpubliccoverage*f.pctpubliccoveragealone + f.pcths18_24, data= df_cleaned)
+anova(m1,m4)
+
+m5 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over, data= df)
 summary(m5)
+
 anova(m4,m5)
 
-m6 <- lm(target_deathrate ~ f.medincome + f.incidencerate + f.pctpubliccoverage*f.pctpubliccoveragealone + f.pcths18_24 + f.percentmarried, data= df_cleaned)
+m6 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over + povertypercent  , data= df)
 summary(m6)
+
 anova(m5,m6)
 
+m7 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over + povertypercent 
+         , data= df)
+t <- summary(m7)
+anova(m6,m7)
+boxcox(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over + povertypercent, data=df)
+vif(m7)
+
+1/(1-t$r.squared)
 
 ```
 
+
+```{r}
+mm1 <- lm(target_deathrate ~ medincome + incidencerate + pctpubliccoverage + pctpubliccoveragealone + f.pcths18_24 + percentmarried, data= df_cleaned)
+
+mm2 <- lm(target_deathrate ~ medincome + pctbachdeg25_over + pctpubliccoveragealone + povertypercent
+         + incidencerate + pctemployed16_over + pctpubliccoverage + pctprivatecoverage + binnedinc + pctunemployed16_over + pctunemployed16_over
+         , data = df)
+
+vif(mm1)
+```
 
 
 
