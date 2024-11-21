@@ -38,6 +38,44 @@ par(mfrow=c(1,1))
 df <- read_csv("data/train.csv")
 ```
 
+Here's a breakdown of all the variables in the dataset.
+
+**Variable Name**       | **Num/Fac** | **Description**
+ ---------------------- | ----------- | ---------------------- 
+avganncount             | N           | Mean number of reported cases of cancer diagnosed annually (2010-2015 
+avgdeathsperyear        | N           | Mean number of reported mortalities due to cancer 
+target_deathrate        | N           | Response variable. Mean per capita (100,000) cancer mortalities 
+incidencerate           | N           | Mean per capita (100,000) cancer diagnoses 
+medincome               | N           | Median income per county 
+popest2015              | N           | Population of county 
+povertypercent          | N           | Percent of population in poverty 
+studypercap             | N           | Per capita number of cancer-related clinical trials per county 
+binnedinc               | F           | Median income per capita binned by decile 
+medianage               | N           | Median age of county residents 
+medianagemale           | N           | Median age of male county residents 
+medianagefemale         | N           | Median age of female county residents 
+geography               | F           | County name 
+percentmarried          | N           | Percent of county residents who are married 
+pctnohs18_24            | N           | Percent  of  county  residents  ages  18-24  highest  education  attained: less than high school  
+pcths18_24              | N           | Percent  of  county  residents  ages  18-24  highest  education  attained:  high school diploma 
+pctsomecol18_24         | N           | Percent  of  county  residents  ages  18-24  highest  education  attained: some college 
+pcths25_over            | N           | Percent  of  county  residents  ages  25  and  over  highest  education attained: high school diploma 
+pctbachdeg25_over       | N           | Percent  of  county  residents  ages  25  and  over  highest  education attained: bachelor's degree 
+pctemployed16_over      | N           | Percent of county residents ages 16 and over employed 
+pctunemployed16_over    | N           | Percent of county residents ages 16 and over unemployed 
+pctprivatecoverage      | N           | Percent of county residents with private health coverage 
+pctprivatecoveragealone | N           | Percent  of  county  residents  with  private  health  coverage  alone  (no public assistance) 
+pctempprivcoverage      | N           | Percent  of  county  residents  with  employee-provided  private  health coverage 
+pctpubliccoverage       | N           | Percent of county residents with government-provided health coverage 
+pctpubliccoveragealone  | N           | Percent of county residents with government-provided health coverage alone 
+pctwhite                | N           | Percent of county residents who identify as White 
+pctblack                | N           | Percent of county residents who identify as Black 
+pctasian                | N           | Percent of county residents who identify as Asian 
+pctotherrace            | N           | Percent  of  county  residents  who  identify  in  a  category  which  is  not White, Black, or Asian 
+pctmarriedhouseholds    | N           | Percent of married households 
+birthrate               | N           | Number of live births relative to number of women in county
+
+
 ## Missing data
 
 There is only one variable left with missing data, pctemployed16_over with 82 
