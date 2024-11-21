@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - CancerMortality.Rmd
+      - IncomeStudy.Rmd
+      - .github/workflows/knit-on-push.yaml # This file (for dev purposes)
 
 jobs:
   update-readme:
@@ -21,6 +22,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        lfs: true
 
     - name: Install R
       uses: r-lib/actions/setup-r@v2
@@ -36,15 +38,18 @@ jobs:
         pandoc --version
 
     - name: Render Rmd to md
-      run: Rscript -e 'rmarkdown::render("CancerMortality.Rmd")'
+      run: Rscript -e 'rmarkdown::render("IncomeStudy.Rmd")'
 
-    - name: Move CancerMortality.md to README.md
-      run: mv CancerMortality.md README.md
+    - name: Move IncomeStudy.md to README.md
+      run: |
+        rm README.md
+        mv IncomeStudy.md README.md
 
     - name: Commit changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add README.md
-        git commit -m 'Update README.md with contents of CancerMortality.md'
+        git add images/*
+        git commit -m 'Update README.md with contents of IncomeStudy.md'
         git push
