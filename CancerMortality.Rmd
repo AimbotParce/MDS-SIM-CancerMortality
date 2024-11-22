@@ -1049,8 +1049,11 @@ autocorrelation.
 
 ## Profiling
 
+Let us start by profiling the target variable with respect to the others, using
+the function `condes` from the `FactoMineR` package.
+
 ```{r}
-res.con = condes(df[, c(1:7, 9:12, 14:31)],3)
+res.con = condes(df,num.var = which(colnames(df) == "target_deathrate"))
 
 correlation_matrix <- res.con$quanti
 correlation_values <- correlation_matrix[, "correlation"]
