@@ -1035,14 +1035,22 @@ df$f.birthrate <- discretize_quartiles(df$birthrate, "Birth%")
 
 ## Autocorrelation
 
+Before proceeding with the multivariate analysis, let's check for 
+autocorrelation in the target variable. We'll use the `acf` function to plot the
+correlation of the target variable with itself at different lags.
+
 ```{r}
-acf(df$target_deathrate)
+acf(df$target_deathrate, type="correlation", plot=T, main="Autocorrelation of Target Death Rate")
 ```
 
+The plot shows that there is a slight positive correlation for lag values lower
+than 22, although none of them exceeds 0.35. This is not a significant
+autocorrelation.
 
 ## Profiling
+
 ```{r}
- res.con = condes(df[, c(1:7, 9:12, 14:31)],3)
+res.con = condes(df[, c(1:7, 9:12, 14:31)],3)
 
 correlation_matrix <- res.con$quanti
 correlation_values <- correlation_matrix[, "correlation"]
