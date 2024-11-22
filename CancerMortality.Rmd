@@ -970,6 +970,28 @@ to the quartiles.
 df$f.pctotherrace <- discretize_quartiles(df$pctotherrace, "OtherRace%")
 ```
 
+#### County race clustering
+
+Having discretized the previous race-related variables, we'll define a new
+factor variable called `f.race` which will probably come in handy in future 
+analysis. This variable will have 4 levels: "White", "Black", "Asian" and 
+"Other", which will be decided based on the maximum value of the 4 columns.
+
+```{r}
+getRace <- function (row) {
+  races = row[c("pctwhite", "pctblack", "pctasian", "pctotherrace")]
+  max_race = which.max(races)
+  return(c("White", "Black", "Asian", "Other")[max_race])
+}
+
+df$race <- as.factor(apply(df, 1, getRace))
+table(df$race)
+```
+
+As expected, the majority of the counties are predominantly white, followed by
+those with a black majority. The number of counties with an asian majority is
+negligible, and there are no counties with an "other" majority.
+
 ### Variable 29 - pctmarriedhouseholds
 
 Another continuous ratio variable not normally distributed.
