@@ -230,6 +230,26 @@ percent) and 2 have a large poor population (over 20%).
 Outliers can sometimes provide valuable information, so they won't be removed
 from the data set just yet.
 
+### The case of medianage
+
+`medianage` is a continuous variable which contains some data points that make 
+no sense, for instance, median ages over 100. Thankfully, we have data for male
+and female median age, which allow us to replace outlier points by a mean of 
+male and female age.
+
+```{r}
+boxplot(df$medianage, horizontal = TRUE, main = "Median Age") 
+out = which(df$medianage > 100)
+df$medianage[out] <- (df$medianagemale[out] + df$medianagefemale[out]) / 2
+```
+
+As the following boxplot shows, the meaninglessly high values have taken a more
+reasonable value.
+
+```{r}
+boxplot(df$medianage, horizontal = TRUE, main = "Median Age") 
+```
+
 ## Multivariate Outliers
 
 We will apply Moutlier on the numerical variables in order to find multivariate 
@@ -490,13 +510,9 @@ categorised.
 
 ### Variable 10 - medianage
 
-This is a continuous interval variable. By using a histogram we see that there 
-are some data points that make no sense (median ages over 100), so the data is 
-erroneous. Since we have data for male median age and female median age will 
-clean the data by replacing the ouliers by the mean of male and female age. 
-After cleaning the data the variable has no missing data, is not normal by means 
-of the shapiro test and has 50 outliers (5 of them severe) in both ends of the 
-spectrum. We create a factor variable "f.medianage" according to the quartiles. 
+After having cleaned it, running it through the Shapiro test shows that it is
+most likely not normally distributed, altough the histogram shows a closely 
+bell-shaped curve.
 
 ```{r}
 summary(df$medianage)
@@ -504,38 +520,25 @@ summary(df$medianage)
 hist(df$medianage, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$medianage), sd(df$medianage)), add = T)
 
-df$medianage[df$medianage>100] <- (df$medianagemale[df$medianage > 100] + df$medianagefemale[df$medianage > 100]) / 2
-
-summary(df$medianage)
-
-hist(df$medianage, breaks = 30, freq = F)
-curve(dnorm(x, mean(df$medianage), sd(df$medianage)), add = T)
-
 shapiro.test(df$medianage)
-
-sum(is.na(df$medianage))
-
-Boxplot(df$medianage)
-
-length(Boxplot(df$medianage, id = list(n=Inf)))
-
-sevout_medianage = (quantile(df$medianage,0.25)+(3*((quantile(df$medianage,0.75)-quantile(df$medianage,0.25)))))
-length(which(df$medianage > sevout_medianage))
-
-df$f.medianage <- ifelse(df$medianage <= 37.85, 1, ifelse(df$medianage > 37.85 & df$medianage <= 40.90, 2, ifelse(df$medianage > 40.90 & df$medianage <= 43.90, 3, ifelse(df$medianage > 43.90, 4,0))))
-df$f.medianage <- factor(df$f.medianage, labels=c("LowAge","LowMidAge","HighMidAge","HighAge"), order = T, levels=c(1,2,3,4))
-table(df$f.medianage)
 ```
 
+An additional factor `f.medianage` is created to discretize the data according
+to the quartiles.
+
+```{r}
+df$f.medianage <- discretize_quartiles(df$medianage, "Age")
+```
 
 ### Variable 11 - medianagemale
 
 Very similar to the previous variable, this is a continuous interval variable, 
-but with no apparent erroneous input. The variable has no missing data, is not 
-normal by means of the shapiro test and has 46 outliers (6 of them severe) in 
-both ends of the spectrum. We create a factor variable "f.medianagemale" 
-according to the quartiles. The summary shows that male median age is slightly 
-lower than median age (and thus lower than female median age). 
+but with no apparent erroneous values. It is most likely not normally 
+distributed, according to the Shapiro test, but, as with the previous variable,
+the histogram shows a closely bell-shaped curve.
+
+The summary shows that male median age is slightly lower than median age (we can
+assume that it will also be lower than the female median age). 
 
 ```{r}
 summary(df$medianagemale)
@@ -544,28 +547,23 @@ hist(df$medianagemale, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$medianagemale), sd(df$medianagemale)), add = T)
 
 shapiro.test(df$medianagemale)
-
-sum(is.na(df$medianagemale))
-
-Boxplot(df$medianagemale)
-
-length(Boxplot(df$medianagemale, id = list(n=Inf)))
-
-sevout_medianagemale = (quantile(df$medianagemale,0.25)+(3*((quantile(df$medianagemale,0.75)-quantile(df$medianagemale,0.25)))))
-length(which(df$medianagemale > sevout_medianagemale))
-
-df$f.medianagemale <- ifelse(df$medianagemale <= 36.40, 1, ifelse(df$medianagemale > 36.40 & df$medianagemale <= 39.50, 2, ifelse(df$medianagemale > 39.50 & df$medianagemale <= 42.60, 3, ifelse(df$medianagemale > 42.60, 4,0))))
-df$f.medianagemale <- factor(df$f.medianagemale, labels=c("LowAgeMale","LowMidAgeMale","HighMidAgeMale","HighAgeMale"), order = T, levels=c(1,2,3,4))
-table(df$f.medianagemale)
 ```
 
+An additional factor `f.medianagemale` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.medianagemale <- discretize_quartiles(df$medianagemale, "AgeMale")
+```
 
 ### Variable 12 - medianagefemale
 
-We repeat the analysis for female median age. The variable has no apparent 
-erroneous input, no missing data, is not normal by means of the shapiro test and 
-has 55 outliers (1 of them severe) in both ends of the spectrum. We create a 
-factor variable "f.medianagefemale" according to the quartiles. 
+Repeating the analysis of the previous two variables, it is not normally 
+distributed according to the Shapiro test, but the histogram, again, shows a
+closely bell-shaped curve.
+
+As expected, the female median age is slightly higher than the median age, as
+well as the male median age.
 
 ```{r}
 summary(df$medianagefemale)
@@ -574,23 +572,31 @@ hist(df$medianagefemale, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$medianagefemale), sd(df$medianagefemale)), add = T)
 
 shapiro.test(df$medianagefemale)
-
-sum(is.na(df$medianagefemale))
-
-Boxplot(df$medianagefemale)
-
-length(Boxplot(df$medianagefemale, id = list(n=Inf)))
-
-sevout_medianagefemale = (quantile(df$medianagefemale,0.25)+(3*((quantile(df$medianagefemale,0.75)-quantile(df$medianagefemale,0.25)))))
-length(which(df$medianagefemale > sevout_medianagefemale))
-
-df$f.medianagefemale <- ifelse(df$medianagefemale <= 39.20, 1, ifelse(df$medianagefemale > 39.20 & df$medianagefemale <= 42.40, 2, ifelse(df$medianagefemale > 42.40 & df$medianagefemale <= 45.30, 3, ifelse(df$medianagefemale > 45.30, 4,0))))
-df$f.medianagefemale <- factor(df$f.medianagefemale, labels=c("LowAgeFemale","LowMidAgeFemale","HighMidAgeFemale","HighAgeFemale"), order = T, levels=c(1,2,3,4))
-table(df$f.medianagefemale)
-
-summary(df$geography)
 ```
 
+An additional factor `f.medianagefemale` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.medianagefemale <- discretize_quartiles(df$medianagefemale, "AgeFemale")
+```
+
+#### A small addendum on the median age variables
+
+Leaving correlation analysis for later, let's check whether one can assume that
+the expected value of the median age of a population is the same for male as is
+for female populations. We'll use a set of wilcox tests (as we've already 
+established that the data is not normally distributed) with the null hypothesis 
+of their means being equal.
+
+```{r}
+wilcox.test(df$medianage, df$medianagefemale)
+wilcox.test(df$medianage, df$medianagemale)
+wilcox.test(df$medianagefemale, df$medianagemale)
+```
+
+The p-values are all very low, so we can safely reject the null hypothesis and
+assume that the median age of a population is different depending on the gender.
 
 ### Variable 13 - geography
 
@@ -599,8 +605,8 @@ unique we could delete it, but it has info on not only the unique county of each
 observation, but also on its state. We will take this information and create a 
 new variable named State that could be beneficial to our analysis. The new 
 variable is a Nominal variable without missing values. However it has a lot of 
-levels (50) with a few sparsly populated so it's not feasible to convert it to 
-factor. 
+levels (50) with a few of them sparsly populated so it's not feasible to convert
+it to factor. 
 
 ```{r}
 sample(df$geography, 10)
@@ -613,17 +619,11 @@ summary(df$state)
 table(df$state)
 
 unique(df$state)
-
-sum(is.na(df$state))
-
 ```
-
 
 ### Variable 13 - percentmarried
 
-Another continuous ratio variable not normally distributed with 0 missing 
-values, 34 outliers (none of them severe), all on the lower end. We create an 
-additional ordinal factor “f.percentmarried”. 
+Another continuous ratio variable not normally distributed.
 
 ```{r}
 summary(df$percentmarried)
@@ -632,26 +632,18 @@ hist(df$percentmarried, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$percentmarried), sd(df$percentmarried)), add = T)
 
 shapiro.test(df$percentmarried)
+```
 
-sum(is.na(df$percentmarried))
+An additional factor `f.percentmarried` is created to discretize the data
+according to the quartiles.
 
-Boxplot(df$percentmarried)
-
-length(Boxplot(df$percentmarried, id = list(n=Inf)))
-
-sevout_percentmarried = (quantile(df$percentmarried,0.25)+(3*((quantile(df$percentmarried,0.75)-quantile(df$percentmarried,0.25)))))
-length(which(df$percentmarried > sevout_percentmarried))
-
-df$f.percentmarried <- ifelse(df$percentmarried <= 47.8, 1, ifelse(df$percentmarried > 47.8 & df$percentmarried <= 52.5, 2, ifelse(df$percentmarried > 52.5 & df$percentmarried <= 56.4, 3, ifelse(df$percentmarried > 56.4, 4,0))))
-df$f.percentmarried <- factor(df$f.percentmarried, labels=c("LowMarriage%","LowMidMarriage%","HighMidMarriage%","HighMarriage%"), order = T, levels=c(1,2,3,4))
-table(df$f.percentmarried)
+```{r}
+df$f.percentmarried <- discretize_quartiles(df$percentmarried, "Married%")
 ```
 
 ### Variable 14 - pctnohs18_24
 
-Another continuous ratio variable not normally distributed with 0 missing 
-values, 34 outliers (none of them severe), all on the higher end. We create an 
-additional ordinal factor “f.pctnohs18_24”. 
+Another continuous ratio variable not normally distributed.
 
 ```{r}
 summary(df$pctnohs18_24)
@@ -660,31 +652,22 @@ hist(df$pctnohs18_24, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctnohs18_24), sd(df$pctnohs18_24)), add = T)
 
 shapiro.test(df$pctnohs18_24)
-
-sum(is.na(df$pctnohs18_24))
-
-Boxplot(df$pctnohs18_24)
-
-length(Boxplot(df$pctnohs18_24, id = list(n=Inf)))
-
-sevout_pctnohs18_24 = (quantile(df$pctnohs18_24,0.25)+(3*((quantile(df$pctnohs18_24,0.75)-quantile(df$pctnohs18_24,0.25)))))
-length(which(df$pctnohs18_24 > sevout_pctnohs18_24))
-
-df$f.pctnohs18_24 <- ifelse(df$pctnohs18_24 <= 12.90, 1, ifelse(df$pctnohs18_24 > 12.90 & df$pctnohs18_24 <= 17.20, 2, ifelse(df$pctnohs18_24 > 17.20 & df$pctnohs18_24 <= 22.70, 3, ifelse(df$pctnohs18_24 > 22.70, 4,0))))
-df$f.pctnohs18_24 <- factor(df$f.pctnohs18_24, labels=c("LowNoHighsc%","LowMidNoHighsc%","HighMidNoHighsc%","HighNoHighsc%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctnohs18_24)
 ```
 
+An additional factor `f.pctnohs18_24` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.pctnohs18_24 <- discretize_quartiles(df$pctnohs18_24, "NoHighsc%")
+```
 
 ### Variable 15 - pcths18_24
 
 Another continuous ratio variable (related to the previous one) not normally 
-distributed with 0 missing values, 33 outliers (9 of them severe) on both ends. 
-There is one really severe outlier with 0 percent of High School Graduates, 
-Greeley County, Kansas. It also has only 4.8% non High School Graduates (really 
-low) and NA college graduates with a population of 1330. It seems like the 
-values are probably false. For now we will leave it as such and later we will 
-see how to deal with it. We create an additional ordinal factor “f.pcths18_24”. 
+distributed. There is one really severe outlier with 0 percent of High School 
+Graduates, Greeley County, Kansas. It also has only 4.8% non High School 
+Graduates (really low). It seems like those values could be incorrect. For now,
+however, we will leave it as is and deal with it later.
 
 ```{r}
 summary(df$pcths18_24)
@@ -693,52 +676,23 @@ hist(df$pcths18_24, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pcths18_24), sd(df$pcths18_24)), add = T)
 
 shapiro.test(df$pcths18_24)
+```
 
-sum(is.na(df$pcths18_24))
+An additional factor `f.pcths18_24` is created to discretize the data according
+to the quartiles.
 
-Boxplot(df$pcths18_24)
-
-length(Boxplot(df$pcths18_24, id = list(n=Inf)))
-
-sevout_pcths18_24 = (quantile(df$pcths18_24,0.25)+(3*((quantile(df$pcths18_24,0.75)-quantile(df$pcths18_24,0.25)))))
-length(which(df$pcths18_24 > sevout_pcths18_24))
-
-df[786,]
-
-df$f.pcths18_24 <- ifelse(df$pcths18_24 <= 29.2, 1, ifelse(df$pcths18_24 > 29.2 & df$pcths18_24 <= 34.7, 2, ifelse(df$pcths18_24 > 34.7 & df$pcths18_24 <= 40.5, 3, ifelse(df$pcths18_24 > 40.5, 4,0))))
-df$f.pcths18_24 <- factor(df$f.pcths18_24, labels=c("LowHighsc%","LowMidHighsc%","HighMidHighsc%","HighHighsc%"), order = T, levels=c(1,2,3,4))
-table(df$f.pcths18_24)
+```{r}
+df$f.pcths18_24 <- discretize_quartiles(df$pcths18_24, "Highsc%")
 ```
 
 ### Variable 16 - pctsomecol18_24
 
-Another continuous ratio variable (related to the 2 previous ones). It has 1376 
-missing values which is more than 75% of our sample. This is too much and we 
-will take the decision to take this variable out of the study because of with 
-such a high proportion of missing data, it will not provide meaningful 
-information. 
-
-```{r}
-summary(df$pctsomecol18_24)
-
-hist(df$pctsomecol18_24, breaks = 30, freq = F)
-curve(dnorm(x, mean(df$pctsomecol18_24), sd(df$pctsomecol18_24)), add = T)
-
-sum(is.na(df$pctsomecol18_24))
-
-1376/1831*100
-
-
-#Removing the column
-df <- subset(df, select = -pctsomecol18_24)
-```
-
+This variable has been removed due to having too many missing values, so 
+analyzing it is left outside the scope for this project.
 
 ### Variable 17 - pcths25_over
 
-Another continuous ratio variable not normally distributed with 0 missing 
-values, 18 outliers (none of them severe), all on the lower end. We create an 
-additional ordinal factor “f.pcths25_over”. 
+Another continuous ratio variable not normally distributed.
 
 ```{r}
 summary(df$pcths25_over)
@@ -747,27 +701,19 @@ hist(df$pcths25_over, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pcths25_over), sd(df$pcths25_over)), add = T)
 
 shapiro.test(df$pcths25_over)
-
-sum(is.na(df$pcths25_over))
-
-Boxplot(df$pcths25_over)
-
-length(Boxplot(df$pcths25_over, id = list(n=Inf)))
-
-sevout_pcths25_over = (quantile(df$pcths25_over,0.25)+(3*((quantile(df$pcths25_over,0.75)-quantile(df$pcths25_over,0.25)))))
-length(which(df$pcths25_over > sevout_pcths25_over))
-
-df$f.pcths25_over <- ifelse(df$pcths25_over <= 30.35, 1, ifelse(df$pcths25_over > 30.35 & df$pcths25_over <= 35.30, 2, ifelse(df$pcths25_over > 35.30 & df$pcths25_over <= 39.65, 3, ifelse(df$pcths25_over > 39.65, 4,0))))
-df$f.pcths25_over <- factor(df$f.pcths25_over, labels=c("Low25Highsc%","LowMid25Highsc%","HighMid25Highsc%","High25Highsc%"), order = T, levels=c(1,2,3,4))
-table(df$f.pcths25_over)
 ```
 
+An additional factor `f.pcths25_over` is created to discretize the data according
+to the quartiles.
+
+```{r}
+df$f.pcths25_over <- discretize_quartiles(df$pcths25_over, "25Highsc%")
+```
 
 ### Variable 18 - pctbachdeg25_over
 
 Another continuous ratio variable (related to the previous one) not normally 
-distributed with 0 missing values, 59 outliers (27 of them severe) all on the 
-higher end. We create an additional ordinal factor “f.pctbachdeg25_over”. 
+distributed. 
 
 ```{r}
 summary(df$pctbachdeg25_over)
@@ -776,29 +722,18 @@ hist(df$pctbachdeg25_over, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctbachdeg25_over), sd(df$pctbachdeg25_over)), add = T)
 
 shapiro.test(df$pctbachdeg25_over)
-
-sum(is.na(df$pctbachdeg25_over))
-
-Boxplot(df$pctbachdeg25_over)
-
-length(Boxplot(df$pctbachdeg25_over, id = list(n=Inf)))
-
-sevout_pctbachdeg25_over = (quantile(df$pctbachdeg25_over,0.25)+(3*((quantile(df$pctbachdeg25_over,0.75)-quantile(df$pctbachdeg25_over,0.25)))))
-length(which(df$pctbachdeg25_over > sevout_pctbachdeg25_over))
-
-df$f.pctbachdeg25_over <- ifelse(df$pctbachdeg25_over <= 9.3, 1, ifelse(df$pctbachdeg25_over > 9.3 & df$pctbachdeg25_over <= 12.3, 2, ifelse(df$pctbachdeg25_over > 12.3 & df$pctbachdeg25_over <= 16.0, 3, ifelse(df$pctbachdeg25_over > 16.0, 4,0))))
-df$f.pctbachdeg25_over <- factor(df$f.pctbachdeg25_over, labels=c("LowBach%","LowMidBach%","HighMidBach%","HighBach%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctbachdeg25_over)
 ```
 
+An additional factor `f.pctbachdeg25_over` is created to discretize the data
+according to the quartiles.
 
+```{r}
+df$f.pctbachdeg25_over <- discretize_quartiles(df$pctbachdeg25_over, "Bach%")
+```
 
 ### Variable 19 - pctemployed16_over
 
-Another continuous ratio variable not normally distributed with 82 missing 
-values (we will see how to input them later), 11 outliers (none of them severe), 
-all but one on the lower end. We create an additional ordinal factor 
-“f.pctemployed16_over”. 
+Another continuous ratio variable not normally distributed. 
 
 ```{r}
 summary(df$pctemployed16_over)
@@ -806,29 +741,20 @@ summary(df$pctemployed16_over)
 hist(df$pctemployed16_over, breaks = 30, freq = F)
 
 shapiro.test(df$pctemployed16_over)
-
-sum(is.na(df$pctemployed16_over))
-
-Boxplot(df$pctemployed16_over)
-
-length(Boxplot(df$pctemployed16_over, id = list(n=Inf)))
-
-sevout_pctemployed16_over = (48.60+(3*(60.30-48.60)))
-length(which(df$pctemployed16_over > sevout_pctemployed16_over))
-
-df$f.pctemployed16_over <- ifelse(df$pctemployed16_over <= 48.60, 1, ifelse(df$pctemployed16_over > 48.60 & df$pctemployed16_over <= 54.50, 2, ifelse(df$pctemployed16_over > 54.50 & df$pctemployed16_over <= 60.30, 3, ifelse(df$pctemployed16_over > 60.30, 4,0))))
-df$f.pctemployed16_over <- factor(df$f.pctemployed16_over, labels=c("LowEmploy%","LowMidEmploy%","HighMidEmploy%","HighEmploy%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctemployed16_over)
 ```
 
+An additional factor `f.pctemployed16_over` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.pctemployed16_over <- discretize_quartiles(df$pctemployed16_over, "Employ%")
+```
 
 ### Variable 20 - pctunemployed16_over
 
-One would assume that this variable is 100 minus the previous variable, but 
-looking at some observations this is proven false. It is a continuous ratio 
-variable not normally distributed with 0 missing values, 42 outliers (18 of them 
-severe), all on the higher end. We create an additional ordinal factor 
-“f.pctunemployed16_over”. 
+One might assume that this variable is 100 minus the previous variable, but 
+looking at some observations this is proven to not be. It is a continuous ratio 
+variable not normally distributed.
 
 ```{r}
 summary(df$pctunemployed16_over)
@@ -837,27 +763,18 @@ hist(df$pctunemployed16_over, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctunemployed16_over), sd(df$pctunemployed16_over)), add = T)
 
 shapiro.test(df$pctunemployed16_over)
-
-sum(is.na(df$pctunemployed16_over))
-
-Boxplot(df$pctunemployed16_over)
-
-length(Boxplot(df$pctunemployed16_over, id = list(n=Inf)))
-
-sevout_pctunemployed16_over = (quantile(df$pctunemployed16_over,0.25)+(3*((quantile(df$pctunemployed16_over,0.75)-quantile(df$pctunemployed16_over,0.25)))))
-length(which(df$pctunemployed16_over > sevout_pctunemployed16_over))
-
-df$f.pctunemployed16_over <- ifelse(df$pctunemployed16_over <= 5.5, 1, ifelse(df$pctunemployed16_over > 5.5 & df$pctunemployed16_over <= 7.5, 2, ifelse(df$pctunemployed16_over > 7.5 & df$pctunemployed16_over <= 9.75, 3, ifelse(df$pctunemployed16_over > 9.75, 4,0))))
-df$f.pcuntemployed16_over <- factor(df$f.pctunemployed16_over, labels=c("LowUnEmploy%","LowMidUnEmploy%","HighMidUnEmploy%","HighUnEmploy%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctunemployed16_over)
 ```
 
+An additional factor `f.pctunemployed16_over` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.pctunemployed16_over <- discretize_quartiles(df$pctunemployed16_over, "Unemploy%")
+```
 
 ### Variable 21 - pctprivatecoverage
 
-Another continuous ratio variable not normally distributed with 0 missing 
-values, 17 outliers (none of them severe) all on the lower end. We create an 
-additional ordinal factor “f.pctprivatecoverage”. 
+Another continuous ratio variable not normally distributed. 
 
 ```{r}
 summary(df$pctprivatecoverage)
@@ -866,49 +783,35 @@ hist(df$pctprivatecoverage, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctprivatecoverage), sd(df$pctprivatecoverage)), add = T)
 
 shapiro.test(df$pctprivatecoverage)
-
-sum(is.na(df$pctprivatecoverage))
-
-Boxplot(df$pctprivatecoverage)
-
-length(Boxplot(df$pctprivatecoverage, id = list(n=Inf)))
-
-sevout_pctprivatecoverage = (quantile(df$pctprivatecoverage,0.25)+(3*((quantile(df$pctprivatecoverage,0.75)-quantile(df$pctprivatecoverage,0.25)))))
-length(which(df$pctprivatecoverage > sevout_pctprivatecoverage))
-
-df$f.pctprivatecoverage <- ifelse(df$pctprivatecoverage <= 57.50, 1, ifelse(df$pctprivatecoverage > 57.50 & df$pctprivatecoverage <= 65.20, 2, ifelse(df$pctprivatecoverage > 65.20 & df$pctprivatecoverage <= 72.10, 3, ifelse(df$pctprivatecoverage > 72.10, 4,0))))
-df$f.pctprivatecoverage <- factor(df$f.pctprivatecoverage, labels=c("LowPrivate%","LowMidPrivate%","HighMidPrivate%","HighPrivate%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctprivatecoverage)
 ```
 
+An additional factor `f.pctprivatecoverage` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.pctprivatecoverage <- discretize_quartiles(df$pctprivatecoverage, "Private%")
+```
 
 ### Variable 22 - pctprivatecoveragealone
 
 This is a continuous ratio variable very closely related with the previous 
-variable. It also has 356 missing values, which amounts to almost 20% of the 
-observations. Since the number of missing values is high and it doesn't add much 
-to our data (it has a correlation of 0.93 with the previous variable) we will 
-delete it. 
+variable. In the data quality section, this variable was shown to have a high 
+amount of missing data, but it was imputed nontheless. However, it has a 0.93
+correlation with variable `pctprivatecoverage`, which is high enough to consider
+removing it for being redundant.
 
 ```{r}
 summary(df$pctprivatecoveragealone)
-
-sum(is.na(df$pctprivatecoveragealone))
-
-356/1831*100
 
 cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
 
 df <- subset(df, select = -pctprivatecoveragealone)
 ```
 
+### Variable 23 - pctempprivcoverage
 
-### Variable 22 - pctempprivcoverage
-
-Another continuous ratio variable normally distributed (if we pick a 99% 
-significance level for the shapiro test) with 0 missing values, 7 outliers (none 
-of them severe) all on the higher end but one. We create an additional ordinal 
-factor “f.pctempprivcoverage”. 
+Another continuous ratio variable normally distributed (with a 99% confidence
+level for the shapiro test). 
 
 ```{r}
 summary(df$pctempprivcoverage)
@@ -917,27 +820,19 @@ hist(df$pctempprivcoverage, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctempprivcoverage), sd(df$pctempprivcoverage)), add = T)
 
 shapiro.test(df$pctempprivcoverage)
-
-sum(is.na(df$pctempprivcoverage))
-
-Boxplot(df$pctempprivcoverage)
-
-length(Boxplot(df$pctempprivcoverage, id = list(n=Inf)))
-
-sevout_pctempprivcoverage = (quantile(df$pctempprivcoverage,0.25)+(3*((quantile(df$pctempprivcoverage,0.75)-quantile(df$pctempprivcoverage,0.25)))))
-length(which(df$pctempprivcoverage > sevout_pctempprivcoverage))
-
-df$f.pctempprivcoverage <- ifelse(df$pctempprivcoverage <= 34.60, 1, ifelse(df$pctempprivcoverage > 34.60 & df$pctempprivcoverage <= 41.10, 2, ifelse(df$pctempprivcoverage > 41.10 & df$pctempprivcoverage <= 47.70, 3, ifelse(df$pctempprivcoverage > 47.70, 4,0))))
-df$f.pctempprivcoverage <- factor(df$f.pctempprivcoverage, labels=c("LowEmployeeHealth%","LowMidEmployeeHealth%","HighMidEmployeeHealth%","HighEmployeeHealth%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctempprivcoverage)
 ```
 
+An additional factor `f.pctempprivcoverage` is created to discretize the data
+according to the quartiles.
 
-### Variable 23 - pctpubliccoverage
+```{r}
+df$f.pctempprivcoverage <- discretize_quartiles(df$pctempprivcoverage, "EmployeeHealth%")
+```
 
-Another continuous ratio variable normally distributed with 0 missing values, 13 
-outliers (1 of them severe) on both ends of the spectrum. We create an 
-additional ordinal factor “f.pctpubliccoverage”. 
+### Variable 24 - pctpubliccoverage
+
+Another continuous ratio variable normally distributed, this time with a very
+high p-value for the shapiro test.
 
 ```{r}
 summary(df$pctpubliccoverage)
@@ -946,29 +841,19 @@ hist(df$pctpubliccoverage, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctpubliccoverage), sd(df$pctpubliccoverage)), add = T)
 
 shapiro.test(df$pctpubliccoverage)
-
-sum(is.na(df$pctpubliccoverage))
-
-Boxplot(df$pctpubliccoverage)
-
-length(Boxplot(df$pctpubliccoverage, id = list(n=Inf)))
-
-sevout_pctpubliccoverage = (quantile(df$pctpubliccoverage,0.25)+(3*((quantile(df$pctpubliccoverage,0.75)-quantile(df$pctpubliccoverage,0.25)))))
-length(which(df$pctpubliccoverage > sevout_pctpubliccoverage))
-
-df$f.pctpubliccoverage <- ifelse(df$pctpubliccoverage <= 30.90, 1, ifelse(df$pctpubliccoverage > 30.90 & df$pctpubliccoverage <= 36.30, 2, ifelse(df$pctpubliccoverage > 36.30 & df$pctpubliccoverage <= 41.40, 3, ifelse(df$pctpubliccoverage > 41.40, 4,0))))
-df$f.pctpubliccoverage <- factor(df$f.pctpubliccoverage, labels=c("LowGovHealth%","LowMidGovHealth%","HighMidGovHealth%","HighGovHealth%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctpubliccoverage)
 ```
 
+An additional factor `f.pctpubliccoverage` is created to discretize the data
+according to the quartiles.
 
-### Variable 24 - pctpubliccoveragealone
+```{r}
+df$f.pctpubliccoverage <- discretize_quartiles(df$pctpubliccoverage, "GovHealth%")
+```
 
-Another continuous ratio variable related to the previous variable (this time 
-with no NAs and not as closely correlated as variables 21 and 22, cor=0.87, so 
-we will keep de variable for now) not normally distributed with 0 missing 
-values, 21 outliers (7 of them severe) on the higher end (except one). We create 
-an additional ordinal factor “f.pctpubliccoveragealone”. 
+### Variable 25 - pctpubliccoveragealone
+
+Another continuous ratio variable related to the previous variable with a 0.87
+correlation. It is not normally distributed. 
 
 ```{r}
 summary(df$pctpubliccoveragealone)
@@ -979,27 +864,18 @@ hist(df$pctpubliccoveragealone, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctpubliccoveragealone), sd(df$pctpubliccoveragealone)), add = T)
 
 shapiro.test(df$pctpubliccoveragealone)
-
-sum(is.na(df$pctpubliccoveragealone))
-
-Boxplot(df$pctpubliccoveragealone)
-
-length(Boxplot(df$pctpubliccoveragealone, id = list(n=Inf)))
-
-sevout_pctpubliccoveragealone = (quantile(df$pctpubliccoveragealone,0.25)+(3*((quantile(df$pctpubliccoveragealone,0.75)-quantile(df$pctpubliccoveragealone,0.25)))))
-length(which(df$pctpubliccoveragealone > sevout_pctpubliccoveragealone))
-
-df$f.pctpubliccoveragealone <- ifelse(df$pctpubliccoveragealone <= 14.90, 1, ifelse(df$pctpubliccoveragealone > 14.90 & df$pctpubliccoveragealone <= 18.70, 2, ifelse(df$pctpubliccoveragealone > 18.70 & df$pctpubliccoveragealone <= 23.00, 3, ifelse(df$pctpubliccoveragealone > 23.00, 4,0))))
-df$f.pctpubliccoveragealone <- factor(df$f.pctpubliccoveragealone, labels=c("LowGovHealthAlone%","LowMidGovHealthAlone%","HighMidGovHealthAlone%","HighGovHealthAlone%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctpubliccoveragealone)
 ```
 
+An additional factor `f.pctpubliccoveragealone` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.pctpubliccoveragealone <- discretize_quartiles(df$pctpubliccoveragealone, "GovHealthAlone%")
+```
 
 ### Variable 25 - pctwhite
 
-Another continuous ratio variable clearly not normally distributed with 0 
-missing values, 97 outliers (none of them severe) all on the low end of the 
-spectrum. We create an additional ordinal factor “f.pctwhite”. 
+Another continuous ratio variable clearly not normally distributed. 
 
 ```{r}
 summary(df$pctwhite)
@@ -1008,28 +884,19 @@ hist(df$pctwhite, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctwhite), sd(df$pctwhite)), add = T)
 
 shapiro.test(df$pctwhite)
-
-sum(is.na(df$pctwhite))
-
-Boxplot(df$pctwhite)
-
-length(Boxplot(df$pctwhite, id = list(n=Inf)))
-
-sevout_pctwhite = (quantile(df$pctwhite,0.25)+(3*((quantile(df$pctwhite,0.75)-quantile(df$pctwhite,0.25)))))
-length(which(df$pctwhite > sevout_pctwhite))
-
-df$f.pctwhite <- ifelse(df$pctwhite <= 77.31, 1, ifelse(df$pctwhite > 77.31 & df$pctwhite <= 89.90, 2, ifelse(df$pctwhite > 89.90 & df$pctwhite <= 95.57, 3, ifelse(df$pctwhite > 95.57, 4,0))))
-df$f.pctwhite <- factor(df$f.pctwhite, labels=c("LowWhite%","LowMidWhite%","HighMidWhite%","HighWhite%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctwhite)
 ```
 
+An additional factor `f.pctwhite` is created to discretize the data according
+to the quartiles.
+
+```{r}
+df$f.pctwhite <- discretize_quartiles(df$pctwhite, "White%")
+```
 
 ### Variable 26 - pctblack
 
-Really similar to the previous variable, with a correlation of 0.84. It is 
-another continuous ratio variable clearly not normally distributed with 0 
-missing values, 224 outliers (168 of them severe) all on the high end of the 
-spectrum. We create an additional ordinal factor “f.pctblack”. 
+This one is really similar to the previous variable, with a correlation of 
+-0.84. It is another continuous ratio variable clearly not normally distributed.
 
 ```{r}
 summary(df$pctblack)
@@ -1040,52 +907,38 @@ hist(df$pctblack, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctblack), sd(df$pctblack)), add = T)
 
 shapiro.test(df$pctblack)
-
-sum(is.na(df$pctblack))
-
-Boxplot(df$pctblack)
-
-length(Boxplot(df$pctblack, id = list(n=Inf)))
-
-sevout_pctblack = (quantile(df$pctblack,0.25)+(3*((quantile(df$pctblack,0.75)-quantile(df$pctblack,0.25)))))
-length(which(df$pctblack > sevout_pctblack))
-
-df$f.pctblack <- ifelse(df$pctblack <= 0.648, 1, ifelse(df$pctblack > 0.648 & df$pctblack <= 2.323, 2, ifelse(df$pctblack > 2.323 & df$pctblack <= 10.867, 3, ifelse(df$pctblack > 10.867, 4,0))))
-df$f.pctblack <- factor(df$f.pctblack, labels=c("LowBlack%","LowMidBlack%","HighMidBlack%","HighBlack%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctblack)
 ```
 
+An additional factor `f.pctblack` is created to discretize the data according
+to the quartiles.
+
+```{r}
+df$f.pctblack <- discretize_quartiles(df$pctblack, "Black%")
+```
 
 ### Variable 27 - pctasian
 
 Also related to the previous 2 variables. It is a continuous ratio variable 
-clearly not normally distributed with 0 missing values, 198 outliers (156 of 
-them severe, and looking at the boxplot some of them really far, probably asian 
-ghetto counties) all on the high end of the spectrum. We create an additional 
-ordinal factor “f.pctasian”. 
+clearly not normally distributed. Looking at the boxplot, there are some points
+with a high asian population percentage (probably those from asian ghetto 
+counties), but none of them higher than 100%.
 
 ```{r}
 summary(df$pctasian)
+boxplot(df$pctasian, horizontal=T)
 
 hist(df$pctasian, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctasian), sd(df$pctasian)), add = T)
 
 shapiro.test(df$pctasian)
-
-sum(is.na(df$pctasian))
-
-Boxplot(df$pctasian)
-
-length(Boxplot(df$pctasian, id = list(n=Inf)))
-
-sevout_pctasian = (quantile(df$pctasian,0.25)+(3*((quantile(df$pctasian,0.75)-quantile(df$pctasian,0.25)))))
-length(which(df$pctasian > sevout_pctasian))
-
-df$f.pctasian <- ifelse(df$pctasian <= 0.2582, 1, ifelse(df$pctasian > 0.2582 & df$pctasian <= 0.5495, 2, ifelse(df$pctasian > 0.5495 & df$pctasian <= 1.2515, 3, ifelse(df$pctasian > 1.2515, 4,0))))
-df$f.pctasian <- factor(df$f.pctasian, labels=c("LowAsian%","LowMidAsian%","HighMidAsian%","HighAsian%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctasian)
 ```
 
+An additional factor `f.pctasian` is created to discretize the data according
+to the quartiles.
+
+```{r}
+df$f.pctasian <- discretize_quartiles(df$pctasian, "Asian%")
+```
 
 ### Variable 28 - pctotherrace
 
@@ -1095,10 +948,8 @@ multicollinearity using VIF, since the values are lower than 5 we can use the
 rule of thumb to say that there is not a severe multicollinearity so we will 
 keep the variable for now (if it was always equal to 100 we would erase it since 
 it wouldn't add any new info). 
-The variable is a continuous ratio variable clearly not normally distributed 
-with 0 missing values, 181 outliers (148 of them severe, and looking at the 
-boxplot some of them really far, probably asian ghetto counties) all on the high 
-end of the spectrum. We create an additional ordinal factor “f.pctotherrace”. 
+
+The variable is a continuous ratio variable clearly not normally distributed.
 
 ```{r}
 summary(df$pctotherrace)
@@ -1106,33 +957,22 @@ summary(df$pctotherrace)
 model <- lm(pctotherrace ~ pctwhite + pctblack + pctasian, data=df)
 vif(model)
 
-summary(df$pctotherrace)
-
 hist(df$pctotherrace, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctotherrace), sd(df$pctotherrace)), add = T)
 
 shapiro.test(df$pctotherrace)
-
-sum(is.na(df$pctotherrace))
-
-Boxplot(df$pctotherrace)
-
-length(Boxplot(df$pctotherrace, id = list(n=Inf)))
-
-sevout_pctotherrace = (quantile(df$pctotherrace,0.25)+(3*((quantile(df$pctotherrace,0.75)-quantile(df$pctotherrace,0.25)))))
-length(which(df$pctotherrace > sevout_pctotherrace))
-
-df$f.pctotherrace <- ifelse(df$pctotherrace <= 0.2867, 1, ifelse(df$pctotherrace > 0.2867 & df$pctotherrace <= 0.7826, 2, ifelse(df$pctotherrace > 0.7826 & df$pctotherrace <= 2.1066, 3, ifelse(df$pctotherrace > 2.1066, 4,0))))
-df$f.pctotherrace <- factor(df$f.pctotherrace, labels=c("LowOtherRace%","LowMidOtherRace%","HighMidOtherRace%","HighOtherRace%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctotherrace)
 ```
 
+An additional factor `f.pctotherrace` is created to discretize the data according
+to the quartiles.
+
+```{r}
+df$f.pctotherrace <- discretize_quartiles(df$pctotherrace, "OtherRace%")
+```
 
 ### Variable 29 - pctmarriedhouseholds
 
-Another continuous ratio variable not normally distributed with 0 missing 
-values, 57 outliers (2 of them severe) on both ends of the spectrum. We create 
-an additional ordinal factor “f.pctmarriedhouseholds”. 
+Another continuous ratio variable not normally distributed.
 
 ```{r}
 summary(df$pctmarriedhouseholds)
@@ -1141,27 +981,19 @@ hist(df$pctmarriedhouseholds, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$pctmarriedhouseholds), sd(df$pctmarriedhouseholds)), add = T)
 
 shapiro.test(df$pctmarriedhouseholds)
-
-sum(is.na(df$pctmarriedhouseholds))
-
-Boxplot(df$pctmarriedhouseholds)
-
-length(Boxplot(df$pctmarriedhouseholds, id = list(n=Inf)))
-
-sevout_pctmarriedhouseholds = (quantile(df$pctmarriedhouseholds,0.25)+(3*((quantile(df$pctmarriedhouseholds,0.75)-quantile(df$pctmarriedhouseholds,0.25)))))
-length(which(df$pctmarriedhouseholds > sevout_pctmarriedhouseholds))
-
-df$f.pctmarriedhouseholds <- ifelse(df$pctmarriedhouseholds <= 47.85, 1, ifelse(df$pctmarriedhouseholds > 47.85 & df$pctmarriedhouseholds <= 51.73, 2, ifelse(df$pctmarriedhouseholds > 51.73 & df$pctmarriedhouseholds <= 55.48, 3, ifelse(df$pctmarriedhouseholds > 55.48, 4,0))))
-df$f.pctmarriedhouseholds <- factor(df$f.pctmarriedhouseholds, labels=c("LowMarried%","LowMidMarried%","HighMidMarried%","HighMarried%"), order = T, levels=c(1,2,3,4))
-table(df$f.pctmarriedhouseholds)
 ```
 
+An additional factor `f.pctmarriedhouseholds` is created to discretize the data
+according to the quartiles.
+
+```{r}
+df$f.pctmarriedhouseholds <- discretize_quartiles(df$pctmarriedhouseholds, "Married%")
+```
 
 ### Variable 30 - birthrate
 
 The last variable is yet another continuous ratio variable not normally 
-distributed with 0 missing values, 104 outliers (52 of them severe) on both ends 
-of the spectrum. We create an additional ordinal factor “f.birthrate”. 
+distributed.
 
 ```{r}
 summary(df$birthrate)
@@ -1170,22 +1002,14 @@ hist(df$birthrate, breaks = 30, freq = F)
 curve(dnorm(x, mean(df$birthrate), sd(df$birthrate)), add = T)
 
 shapiro.test(df$birthrate)
-
-sum(is.na(df$birthrate))
-
-Boxplot(df$birthrate)
-
-length(Boxplot(df$birthrate, id = list(n=Inf)))
-
-sevout_birthrate = (quantile(df$birthrate,0.25)+(3*((quantile(df$birthrate,0.75)-quantile(df$birthrate,0.25)))))
-length(which(df$birthrate > sevout_birthrate))
-
-df$f.birthrate <- ifelse(df$birthrate <= 4.528, 1, ifelse(df$birthrate > 4.528 & df$birthrate <= 5.355, 2, ifelse(df$birthrate > 5.355 & df$birthrate <= 6.414, 3, ifelse(df$birthrate > 6.414, 4,0))))
-df$f.birthrate <- factor(df$f.birthrate, labels=c("LowBirth%","LowMidBirth%","HighMidBirth%","HighBirth%"), order = T, levels=c(1,2,3,4))
-table(df$f.birthrate)
 ```
 
+An additional factor `f.birthrate` is created to discretize the data according
+to the quartiles.
 
+```{r}
+df$f.birthrate <- discretize_quartiles(df$birthrate, "Birth%")
+```
 
 ## Autocorrelation
 
