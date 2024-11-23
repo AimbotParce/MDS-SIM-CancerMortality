@@ -1169,6 +1169,7 @@ sorted_correlation_df <- filtered_correlation_df[order(abs(filtered_correlation_
 
 print(sorted_correlation_df[,"variable"])
 
+
 ```
 
 # Check multicolinearity and low correlation with the target (remove or combine variables)
@@ -1199,8 +1200,6 @@ for(i in 1:ncol(cor_matrix)){
 high_corr_vars <- unique(high_corr_vars)
 print("Highly multicollinearity variables")
 print(high_corr_vars)
-print("Varialbes highly corralated with the target")
-print(high_correlation)
 
 #binnedinc highly corralated with medincome
 
@@ -1215,10 +1214,10 @@ df_cleaned <- df[, !(colnames(df) %in% vars_to_remove)]
 
 #######
 # pcths18_24 with pcths25_over
-df_cleaned$pcths <- (df$pcths18_24 + df$pcths25_over) / 2
+df_cleaned$pcths <- (df$pcths18_24 + df$pcths25_over)
 
 # pctbachdeg18_24 with pctbachdeg25_over
-df_cleaned$pctbach <- (df$pctbachdeg18_24 + df$pctbachdeg25_over) / 2
+df_cleaned$pctbach <- (df$pctbachdeg18_24 + df$pctbachdeg25_over)
 
 df_cleaned <- df_cleaned[, !colnames(df_cleaned) %in% c("pcths18_24", "pcths25_over", "pctbachdeg18_24", "pctbachdeg25_over")]
 
@@ -1245,32 +1244,11 @@ corrplot(new_cor_matrix, method = "circle")
 
 ```
 
-```{r}
-#Most corralated +incidencerate  -medincome +povertypercent  +pcths25_over -pctemployed16_over pctunemployed16_over  pctprivatecoverage pctpubliccoverage pctpubliccoveragealone
-model <- lm(target_deathrate ~ percentmarried * incidencerate  + pcths25_over +
-              povertypercent + pctbachdeg25_over + pctemployed16_over + medincome * pcths18_24 + pctbachdeg18_24 * pcths25_over +
-                   f.pctpubliccoveragealone, data = df_cleaned)
-
-summary(model)
-
-qqnorm(model$residuals)
-qqline(model$residuals, col = "red")
-
-# Breusch-Pagan test for heteroscedasticity
-bptest(model)
-
-lm_stepwise <- step(model, direction = "both", trace = 0)
-
-vif(lm_stepwise)  
-
-summary(lm_stepwise)
-```
-
-
 
 #Analyze behaviour of what seem to be the main predictors
 
 ```{r}
+library(MASS)
 #Boxplot most relevant predictors
 boxplot(target_deathrate ~ f.incidencerate, data = df_cleaned, main = "Death Rate vs. Incidence Rate")
 boxplot(target_deathrate ~ f.medincome, data = df_cleaned, main = "Death Rate vs. Median Income")
@@ -1301,6 +1279,7 @@ pairwise.wilcox.test(df_cleaned$target_deathrate, df_cleaned$f.pcths18_24)
 oneway.test(target_deathrate ~ f.pcths18_24, data = df_cleaned)
 
 pairwise.wilcox.test(df_cleaned$target_deathrate, df_cleaned$f.pctpubliccoverage)
+
 oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df_cleaned)
 
 pairwise.wilcox.test(df_cleaned$target_deathrate, df_cleaned$f.pctpubliccoverage)
@@ -1341,26 +1320,48 @@ summary(lm_pctpubliccoveragealone)
 # Interaction models 
 
 ```{r}
-m1 <- lm(target_deathrate ~ f.medincome, data = df)
+library(lmtest)
+library(sandwich)
+m1 <- lm(target_deathrate ~ medincome, data = df_cleaned[,c(1:21, 54:55)])
 summary(m1)
 par(mar = c(5, 5, 4, 2)) 
-boxcox(target_deathrate ~ f.medincome , data=df) #No transformation of the target needed
+boxcox(target_deathrate ~ medincome , data=df[,c(1:21, 54:55)]) #No transformation of the target needed
 
-m2 <- lm(target_deathrate ~ f.medincome + f.incidencerate, data= df)
-boxcox(target_deathrate ~ f.medincome + f.incidencerate, data=df) #No transformation of the target needed
+m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df[,c(1:21, 54:55)])
+boxcox(target_deathrate ~ medincome + incidencerate, data=df[,c(1:21, 54:55)]) #No transformation of the target needed. Log del target descartat
 summary(m2)
 t <- summary(m2)
 vif(m2)
 1/(1-t$r.squared)
-  
+
 anova(m1,m2)
 
-#########################Fins aquí estic bastant segur que está be, no hi ha collinearity i el imporvement es considerable#########
 
-m3 <- lm(target_deathrate ~ medincome + incidencerate + pctpubliccoveragealone, data= df)
+#The residuals indicate a fairly balanced distribution around zero, though the maximum residual of 140.048 suggests some outliers. The coefficients show that all predictors are statistically significant with p-values < 0.001. 
+m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data= df_cleaned[,c(1:21, 54:55)])
 summary(m3)
 
+
+#The Breusch-Pagan test was conducted to check for heteroscedasticity (non-constant variance of residuals). With a p-value of 0.0086, the test indicates evidence of heteroscedasticity in the model. This suggests that the residuals’ variance is not constant, potentially violating one of the assumptions of linear regression
+bptest(m3)
+
+#The reduction in residual sum of squares (RSS) from 1,008,488 in m1 to 724,598 in m3 is significant (p-value < 2.2e-16). The 
+#F-statistic of 342.62 confirms that adding incidencerate and pcths significantly improves the model.
 anova(m1,m3)
+
+#The VIF values for all predictors in the model (medincome, incidencerate, and pcths) are below 1.2, far below the common threshold of 5 or 10 for multicollinearity concerns. This indicates that the predictors are not highly correlated and do not pose a multicollinearity issue in the regression
+vif(m3)
+t <- summary(m3)
+1/(1-t$r.squared)
+
+
+lm_stepwise <- step(m3, direction = "both", trace = 0)
+plot(lm_stepwise)
+coeftest(m3, vcov = vcovHC(m3, type = "HC1"))
+
+
+
+#########################Fins aquí estic bastant segur que está be, no hi ha collinearity i el imporvement es considerable#########
 
 m4 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone, data= df)
 summary(m4)
