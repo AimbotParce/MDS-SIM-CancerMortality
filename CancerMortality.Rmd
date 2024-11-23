@@ -1509,8 +1509,54 @@ test$f.pctmarriedhouseholds <- discretize_based_on(test$pctmarriedhouseholds, df
 test$f.birthrate <- discretize_based_on(test$birthrate, df$birthrate, "Birth%")
 
 # Combining variables
-df$pcths <- df$pcths18_24 + df$pcths25_over
-df$pctbach <- df$pctbachdeg18_24 + df$pctbachdeg25_over
-df$racindex <- df$pctblack + df$pctasian + df$pctotherrace
-df$social_welfare <- df$pctpubliccoverage + df$povertypercent
+test$pcths <- test$pcths18_24 + test$pcths25_over
+test$pctbach <- test$pctbachdeg18_24 + test$pctbachdeg25_over
+test$racindex <- test$pctblack + test$pctasian + test$pctotherrace
+test$social_welfare <- test$pctpubliccoverage + test$povertypercent
+```
+
+## Model Evaluation
+
+Let's evaluate the model on the test dataset. We will start by predicting the
+target variable using the model and calculating the mean squared error (MSE) and
+the R-squared value.
+
+```{r}
+test$predicted_deathrate <- predict(model, newdata = test)
+
+mse <- mean((test$target_deathrate - test$predicted_deathrate)^2)
+r_squared <- 1 - mse / var(test$target_deathrate)
+cat("Mean Squared Error:", mse, "\n")
+cat("R-squared:", r_squared, "\n")
+```
+
+The model has an R-squared value of 0.46 on the test dataset, indicating that it
+explains 46% of the variance in the target death rate.
+
+Looking at the residuals, we can see that they are correctly centered around 0,
+which is expected for a well-fitted model. However, there's one clear indicator
+of the necessity of a more complex model: The residuals do not seem to follow a
+normal distribution independent of the actual death rate. Looking at the plot,
+there's a clear trend of the residuals being higher for higher death rates.
+
+```{r}
+par(mfrow = c(2, 2))
+plot(test$target_deathrate, test$predicted_deathrate, 
+  main = "Predicted vs. Actual Death Rate", 
+  xlab = "Actual Death Rate", ylab = "Predicted Death Rate"
+)
+abline(0, 1, col = "red")
+
+plot(test$target_deathrate, test$target_deathrate - test$predicted_deathrate, 
+  main = "Residuals vs. Actual Death Rate", 
+  xlab = "Actual Death Rate", ylab = "Residuals"
+)
+abline(h = 0, col = "red")
+
+plot(1, type = "n", axes = F, xlab = "", ylab = "")
+
+hist(test$target_deathrate - test$predicted_deathrate, 
+  main = "Histogram of Residuals", 
+  xlab = "Residuals"
+)
 ```
