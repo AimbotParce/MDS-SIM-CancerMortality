@@ -1173,8 +1173,8 @@ corrplot(new_cor_matrix, method = "circle")
 
 # Model Fitting
 
-Let's start by exploring a linear model with all the variables. We will then
-remove those that are not significant.
+Let's start by exploring a linear model with all the variables, with the 
+intention of getting a first glance at the most significant predictors.
 
 ```{r}
 base_df = Filter(is.numeric, df)
