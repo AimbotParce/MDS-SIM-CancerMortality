@@ -1268,13 +1268,13 @@ summary(lm_pctpubliccoveragealone)
 ## Interaction models 
 
 ```{r}
-m1 <- lm(target_deathrate ~ medincome, data = df[,c(1:21, 54:55)])
+m1 <- lm(target_deathrate ~ medincome, data = df)
 summary(m1)
 par(mar = c(5, 5, 4, 2)) 
-boxcox(target_deathrate ~ medincome , data=df[,c(1:21, 54:55)]) #No transformation of the target needed
+boxcox(target_deathrate ~ medincome , data = df) #No transformation of the target needed
 
-m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df[,c(1:21, 54:55)])
-boxcox(target_deathrate ~ medincome + incidencerate, data=df[,c(1:21, 54:55)]) #No transformation of the target needed. Log del target descartat
+m2 <- lm(target_deathrate ~ medincome + incidencerate, data=df)
+boxcox(target_deathrate ~ medincome + incidencerate, data=df) #No transformation of the target needed. Log del target descartat
 summary(m2)
 t <- summary(m2)
 vif(m2)
@@ -1284,7 +1284,7 @@ anova(m1, m2)
 
 
 #The residuals indicate a fairly balanced distribution around zero, though the maximum residual of 140.048 suggests some outliers. The coefficients show that all predictors are statistically significant with p-values < 0.001. 
-m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data= df[,c(1:21, 54:55)])
+m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data=df)
 summary(m3)
 
 
