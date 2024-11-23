@@ -1274,34 +1274,64 @@ reporting. Overall, these variables highlight key socio-economic and health
 influences on mortality, providing insights for further analysis and potential
 intervention strategies.
 
+In the analysis, the decision to modify only the pcths variable is based on the optimal lambda value obtained from the Box-Cox transformation. For most variables, the lambda values were either close to 1, indicating that no transformation is needed, or close to values suggesting the relationship with the target variable is already approximately linear. However, for the pcths variable, the optimal lambda value was 0.66, which suggests that a moderate transformation would be beneficial. A lambda value of 0.66 indicates that a mild transformation, such as squaring or taking the square root, could help linearize the relationship between pcths and target_deathrate.
+
 ```{r}
-# Linear model: target_deathrate ~ f.percentmarried --> 5.47%
-lm_percentmarried <- lm(target_deathrate ~ f.percentmarried, data = df)
+# Linear model: target_deathrate ~ percentmarried 
+lm_percentmarried <- lm(target_deathrate ~ percentmarried, data = df)
 summary(lm_percentmarried)
+lambda_percentmarried <- boxcox(target_deathrate ~ percentmarried, data = df)
+optimal_lambda_percentmarried <- lambda_percentmarried$x[which.max(lambda_percentmarried$y)]
+optimal_lambda_percentmarried
+#df$percentmarried <- df$percentmarried^optimal_lambda_percentmarried
 
-# Linear model: target_deathrate ~ f.incidencerate --> 15%
-lm_incidencerate <- lm(target_deathrate ~ f.incidencerate, data = df)
+# Linear model: target_deathrate ~ incidencerate
+lm_incidencerate <- lm(target_deathrate ~ incidencerate, data = df)
 summary(lm_incidencerate)
+lambda_incidencerate <- boxcox(target_deathrate ~ incidencerate, data = df)
+optimal_lambda_incidencerate <- lambda_incidencerate$x[which.max(lambda_incidencerate$y)]
+optimal_lambda_incidencerate
+#df$incidencerate <- df$incidencerate^optimal_lambda_incidencerate
 
-# Linear model: target_deathrate ~ f.medincome --> 19%
-lm_medincome <- lm(target_deathrate ~ f.medincome, data = df)
+# Linear model: target_deathrate ~ medincome
+lm_medincome <- lm(target_deathrate ~ medincome, data = df)
 summary(lm_medincome)
+lambda_medincome <- boxcox(target_deathrate ~ medincome, data = df)
+optimal_lambda_medincome <- lambda_medincome$x[which.max(lambda_medincome$y)]
+optimal_lambda_medincome
+#df$medincome <- df$medincome^optimal_lambda_medincome
 
-# Linear model: target_deathrate ~ f.pcths --> 12.6%
+# Linear model: target_deathrate ~ pcths
 lm_pcths <- lm(target_deathrate ~ pcths, data = df)
 summary(lm_pcths)
+lambda_pcths <- boxcox(target_deathrate ~ pcths, data = df)
+optimal_lambda_pcths <- lambda_pcths$x[which.max(lambda_pcths$y)]
+optimal_lambda_pcths
+df$pcths <- df$pcths^optimal_lambda_pcths
 
-# Linear model: target_deathrate ~ f.pctpubliccoverage --> 15%
-lm_pctpubliccoverage <- lm(target_deathrate ~ f.pctpubliccoverage, data = df) 
+# Linear model: target_deathrate ~ pctpubliccoverage
+lm_pctpubliccoverage <- lm(target_deathrate ~ pctpubliccoverage, data = df)
 summary(lm_pctpubliccoverage)
+lambda_pctpubliccoverage <- boxcox(target_deathrate ~ pctpubliccoverage, data = df)
+optimal_lambda_pctpubliccoverage <- lambda_pctpubliccoverage$x[which.max(lambda_pctpubliccoverage$y)]
+optimal_lambda_pctpubliccoverage
+#df$pctpubliccoverage <- df$pctpubliccoverage^optimal_lambda_pctpubliccoverage
 
-# Linear model: target_deathrate ~ f.pctpubliccoveragealone --> 18.85%
-lm_pctpubliccoveragealone <- lm(target_deathrate ~ f.pctpubliccoveragealone, data = df) 
+# Linear model: target_deathrate ~ pctpubliccoveragealone
+lm_pctpubliccoveragealone <- lm(target_deathrate ~ pctpubliccoveragealone, data = df)
 summary(lm_pctpubliccoveragealone)
+lambda_pctpubliccoveragealone <- boxcox(target_deathrate ~ pctpubliccoveragealone, data = df)
+optimal_lambda_pctpubliccoveragealone <- lambda_pctpubliccoveragealone$x[which.max(lambda_pctpubliccoveragealone$y)]
+optimal_lambda_pctpubliccoveragealone
+#df$pctpubliccoveragealone <- df$pctpubliccoveragealone^optimal_lambda_pctpubliccoveragealone
 
-# Linear mdodel: target_deathrate ~ f.povertypercent --> 18.95
-lm_povertypercent <- lm(target_deathrate ~ f.povertypercent, data = df)
+# Linear model: target_deathrate ~ povertypercent
+lm_povertypercent <- lm(target_deathrate ~ povertypercent, data = df)
 summary(lm_povertypercent)
+lambda_povertypercent <- boxcox(target_deathrate ~ povertypercent, data = df)
+optimal_lambda_povertypercent <- lambda_povertypercent$x[which.max(lambda_povertypercent$y)]
+optimal_lambda_povertypercent
+#df$povertypercent <- df$povertypercent^optimal_lambda_povertypercent
 
 
 ```
@@ -1309,9 +1339,9 @@ summary(lm_povertypercent)
 # Interaction models 
 
 We began by building a comprehensive linear model to predict the target death
-rate using a set of selected variables, including f.percentmarried,
-f.incidencerate, f.medincome, pcths, f.pctpubliccoverage,
-f.pctpubliccoveragealone, and f.povertypercent. The idea behind this is to
+rate using a set of selected variables, including percentmarried,
+incidencerate, medincome, pcths, pctpubliccoverage,
+pctpubliccoveragealone, and povertypercent. The idea behind this is to
 examine the influence of various socioeconomic factors and health coverage on
 the target variable. Given the complexity of this model, we then applied
 stepwise regression (in both directions) to simplify it, seeking to retain only
@@ -1326,17 +1356,42 @@ analyzing the results, we aim to identify a simpler model that still provides a
 meaningful and effective prediction of the death rate, with the potential for
 clearer interpretations and easier implementation.
 
+Then, we repeat the process adding more variables and accounting for interactions
+to obtain a more completed model. We obtain a model with 56,7% r-square value, which
+is quite high. However,
+
 ```{r}
 # Create a new model with all selected variables
-full_selected_model <- lm(target_deathrate ~ f.percentmarried + f.incidencerate + f.medincome + pcths + f.pctpubliccoverage + f.pctpubliccoveragealone + f.povertypercent, 
+full_selected_model <- lm(target_deathrate ~ percentmarried + incidencerate + medincome + pcths + pctpubliccoverage + pctpubliccoveragealone + povertypercent, 
                           data = df)
 summary(full_selected_model)
 
 # Perform stepwise selection (both directions)
-lm_stepwise <- step(full_selected_model, direction = "both", trace = 0); lm_stepwise
+lm_stepwise <- step(full_selected_model, direction = "both", k=log(nrow(df))); lm_stepwise
+
+## BEST MODEL PREDICTED BY FUNCTION STEP
+#Step:  AIC=11068.72
+#target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
+#    povertypercent
 
 # Plot the stepwise regression result
 plot(lm_stepwise)
+
+#Repeat the process adding more variables and accounting for interactions
+
+full_selected_model <- lm(target_deathrate ~ (percentmarried + incidencerate + medincome + pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone +  pctbach)^2, data = df)
+full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
+
+#Last model: 
+
+#Step:  AIC=10996.07
+#target_deathrate ~ percentmarried + incidencerate + medincome + 
+#    pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
+#    pctbach + percentmarried:medincome + incidencerate:pctpubliccoverage + 
+#    incidencerate:pctpubliccoveragealone + medincome:pctpubliccoveragealone + 
+#    povertypercent:pctpubliccoverage + povertypercent:pctpubliccoveragealone
+
+summary(full_selected_model)
 
 ```
 
@@ -1372,18 +1427,20 @@ The final model (m4) included median income, incidence rate, poverty percentage,
 and high school graduation rate. Although the model fits the data well, we noted
 the presence of heteroscedasticity, which we may need to address in future
 iterations. This approach has ensured that we retain the most statistically
-significant variables while minimizing the risk of overfitting.
+significant variables while minimizing the risk of over fitting.Note the fact prior
+to this code we tested other possible arrangements and used other variables in order to
+find the best model. For sake of simplicity, this code only shows the last results. 
 
 ```{r}
-# target_deathrate ~ medincome
-m1 <- lm(target_deathrate ~ medincome, data = df)
+# target_deathrate ~ incidentrate
+m1 <- lm(target_deathrate ~ incidentrate, data = df)
 summary(m1)
 # plot(m1)
-boxcox(target_deathrate ~ medincome , data=df) #No transformation of the target needed
+boxcox(target_deathrate ~ incidentrate , data=df) #No transformation of the target needed
 
-# target_deathrate ~ medincome + incidencerate
-m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df)
-boxcox(target_deathrate ~ medincome + incidencerate, data=df) #No transformation of the target needed.
+# target_deathrate ~ povertypercent + incidencerate
+m2 <- lm(target_deathrate ~ povertypercent + incidencerate, data= df)
+boxcox(target_deathrate ~ povertypercent + incidencerate, data=df) #No transformation of the target needed.
 summary(m2)
 # plot(m2)
 t <- summary(m2)
@@ -1392,19 +1449,20 @@ vif(m2)
 
 anova(m1,m2)
 
-# target_deathrate ~ medincome + incidencerate + f.povertypercent
-m3 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent, data= df)
+# target_deathrate ~ pcths + incidencerate + povertypercent
+m3 <- lm(target_deathrate ~  pcths + incidencerate + povertypercent, data= df)
 summary(m3)
 plot(m3)
 
 anova(m1,m3)
 anova(m2,m3)
 
-# target_deathrate ~ medincome + incidencerate + f.povertypercent + pcths
-m4 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent + pcths, data= df)
+# target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent
+m4 <- lm(target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent, data= df)
 summary(m4)
 plot(m4)
 
+#The ANOVA results show that adding the variable pcths (percentage of high school graduates) significantly improves the model in all #three comparisons. In each case, the p-values are extremely low (< 2.2e-16), indicating that the inclusion of pcths leads to a #statistically significant reduction in the residual sum of squares, improving the model's fit. This suggests that pcths provides #valuable explanatory power in predicting target_deathrate.
 anova(m1,m4)
 anova(m2,m4)
 anova(m3,m4)
@@ -1416,12 +1474,6 @@ anova(m3,m4)
 # assumptions of linear regression
 bptest(m4)
 
-# The reduction in residual sum of squares (RSS) from 1,008,488 in m1 to 724,598
-# in m3 is significant (p-value < 2.2e-16). The 
-# F-statistic of 342.62 confirms that adding incidencerate and pcths 
-# significantly improves the model.
-anova(m1,m3)
-
 # The VIF values for all predictors in the model (medincome, incidencerate, and
 # pcths) are below 1.2, far below the common threshold of 5 or 10 for
 # multicollinearity concerns. This indicates that the predictors are not highly
@@ -1430,10 +1482,22 @@ vif(m4)
 t <- summary(m4)
 1/(1-t$r.squared)
 
-crPlots(m4)
-marginalModelPlots(m4)
-
 model <- m4
+```
+
+#Visualize final model
+```{r}
+lmBest <- model
+plot(model)
+crPlots(model)
+marginalModelPlots(model)
+
+```
+
+
+# Influential data
+```{r}
+
 ```
 
 # Model Validation
