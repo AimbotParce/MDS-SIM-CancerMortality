@@ -320,14 +320,14 @@ quantile(df$pctemployed16_over, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 23.9 43.3 47.4 50.0 52.5 54.6 57.2 59.3 61.5 64.5 80.1
+    ## 23.9 43.3 47.5 50.1 52.5 54.6 57.1 59.3 61.5 64.5 80.1
 
 ``` r
 quantile(df$pctprivatecoveragealone, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 16.8 35.3 39.7 42.9 45.8 48.9 51.5 54.3 57.2 61.6 78.9
+    ## 16.8 35.4 39.7 42.9 45.8 48.9 51.6 54.3 57.0 61.6 78.9
 
 Which they are.
 
@@ -372,10 +372,10 @@ for (colname in colnames(Filter(is.numeric, df))) {
     ## Column pctbachdeg18_24 has 46 mild outliers and 10 severe outliers
     ## Column pcths25_over has 18 mild outliers and 0 severe outliers
     ## Column pctbachdeg25_over has 56 mild outliers and 3 severe outliers
-    ## Column pctemployed16_over has 11 mild outliers and 0 severe outliers
+    ## Column pctemployed16_over has 13 mild outliers and 0 severe outliers
     ## Column pctunemployed16_over has 38 mild outliers and 4 severe outliers
     ## Column pctprivatecoverage has 17 mild outliers and 0 severe outliers
-    ## Column pctprivatecoveragealone has 2 mild outliers and 0 severe outliers
+    ## Column pctprivatecoveragealone has 3 mild outliers and 0 severe outliers
     ## Column pctempprivcoverage has 7 mild outliers and 0 severe outliers
     ## Column pctpubliccoverage has 13 mild outliers and 0 severe outliers
     ## Column pctpubliccoveragealone has 21 mild outliers and 0 severe outliers
@@ -491,7 +491,7 @@ multi_outliers_95 = which((res.out_95$md > res.out_95$cutoff)&(res.out_95$rd > r
 length(multi_outliers_95)
 ```
 
-    ## [1] 269
+    ## [1] 272
 
 ``` r
 res.out <- Moutlier(numeric.df, quantile = 0.9999995, plot=F)
@@ -499,7 +499,7 @@ multi_outliers = which((res.out$md > res.out$cutoff)&(res.out$rd > res.out$cutof
 length(multi_outliers)
 ```
 
-    ## [1] 82
+    ## [1] 81
 
 ``` r
 par(mfrow = c(1,1))
@@ -1095,11 +1095,11 @@ of them sparsly populated so it’s not feasible to convert it to factor.
 sample(df$geography, 10)
 ```
 
-    ##  [1] "Union County, New Jersey"        "Meriwether County, Georgia"     
-    ##  [3] "Carroll County, Indiana"         "Van Buren County, Tennessee"    
-    ##  [5] "Graves County, Kentucky"         "Lancaster County, Nebraska"     
-    ##  [7] "Hancock County, Kentucky"        "Grenada County, Mississippi"    
-    ##  [9] "Carlisle County, Kentucky"       "Pleasants County, West Virginia"
+    ##  [1] "Baker County, Florida"           "Livingston County, Michigan"    
+    ##  [3] "DeKalb County, Indiana"          "Big Horn County, Montana"       
+    ##  [5] "Daviess County, Indiana"         "Lawrence County, Alabama"       
+    ##  [7] "Ozaukee County, Wisconsin"       "Cross County, Arkansas"         
+    ##  [9] "Calhoun County, Michigan"        "Hampshire County, West Virginia"
 
 ``` r
 # Use regex to get the state (everything after the comma and white space):
@@ -1370,7 +1370,7 @@ summary(df$pctemployed16_over)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   23.90   48.60   54.60   54.29   60.30   80.10
+    ##   23.90   48.70   54.60   54.25   60.30   80.10
 
 ``` r
 hist(df$pctemployed16_over, breaks = 30, freq = F)
@@ -1386,7 +1386,7 @@ shapiro.test(df$pctemployed16_over)
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  df$pctemployed16_over
-    ## W = 0.99199, p-value = 1.852e-08
+    ## W = 0.99163, p-value = 9.71e-09
 
 An additional factor `f.pctemployed16_over` is created to discretize the
 data according to the quartiles.
@@ -1397,7 +1397,7 @@ df$f.pctemployed16_over <- discretize_quartiles(df$pctemployed16_over, "Employ%"
 
     ## res
     ##     LowEmploy%  LowMidEmploy% HighMidEmploy%    HighEmploy% 
-    ##            459            464            455            453
+    ##            460            463            457            451
 
 ### Variable 20 - pctunemployed16_over
 
@@ -1492,7 +1492,7 @@ summary(df$pctprivatecoveragealone)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   16.80   41.20   48.90   48.57   55.60   78.90
+    ##   16.80   41.30   48.90   48.59   55.50   78.90
 
 ``` r
 cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
@@ -1502,13 +1502,13 @@ cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
     ##  Pearson's product-moment correlation
     ## 
     ## data:  df$pctprivatecoverage and df$pctprivatecoveragealone
-    ## t = 110.02, df = 1829, p-value < 2.2e-16
+    ## t = 110.61, df = 1829, p-value < 2.2e-16
     ## alternative hypothesis: true correlation is not equal to 0
     ## 95 percent confidence interval:
-    ##  0.9257713 0.9378207
+    ##  0.9264886 0.9384253
     ## sample estimates:
     ##       cor 
-    ## 0.9320533
+    ## 0.9327119
 
 ``` r
 df <- subset(df, select = -pctprivatecoveragealone)
@@ -1999,7 +1999,7 @@ sorted_correlation_df
     ## povertypercent           0.4500846  5.144264e-92
     ## incidencerate            0.4495485  8.953861e-92
     ## medincome               -0.4436828  3.606607e-89
-    ## pctemployed16_over      -0.4425599  1.122079e-88
+    ## pctemployed16_over      -0.4413929  3.633342e-88
     ## pctpubliccoverage        0.4243675  6.056303e-81
     ## pcths25_over             0.4069017  5.910723e-74
     ## binnedinc               -0.4046327  4.462085e-73
@@ -2153,50 +2153,50 @@ summary(model)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -99.306 -10.946  -0.497  10.570 133.185 
+    ## -98.913 -10.988  -0.392  10.474 133.256 
     ## 
     ## Coefficients: (4 not defined because of singularities)
     ##                          Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)             2.059e+02  2.665e+01   7.728 1.80e-14 ***
-    ## avganncount            -3.054e-03  9.753e-04  -3.131 0.001771 ** 
-    ## avgdeathsperyear        1.460e-02  4.679e-03   3.121 0.001830 ** 
-    ## incidencerate           1.868e-01  9.193e-03  20.314  < 2e-16 ***
-    ## medincome               1.220e-04  1.379e-04   0.885 0.376281    
-    ## popest2015             -1.095e-05  6.378e-06  -1.717 0.086226 .  
-    ## povertypercent          3.550e-01  2.173e-01   1.634 0.102486    
-    ## studypercap             1.272e-03  9.357e-04   1.360 0.174109    
-    ## binnedinc              -2.429e-06  7.185e-05  -0.034 0.973032    
-    ## medianage              -5.260e-01  2.020e-01  -2.604 0.009280 ** 
-    ## percentmarried          1.359e+00  2.227e-01   6.100 1.30e-09 ***
-    ## pctnohs18_24           -1.059e-01  7.331e-02  -1.445 0.148664    
-    ## pcths18_24              1.488e-01  6.546e-02   2.274 0.023103 *  
-    ## pctbachdeg18_24        -5.578e-02  1.435e-01  -0.389 0.697610    
-    ## pcths25_over            4.341e-01  1.268e-01   3.424 0.000631 ***
-    ## pctbachdeg25_over      -1.087e+00  2.014e-01  -5.399 7.61e-08 ***
-    ## pctemployed16_over     -7.750e-01  1.462e-01  -5.303 1.28e-07 ***
-    ## pctunemployed16_over    7.299e-02  2.184e-01   0.334 0.738256    
-    ## pctprivatecoverage     -3.653e-01  1.726e-01  -2.117 0.034392 *  
-    ## pctempprivcoverage      3.363e-01  1.328e-01   2.532 0.011411 *  
-    ## pctpubliccoverage      -4.508e-01  2.957e-01  -1.525 0.127535    
-    ## pctpubliccoveragealone  5.920e-01  3.641e-01   1.626 0.104109    
-    ## pctwhite               -1.305e-01  8.152e-02  -1.601 0.109648    
-    ## pctblack               -3.872e-03  8.293e-02  -0.047 0.962766    
-    ## pctasian               -2.015e-01  2.925e-01  -0.689 0.490997    
-    ## pctotherrace           -7.343e-01  1.599e-01  -4.592 4.70e-06 ***
-    ## pctmarriedhouseholds   -1.264e+00  2.109e-01  -5.993 2.48e-09 ***
-    ## birthrate              -8.063e-01  2.587e-01  -3.117 0.001856 ** 
+    ## (Intercept)             2.055e+02  2.674e+01   7.685 2.50e-14 ***
+    ## avganncount            -3.122e-03  9.745e-04  -3.204 0.001381 ** 
+    ## avgdeathsperyear        1.489e-02  4.677e-03   3.185 0.001473 ** 
+    ## incidencerate           1.863e-01  9.198e-03  20.259  < 2e-16 ***
+    ## medincome               1.265e-04  1.379e-04   0.917 0.359339    
+    ## popest2015             -1.110e-05  6.380e-06  -1.740 0.081948 .  
+    ## povertypercent          3.549e-01  2.178e-01   1.629 0.103382    
+    ## studypercap             1.282e-03  9.361e-04   1.370 0.170871    
+    ## binnedinc              -5.267e-06  7.189e-05  -0.073 0.941606    
+    ## medianage              -5.384e-01  2.024e-01  -2.660 0.007881 ** 
+    ## percentmarried          1.365e+00  2.244e-01   6.080 1.46e-09 ***
+    ## pctnohs18_24           -1.029e-01  7.329e-02  -1.403 0.160658    
+    ## pcths18_24              1.477e-01  6.552e-02   2.254 0.024308 *  
+    ## pctbachdeg18_24        -5.207e-02  1.436e-01  -0.363 0.716880    
+    ## pcths25_over            4.352e-01  1.268e-01   3.431 0.000614 ***
+    ## pctbachdeg25_over      -1.092e+00  2.014e-01  -5.421 6.72e-08 ***
+    ## pctemployed16_over     -7.650e-01  1.469e-01  -5.207 2.14e-07 ***
+    ## pctunemployed16_over    8.907e-02  2.179e-01   0.409 0.682740    
+    ## pctprivatecoverage     -3.584e-01  1.726e-01  -2.077 0.037966 *  
+    ## pctempprivcoverage      3.303e-01  1.327e-01   2.489 0.012910 *  
+    ## pctpubliccoverage      -4.451e-01  2.960e-01  -1.504 0.132810    
+    ## pctpubliccoveragealone  5.958e-01  3.647e-01   1.633 0.102541    
+    ## pctwhite               -1.304e-01  8.155e-02  -1.599 0.110101    
+    ## pctblack               -4.231e-03  8.297e-02  -0.051 0.959337    
+    ## pctasian               -2.063e-01  2.927e-01  -0.705 0.480934    
+    ## pctotherrace           -7.376e-01  1.600e-01  -4.610 4.31e-06 ***
+    ## pctmarriedhouseholds   -1.268e+00  2.124e-01  -5.969 2.87e-09 ***
+    ## birthrate              -8.095e-01  2.587e-01  -3.129 0.001783 ** 
     ## pcths                          NA         NA      NA       NA    
     ## pctbach                        NA         NA      NA       NA    
     ## racindex                       NA         NA      NA       NA    
     ## social_welfare                 NA         NA      NA       NA    
-    ## f.raceBlack            -3.946e+01  1.751e+01  -2.254 0.024310 *  
-    ## f.raceWhite            -3.669e+01  1.710e+01  -2.146 0.032042 *  
+    ## f.raceBlack            -3.978e+01  1.751e+01  -2.271 0.023254 *  
+    ## f.raceWhite            -3.693e+01  1.711e+01  -2.158 0.031034 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 19.48 on 1801 degrees of freedom
-    ## Multiple R-squared:  0.5212, Adjusted R-squared:  0.5135 
-    ## F-statistic:  67.6 on 29 and 1801 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 19.49 on 1801 degrees of freedom
+    ## Multiple R-squared:  0.5209, Adjusted R-squared:  0.5132 
+    ## F-statistic: 67.53 on 29 and 1801 DF,  p-value: < 2.2e-16
 
 According to this first model, the following variables seem to be very
 significant (p-value \< 0.01):
@@ -2208,68 +2208,82 @@ significant_vars
 ```
 
     ##                           Estimate   Std. Error   t value     Pr(>|t|)
-    ## (Intercept)          205.947058223 2.664941e+01  7.728017 1.802086e-14
-    ## avganncount           -0.003053622 9.753439e-04 -3.130815 1.771208e-03
-    ## avgdeathsperyear       0.014602414 4.678610e-03  3.121101 1.830361e-03
-    ## incidencerate          0.186751899 9.193288e-03 20.313939 9.041513e-83
-    ## medianage             -0.525956529 2.019505e-01 -2.604383 9.279675e-03
-    ## percentmarried         1.358551800 2.227128e-01  6.100017 1.295004e-09
-    ## pcths25_over           0.434050740 1.267698e-01  3.423927 6.310610e-04
-    ## pctbachdeg25_over     -1.087338870 2.014136e-01 -5.398538 7.609898e-08
-    ## pctemployed16_over    -0.775014452 1.461514e-01 -5.302818 1.280887e-07
-    ## pctotherrace          -0.734327174 1.599165e-01 -4.591940 4.695570e-06
-    ## pctmarriedhouseholds  -1.264045798 2.109088e-01 -5.993329 2.477433e-09
-    ## birthrate             -0.806281307 2.586690e-01 -3.117038 1.855635e-03
+    ## (Intercept)          205.519309951 2.674284e+01  7.685023 2.496596e-14
+    ## avganncount           -0.003122074 9.745324e-04 -3.203664 1.380633e-03
+    ## avgdeathsperyear       0.014894697 4.676715e-03  3.184863 1.473000e-03
+    ## incidencerate          0.186347254 9.198372e-03 20.258722 2.255231e-82
+    ## medianage             -0.538416095 2.024030e-01 -2.660120 7.880588e-03
+    ## percentmarried         1.364630886 2.244406e-01  6.080144 1.462488e-09
+    ## pcths25_over           0.435189002 1.268253e-01  3.431405 6.140290e-04
+    ## pctbachdeg25_over     -1.091915879 2.014171e-01 -5.421166 6.720204e-08
+    ## pctemployed16_over    -0.765008167 1.469289e-01 -5.206654 2.142827e-07
+    ## pctotherrace          -0.737619211 1.599996e-01 -4.610132 4.307191e-06
+    ## pctmarriedhouseholds  -1.267672192 2.123742e-01 -5.969050 2.867355e-09
+    ## birthrate             -0.809496305 2.587209e-01 -3.128840 1.783094e-03
 
 ## Analyze behaviour of what seem to be the main predictors
 
+The analysis found significant relationships between target death rates
+and socioeconomic factors. Marital status, incidence rates, and median
+income all showed strong associations, with higher marriage and income
+levels linked to lower death rates, while higher incidence rates
+correlated with higher death rates. These results were supported by both
+pairwise Wilcoxon tests and ANOVA.
+
 ``` r
-#Boxplot most relevant predictors
-boxplot(target_deathrate ~ f.incidencerate, data = df, main = "Death Rate vs. Incidence Rate")
+# Boxplot for most relevant predictors with appropriate labels
+boxplot(target_deathrate ~ f.incidencerate, data = df, main = "Death Rate vs. Incidence Rate", 
+        xlab = "Incidence Rate (Factor)", ylab = "Death Rate")
 ```
 
 ![](images/unnamed-chunk-90-1.png)
 
 ``` r
-boxplot(target_deathrate ~ f.medincome, data = df, main = "Death Rate vs. Median Income")
+boxplot(target_deathrate ~ f.medincome, data = df, main = "Death Rate vs. Median Income", 
+        xlab = "Median Income (Factor)", ylab = "Death Rate")
 ```
 
 ![](images/unnamed-chunk-90-2.png)
 
 ``` r
-boxplot(target_deathrate ~ f.percentmarried, data = df, main = "Death Rate vs. Percent Married")
+boxplot(target_deathrate ~ f.percentmarried, data = df, main = "Death Rate vs. Percent Married", 
+        xlab = "Percent Married (Factor)", ylab = "Death Rate")
 ```
 
 ![](images/unnamed-chunk-90-3.png)
 
 ``` r
-boxplot(target_deathrate ~ f.pcths18_24, data = df, main = "Death Rate vs. Percent 18-24 HS")
+boxplot(target_deathrate ~ pcths, data = df, main = "Death Rate vs. Percent High School", 
+        xlab = "Percent High School", ylab = "Death Rate")
 ```
 
 ![](images/unnamed-chunk-90-4.png)
 
 ``` r
-boxplot(target_deathrate ~ f.povertypercent, data = df, main = "Death Rate vs. Percent 18-24 HS")
+boxplot(target_deathrate ~ f.povertypercent, data = df, main = "Death Rate vs. Poverty Percent", 
+        xlab = "Poverty Percent (Factor)", ylab = "Death Rate")
 ```
 
 ![](images/unnamed-chunk-90-5.png)
 
 ``` r
-boxplot(target_deathrate ~ f.pctpubliccoverage, data = df, main = "Death Rate vs. Percent 18-24 HS")
+boxplot(target_deathrate ~ f.pctpubliccoverage, data = df, main = "Death Rate vs. Public Coverage", 
+        xlab = "Public Coverage (Factor)", ylab = "Death Rate")
 ```
 
 ![](images/unnamed-chunk-90-6.png)
 
 ``` r
-boxplot(target_deathrate ~ f.pctpubliccoveragealone, data = df, main = "Death Rate vs. Percent 18-24 HS")
+boxplot(target_deathrate ~ f.pctpubliccoveragealone, data = df, main = "Death Rate vs. Public Coverage Alone", 
+        xlab = "Public Coverage Alone (Factor)", ylab = "Death Rate")
 ```
 
 ![](images/unnamed-chunk-90-7.png)
 
 ``` r
-#Pairwise tests
-#The ANOVA result confirms that marital status percentage (f.percentmarried) has a significant effect on the target_deathrate, suggesting that different levels of marriage percentages correspond to different death rate levels.
-pairwise.wilcox.test(df$target_deathrate, df$f.percentmarried)
+# Pairwise tests and ANOVA for corresponding variables
+# Percent Married
+pairwise.wilcox.test(df$target_deathrate, df$f.percentmarried, p.adjust.method = "bonferroni")
 ```
 
     ## 
@@ -2278,11 +2292,11 @@ pairwise.wilcox.test(df$target_deathrate, df$f.percentmarried)
     ## data:  df$target_deathrate and df$f.percentmarried 
     ## 
     ##                 LowMarried% LowMidMarried% HighMidMarried%
-    ## LowMidMarried%  0.16539     -              -              
-    ## HighMidMarried% 0.00015     0.00407        -              
-    ## HighMarried%    < 2e-16     < 2e-16        2.3e-08        
+    ## LowMidMarried%  0.9924      -              -              
+    ## HighMidMarried% 0.0003      0.0122         -              
+    ## HighMarried%    < 2e-16     < 2e-16        3.5e-08        
     ## 
-    ## P value adjustment method: holm
+    ## P value adjustment method: bonferroni
 
 ``` r
 oneway.test(target_deathrate ~ f.percentmarried, data = df)
@@ -2296,8 +2310,7 @@ oneway.test(target_deathrate ~ f.percentmarried, data = df)
 
 ``` r
 # Incidence Rate
-#ANOVA results indicate that the f.incidencerate factor has a statistically significant impact on target_deathrate.
-pairwise.wilcox.test(df$target_deathrate, df$f.incidencerate)
+pairwise.wilcox.test(df$target_deathrate, df$f.incidencerate, p.adjust.method = "bonferroni")
 ```
 
     ## 
@@ -2306,11 +2319,11 @@ pairwise.wilcox.test(df$target_deathrate, df$f.incidencerate)
     ## data:  df$target_deathrate and df$f.incidencerate 
     ## 
     ##                    LowDiagnPerCap LowMidDiagnPerCap HighMidDiagnPerCap
-    ## LowMidDiagnPerCap  1.4e-13        -                 -                 
-    ## HighMidDiagnPerCap < 2e-16        7.8e-10           -                 
-    ## HighDiagnPerCap    < 2e-16        < 2e-16           1.2e-05           
+    ## LowMidDiagnPerCap  2.8e-13        -                 -                 
+    ## HighMidDiagnPerCap < 2e-16        2.3e-09           -                 
+    ## HighDiagnPerCap    < 2e-16        < 2e-16           7.0e-05           
     ## 
-    ## P value adjustment method: holm
+    ## P value adjustment method: bonferroni
 
 ``` r
 oneway.test(target_deathrate ~ f.incidencerate, data = df)
@@ -2324,8 +2337,7 @@ oneway.test(target_deathrate ~ f.incidencerate, data = df)
 
 ``` r
 # Median Income
-# ANOVA tests indicate that f.medincome (median income) has a statistically significant impact on target_deathrate. Specifically, different levels of median income (such as LowMedianInc, LowMidMedianInc, etc.) are associated with different death rates, with higher income groups generally showing lower death rates.
-pairwise.wilcox.test(df$target_deathrate, df$f.medincome)
+pairwise.wilcox.test(df$target_deathrate, df$f.medincome, p.adjust.method = "bonferroni")
 ```
 
     ## 
@@ -2334,11 +2346,11 @@ pairwise.wilcox.test(df$target_deathrate, df$f.medincome)
     ## data:  df$target_deathrate and df$f.medincome 
     ## 
     ##                  LowMedianInc LowMidMedianInc HighMidMedianInc
-    ## LowMidMedianInc  1.8e-13      -               -               
-    ## HighMidMedianInc < 2e-16      1.1e-11         -               
-    ## HighMedianInc    < 2e-16      < 2e-16         4.9e-11         
+    ## LowMidMedianInc  3.5e-13      -               -               
+    ## HighMidMedianInc < 2e-16      3.3e-11         -               
+    ## HighMedianInc    < 2e-16      < 2e-16         3.0e-10         
     ## 
-    ## P value adjustment method: holm
+    ## P value adjustment method: bonferroni
 
 ``` r
 oneway.test(target_deathrate ~ f.medincome, data = df)
@@ -2351,35 +2363,35 @@ oneway.test(target_deathrate ~ f.medincome, data = df)
     ## F = 133.32, num df = 3.0, denom df = 1009.9, p-value < 2.2e-16
 
 ``` r
-# Percent 18-24 HS
-#ANOVA indicate a significant relationship between f.pcths18_24 (the percentage of people with high school education in the 18-24 age range) and target_deathrate. The results suggest that as the percentage of high school education increases, the death rates tend to decrease
-pairwise.wilcox.test(df$target_deathrate, df$f.pcths18_24)
+# Poverty Percent
+pairwise.wilcox.test(df$target_deathrate, df$f.povertypercent, p.adjust.method = "bonferroni")
 ```
 
     ## 
     ##  Pairwise comparisons using Wilcoxon rank sum test with continuity correction 
     ## 
-    ## data:  df$target_deathrate and df$f.pcths18_24 
+    ## data:  df$target_deathrate and df$f.povertypercent 
     ## 
-    ##                LowHighsc% LowMidHighsc% HighMidHighsc%
-    ## LowMidHighsc%  1.3e-06    -             -             
-    ## HighMidHighsc% 1.1e-15    0.00014       -             
-    ## HighHighsc%    < 2e-16    1.6e-08       0.02883       
+    ##             LowPov% LowMidPov% HighMidPov%
+    ## LowMidPov%  1.1e-10 -          -          
+    ## HighMidPov% < 2e-16 3.3e-12    -          
+    ## HighPov%    < 2e-16 < 2e-16    2.0e-11    
     ## 
-    ## P value adjustment method: holm
+    ## P value adjustment method: bonferroni
 
 ``` r
-oneway.test(target_deathrate ~ f.pcths18_24, data = df)
+oneway.test(target_deathrate ~ f.povertypercent, data = df)
 ```
 
     ## 
     ##  One-way analysis of means (not assuming equal variances)
     ## 
-    ## data:  target_deathrate and f.pcths18_24
-    ## F = 36.623, num df = 3.0, denom df = 1009.7, p-value < 2.2e-16
+    ## data:  target_deathrate and f.povertypercent
+    ## F = 131.91, num df = 3.0, denom df = 1007.1, p-value < 2.2e-16
 
 ``` r
-pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoverage)
+# Public Coverage
+pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoverage, p.adjust.method = "bonferroni")
 ```
 
     ## 
@@ -2388,11 +2400,11 @@ pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoverage)
     ## data:  df$target_deathrate and df$f.pctpubliccoverage 
     ## 
     ##                   LowGovHealth% LowMidGovHealth% HighMidGovHealth%
-    ## LowMidGovHealth%  1.1e-13       -                -                
-    ## HighMidGovHealth% < 2e-16       3.8e-08          -                
-    ## HighGovHealth%    < 2e-16       < 2e-16          3.8e-08          
+    ## LowMidGovHealth%  2.3e-13       -                -                
+    ## HighMidGovHealth% < 2e-16       2.0e-07          -                
+    ## HighGovHealth%    < 2e-16       < 2e-16          1.2e-07          
     ## 
-    ## P value adjustment method: holm
+    ## P value adjustment method: bonferroni
 
 ``` r
 oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df)
@@ -2405,32 +2417,63 @@ oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df)
     ## F = 104.8, num df = 3.0, denom df = 1009.4, p-value < 2.2e-16
 
 ``` r
-pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoverage)
+# Public Coverage Alone
+pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoveragealone, p.adjust.method = "bonferroni")
 ```
 
     ## 
     ##  Pairwise comparisons using Wilcoxon rank sum test with continuity correction 
     ## 
-    ## data:  df$target_deathrate and df$f.pctpubliccoverage 
+    ## data:  df$target_deathrate and df$f.pctpubliccoveragealone 
     ## 
-    ##                   LowGovHealth% LowMidGovHealth% HighMidGovHealth%
-    ## LowMidGovHealth%  1.1e-13       -                -                
-    ## HighMidGovHealth% < 2e-16       3.8e-08          -                
-    ## HighGovHealth%    < 2e-16       < 2e-16          3.8e-08          
+    ##                        LowGovHealthAlone% LowMidGovHealthAlone%
+    ## LowMidGovHealthAlone%  2.7e-14            -                    
+    ## HighMidGovHealthAlone% < 2e-16            1.1e-11              
+    ## HighGovHealthAlone%    < 2e-16            < 2e-16              
+    ##                        HighMidGovHealthAlone%
+    ## LowMidGovHealthAlone%  -                     
+    ## HighMidGovHealthAlone% -                     
+    ## HighGovHealthAlone%    3.2e-11               
     ## 
-    ## P value adjustment method: holm
+    ## P value adjustment method: bonferroni
 
 ``` r
-oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df)
+oneway.test(target_deathrate ~ f.pctpubliccoveragealone, data = df)
 ```
 
     ## 
     ##  One-way analysis of means (not assuming equal variances)
     ## 
-    ## data:  target_deathrate and f.pctpubliccoverage
-    ## F = 104.8, num df = 3.0, denom df = 1009.4, p-value < 2.2e-16
+    ## data:  target_deathrate and f.pctpubliccoveragealone
+    ## F = 120.39, num df = 3, denom df = 1006, p-value < 2.2e-16
 
-## No-interaction models
+# No-interaction models
+
+This preliminary analysis involves building multiple linear regression
+models to explore how different predictors (e.g., poverty rate, marriage
+rate, incidence rate, median income, public coverage) relate to a target
+variable, target_deathrate. Each model tests the relationship between
+target_deathrate and one predictor, while controlling for other factors.
+
+The analysis of various socio-economic and health-related factors
+reveals significant relationships with target_deathrate. Poverty
+percentage has a strong positive association with death rates, where a
+1% increase in poverty corresponds to a 23.42 increase in death rates.
+Marriage rates show a negative relationship, with higher marriage
+percentages linked to lower death rates, particularly in the linear and
+quadratic terms. Incidence rates exhibit a positive effect, suggesting
+that higher disease rates contribute to higher death rates. Median
+income also has a negative relationship, with higher income associated
+with lower death rates, though the effect becomes more complex with
+higher-order terms. Interestingly, high school graduation rates are
+positively correlated with death rates, which may reflect underlying
+socio-economic factors not captured in the model. Public health
+coverage, both overall and alone, shows a positive association with
+death rates, indicating that more coverage could be linked to higher
+mortality, possibly due to disparities in healthcare access or
+reporting. Overall, these variables highlight key socio-economic and
+health influences on mortality, providing insights for further analysis
+and potential intervention strategies.
 
 ``` r
 # Linear model: target_deathrate ~ f.percentmarried --> 5.47%
@@ -2514,31 +2557,29 @@ summary(lm_medincome)
     ## F-statistic: 140.4 on 3 and 1827 DF,  p-value: < 2.2e-16
 
 ``` r
-# Linear model: target_deathrate ~ f.pcths18_24 --> 5.1%
-lm_pcths18_24 <- lm(target_deathrate ~ f.pcths18_24, data = df)
-summary(lm_pcths18_24)
+# Linear model: target_deathrate ~ f.pcths --> 12.6%
+lm_pcths <- lm(target_deathrate ~ pcths, data = df)
+summary(lm_pcths)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = target_deathrate ~ f.pcths18_24, data = df)
+    ## lm(formula = target_deathrate ~ pcths, data = df)
     ## 
     ## Residuals:
-    ##      Min       1Q   Median       3Q      Max 
-    ## -109.408  -16.152   -0.265   15.215  175.495 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -93.016 -15.177  -0.017  14.581 174.189 
     ## 
     ## Coefficients:
-    ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                 169.108      1.262 134.015  < 2e-16 ***
-    ## f.pcths18_24LowMidHighsc%     7.131      1.783   4.000 6.58e-05 ***
-    ## f.pcths18_24HighMidHighsc%   13.757      1.789   7.688 2.43e-14 ***
-    ## f.pcths18_24HighHighsc%      18.196      1.794  10.141  < 2e-16 ***
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 125.3421     3.1755   39.47   <2e-16 ***
+    ## pcths         0.7669     0.0447   17.16   <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 27.09 on 1827 degrees of freedom
-    ## Multiple R-squared:  0.06059,    Adjusted R-squared:  0.05904 
-    ## F-statistic: 39.28 on 3 and 1827 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 25.93 on 1829 degrees of freedom
+    ## Multiple R-squared:  0.1386, Adjusted R-squared:  0.1381 
+    ## F-statistic: 294.3 on 1 and 1829 DF,  p-value: < 2.2e-16
 
 ``` r
 # Linear model: target_deathrate ~ f.pctpubliccoverage --> 15%
@@ -2599,9 +2640,192 @@ summary(lm_pctpubliccoveragealone)
     ## Multiple R-squared:  0.1829, Adjusted R-squared:  0.1816 
     ## F-statistic: 136.3 on 3 and 1827 DF,  p-value: < 2.2e-16
 
-## Interaction models
+``` r
+# Linear mdodel: target_deathrate ~ f.povertypercent --> 18.95
+lm_povertypercent <- lm(target_deathrate ~ f.povertypercent, data = df)
+summary(lm_povertypercent)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = target_deathrate ~ f.povertypercent, data = df)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -129.392  -13.998    0.588   14.483  167.108 
+    ## 
+    ## Coefficients:
+    ##                             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                  163.021      1.177 138.550  < 2e-16 ***
+    ## f.povertypercentLowMidPov%    10.177      1.655   6.149 9.55e-10 ***
+    ## f.povertypercentHighMidPov%   20.691      1.670  12.387  < 2e-16 ***
+    ## f.povertypercentHighPov%      32.671      1.668  19.591  < 2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 25.18 on 1827 degrees of freedom
+    ## Multiple R-squared:  0.1885, Adjusted R-squared:  0.1872 
+    ## F-statistic: 141.5 on 3 and 1827 DF,  p-value: < 2.2e-16
+
+# Interaction models
+
+We began by building a comprehensive linear model to predict the target
+death rate using a set of selected variables, including
+f.percentmarried, f.incidencerate, f.medincome, pcths,
+f.pctpubliccoverage, f.pctpubliccoveragealone, and f.povertypercent. The
+idea behind this is to examine the influence of various socioeconomic
+factors and health coverage on the target variable. Given the complexity
+of this model, we then applied stepwise regression (in both directions)
+to simplify it, seeking to retain only the most influential variables
+while removing any that may be redundant or contribute little
+explanatory power. Stepwise selection is a common approach to model
+simplification as it systematically evaluates each predictor’s
+contribution, helping to ensure that the final model is parsimonious
+without losing predictive accuracy. The stepwise procedure both adds and
+removes terms based on the Akaike Information Criterion (AIC),
+optimizing the model by reducing unnecessary complexity while preserving
+the key predictors. By analyzing the results, we aim to identify a
+simpler model that still provides a meaningful and effective prediction
+of the death rate, with the potential for clearer interpretations and
+easier implementation.
 
 ``` r
+# Create a new model with all selected variables
+full_selected_model <- lm(target_deathrate ~ f.percentmarried + f.incidencerate + f.medincome + pcths + f.pctpubliccoverage + f.pctpubliccoveragealone + f.povertypercent, 
+                          data = df)
+summary(full_selected_model)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = target_deathrate ~ f.percentmarried + f.incidencerate + 
+    ##     f.medincome + pcths + f.pctpubliccoverage + f.pctpubliccoveragealone + 
+    ##     f.povertypercent, data = df)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -99.811 -12.163  -0.085  11.890 152.644 
+    ## 
+    ## Coefficients:
+    ##                                                  Estimate Std. Error t value
+    ## (Intercept)                                    121.970993   4.426732  27.553
+    ## f.percentmarriedLowMidMarried%                  -0.253783   1.507510  -0.168
+    ## f.percentmarriedHighMidMarried%                  0.004969   1.637878   0.003
+    ## f.percentmarriedHighMarried%                    -1.098513   1.780389  -0.617
+    ## f.incidencerateLowMidDiagnPerCap                15.580564   1.355669  11.493
+    ## f.incidencerateHighMidDiagnPerCap               22.118699   1.502894  14.717
+    ## f.incidencerateHighDiagnPerCap                  28.953767   1.427183  20.287
+    ## f.medincomeLowMidMedianInc                      -5.310504   1.909251  -2.781
+    ## f.medincomeHighMidMedianInc                     -7.233857   2.441108  -2.963
+    ## f.medincomeHighMedianInc                        -9.683395   2.889013  -3.352
+    ## pcths                                            0.534223   0.042098  12.690
+    ## f.pctpubliccoverageLowMidGovHealth%             -1.643178   1.774619  -0.926
+    ## f.pctpubliccoverageHighMidGovHealth%            -4.470649   2.242502  -1.994
+    ## f.pctpubliccoverageHighGovHealth%               -1.498319   2.658979  -0.563
+    ## f.pctpubliccoveragealoneLowMidGovHealthAlone%    1.812922   1.776217   1.021
+    ## f.pctpubliccoveragealoneHighMidGovHealthAlone%   4.735781   2.293793   2.065
+    ## f.pctpubliccoveragealoneHighGovHealthAlone%      5.392699   2.813623   1.917
+    ## f.povertypercentLowMidPov%                       4.662296   1.789773   2.605
+    ## f.povertypercentHighMidPov%                     10.391242   2.361532   4.400
+    ## f.povertypercentHighPov%                        17.376232   3.063485   5.672
+    ##                                                Pr(>|t|)    
+    ## (Intercept)                                     < 2e-16 ***
+    ## f.percentmarriedLowMidMarried%                 0.866330    
+    ## f.percentmarriedHighMidMarried%                0.997580    
+    ## f.percentmarriedHighMarried%                   0.537307    
+    ## f.incidencerateLowMidDiagnPerCap                < 2e-16 ***
+    ## f.incidencerateHighMidDiagnPerCap               < 2e-16 ***
+    ## f.incidencerateHighDiagnPerCap                  < 2e-16 ***
+    ## f.medincomeLowMidMedianInc                     0.005468 ** 
+    ## f.medincomeHighMidMedianInc                    0.003083 ** 
+    ## f.medincomeHighMedianInc                       0.000819 ***
+    ## pcths                                           < 2e-16 ***
+    ## f.pctpubliccoverageLowMidGovHealth%            0.354604    
+    ## f.pctpubliccoverageHighMidGovHealth%           0.046346 *  
+    ## f.pctpubliccoverageHighGovHealth%              0.573168    
+    ## f.pctpubliccoveragealoneLowMidGovHealthAlone%  0.307550    
+    ## f.pctpubliccoveragealoneHighMidGovHealthAlone% 0.039102 *  
+    ## f.pctpubliccoveragealoneHighGovHealthAlone%    0.055441 .  
+    ## f.povertypercentLowMidPov%                     0.009264 ** 
+    ## f.povertypercentHighMidPov%                    1.14e-05 ***
+    ## f.povertypercentHighPov%                       1.64e-08 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 21.14 on 1811 degrees of freedom
+    ## Multiple R-squared:  0.4332, Adjusted R-squared:  0.4273 
+    ## F-statistic: 72.85 on 19 and 1811 DF,  p-value: < 2.2e-16
+
+``` r
+# Perform stepwise selection (both directions)
+lm_stepwise <- step(full_selected_model, direction = "both", trace = 0); lm_stepwise
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = target_deathrate ~ f.incidencerate + f.medincome + 
+    ##     pcths + f.povertypercent, data = df)
+    ## 
+    ## Coefficients:
+    ##                       (Intercept)   f.incidencerateLowMidDiagnPerCap  
+    ##                          121.2359                            15.3990  
+    ## f.incidencerateHighMidDiagnPerCap     f.incidencerateHighDiagnPerCap  
+    ##                           22.2724                            29.0443  
+    ##        f.medincomeLowMidMedianInc        f.medincomeHighMidMedianInc  
+    ##                           -6.0672                            -7.7552  
+    ##          f.medincomeHighMedianInc                              pcths  
+    ##                           -9.5172                             0.5335  
+    ##        f.povertypercentLowMidPov%        f.povertypercentHighMidPov%  
+    ##                            5.8550                            12.8211  
+    ##          f.povertypercentHighPov%  
+    ##                           20.9715
+
+``` r
+# Plot the stepwise regression result
+plot(lm_stepwise)
+```
+
+![](images/unnamed-chunk-92-1.png)![](images/unnamed-chunk-92-2.png)![](images/unnamed-chunk-92-3.png)![](images/unnamed-chunk-92-4.png)
+
+In this section, we are building a series of linear regression models to
+predict the target death rate. We started with a simple model (m1) that
+used only median income as a predictor, which provided some insight into
+its relationship with the death rate. Next, we expanded the model (m2)
+to include incidence rate as an additional predictor, and confirmed that
+no transformation of the target variable was needed through the Box-Cox
+transformation. The inclusion of incidence rate significantly improved
+the model, as evidenced by the higher R-squared and F-statistic.
+
+We continued to refine the model by adding poverty percentage
+(f.povertypercent) in model (m3), which further improved the fit,
+showing a significant reduction in residual sum of squares (RSS). The
+inclusion of poverty percentage, along with median income and incidence
+rate, captured more variance in the target death rate, as confirmed by
+an ANOVA comparison between m2 and m3. In model (m4), we added high
+school graduation rate (pcths), which was also found to be a significant
+predictor. The ANOVA results indicated that this addition further
+improved the model’s fit, with a significant reduction in RSS and an
+increased F-statistic.
+
+Throughout this process, we monitored potential issues such as
+multicollinearity and heteroscedasticity. The Variance Inflation Factor
+(VIF) values for all predictors were low (well below 5), indicating that
+multicollinearity was not a concern. However, the Breusch-Pagan test for
+heteroscedasticity showed evidence of non-constant variance in the
+residuals in m4, which could violate one of the assumptions of linear
+regression.
+
+Overall, the model selection process allowed us to identify the most
+relevant socio-economic and health-related variables influencing the
+target death rate. The final model (m4) included median income,
+incidence rate, poverty percentage, and high school graduation rate.
+Although the model fits the data well, we noted the presence of
+heteroscedasticity, which we may need to address in future iterations.
+This approach has ensured that we retain the most statistically
+significant variables while minimizing the risk of overfitting.
+
+``` r
+# target_deathrate ~ medincome
 m1 <- lm(target_deathrate ~ medincome, data = df)
 summary(m1)
 ```
@@ -2626,18 +2850,19 @@ summary(m1)
     ## F-statistic: 448.3 on 1 and 1829 DF,  p-value: < 2.2e-16
 
 ``` r
-par(mar = c(5, 5, 4, 2)) 
-boxcox(target_deathrate ~ medincome , data = df) #No transformation of the target needed
+# plot(m1)
+boxcox(target_deathrate ~ medincome , data=df) #No transformation of the target needed
 ```
 
-![](images/unnamed-chunk-92-1.png)
+![](images/unnamed-chunk-93-1.png)
 
 ``` r
-m2 <- lm(target_deathrate ~ medincome + incidencerate, data=df)
-boxcox(target_deathrate ~ medincome + incidencerate, data=df) #No transformation of the target needed. Log del target descartat
+# target_deathrate ~ medincome + incidencerate
+m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df)
+boxcox(target_deathrate ~ medincome + incidencerate, data=df) #No transformation of the target needed.
 ```
 
-![](images/unnamed-chunk-92-2.png)
+![](images/unnamed-chunk-93-2.png)
 
 ``` r
 summary(m2)
@@ -2664,6 +2889,7 @@ summary(m2)
     ## F-statistic: 587.7 on 2 and 1828 DF,  p-value: < 2.2e-16
 
 ``` r
+# plot(m2)
 t <- summary(m2)
 vif(m2)
 ```
@@ -2678,7 +2904,7 @@ vif(m2)
     ## [1] 1.643051
 
 ``` r
-anova(m1, m2)
+anova(m1,m2)
 ```
 
     ## Analysis of Variance Table
@@ -2692,99 +2918,212 @@ anova(m1, m2)
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
-#The residuals indicate a fairly balanced distribution around zero, though the maximum residual of 140.048 suggests some outliers. The coefficients show that all predictors are statistically significant with p-values < 0.001. 
-m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data=df)
+# target_deathrate ~ medincome + incidencerate + f.povertypercent
+m3 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent, data= df)
 summary(m3)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = target_deathrate ~ medincome + incidencerate + pcths, 
+    ## lm(formula = target_deathrate ~ medincome + incidencerate + povertypercent, 
     ##     data = df)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -118.786  -12.049   -0.291   12.233  140.335 
+    ## -143.534  -12.525   -0.129   12.625  125.821 
     ## 
     ## Coefficients:
-    ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)    9.140e+01  5.493e+00   16.64   <2e-16 ***
-    ## medincome     -8.115e-04  4.308e-05  -18.84   <2e-16 ***
-    ## incidencerate  2.136e-01  8.872e-03   24.08   <2e-16 ***
-    ## pcths          4.283e-01  3.931e-02   10.89   <2e-16 ***
+    ##                  Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)     8.987e+01  6.372e+00  14.104  < 2e-16 ***
+    ## medincome      -5.576e-04  6.645e-05  -8.391  < 2e-16 ***
+    ## incidencerate   2.180e-01  8.977e-03  24.281  < 2e-16 ***
+    ## povertypercent  1.039e+00  1.280e-01   8.119 8.54e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 21.13 on 1827 degrees of freedom
-    ## Multiple R-squared:  0.4285, Adjusted R-squared:  0.4276 
-    ## F-statistic: 456.6 on 3 and 1827 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 21.42 on 1827 degrees of freedom
+    ## Multiple R-squared:  0.4126, Adjusted R-squared:  0.4116 
+    ## F-statistic: 427.7 on 3 and 1827 DF,  p-value: < 2.2e-16
 
 ``` r
-#The Breusch-Pagan test was conducted to check for heteroscedasticity (non-constant variance of residuals). With a p-value of 0.0086, the test indicates evidence of heteroscedasticity in the model. This suggests that the residuals’ variance is not constant, potentially violating one of the assumptions of linear regression
-bptest(m3)
+plot(m3)
 ```
 
-    ## 
-    ##  studentized Breusch-Pagan test
-    ## 
-    ## data:  m3
-    ## BP = 4.5799, df = 3, p-value = 0.2053
+![](images/unnamed-chunk-93-3.png)![](images/unnamed-chunk-93-4.png)![](images/unnamed-chunk-93-5.png)![](images/unnamed-chunk-93-6.png)
 
 ``` r
-#The reduction in residual sum of squares (RSS) from 1,008,488 in m1 to 724,598 in m3 is significant (p-value < 2.2e-16). The 
-#F-statistic of 342.62 confirms that adding incidencerate and pcths significantly improves the model.
-anova(m1, m3)
+anova(m1,m3)
 ```
 
     ## Analysis of Variance Table
     ## 
     ## Model 1: target_deathrate ~ medincome
-    ## Model 2: target_deathrate ~ medincome + incidencerate + pcths
+    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent
     ##   Res.Df     RSS Df Sum of Sq      F    Pr(>F)    
     ## 1   1829 1146569                                  
-    ## 2   1827  815868  2    330701 370.28 < 2.2e-16 ***
+    ## 2   1827  838612  2    307957 335.46 < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
-#The VIF values for all predictors in the model (medincome, incidencerate, and pcths) are below 1.2, far below the common threshold of 5 or 10 for multicollinearity concerns. This indicates that the predictors are not highly correlated and do not pose a multicollinearity issue in the regression
-vif(m3)
+anova(m2,m3)
 ```
 
-    ##     medincome incidencerate         pcths 
-    ##      1.158362      1.005671      1.164403
+    ## Analysis of Variance Table
+    ## 
+    ## Model 1: target_deathrate ~ medincome + incidencerate
+    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent
+    ##   Res.Df    RSS Df Sum of Sq     F    Pr(>F)    
+    ## 1   1828 868870                                 
+    ## 2   1827 838612  1     30258 65.92 8.542e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
-t <- summary(m3)
+# target_deathrate ~ medincome + incidencerate + f.povertypercent + pcths
+m4 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent + pcths, data= df)
+summary(m4)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = target_deathrate ~ medincome + incidencerate + povertypercent + 
+    ##     pcths, data = df)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -115.993  -11.685    0.343   11.481  136.623 
+    ## 
+    ## Coefficients:
+    ##                  Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)     3.393e+01  7.359e+00   4.611  4.3e-06 ***
+    ## medincome      -1.914e-04  6.897e-05  -2.775  0.00558 ** 
+    ## incidencerate   2.084e-01  8.592e-03  24.253  < 2e-16 ***
+    ## povertypercent  1.413e+00  1.252e-01  11.283  < 2e-16 ***
+    ## pcths           5.256e-01  3.899e-02  13.482  < 2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 20.44 on 1826 degrees of freedom
+    ## Multiple R-squared:  0.4657, Adjusted R-squared:  0.4646 
+    ## F-statistic:   398 on 4 and 1826 DF,  p-value: < 2.2e-16
+
+``` r
+plot(m4)
+```
+
+![](images/unnamed-chunk-93-7.png)![](images/unnamed-chunk-93-8.png)![](images/unnamed-chunk-93-9.png)![](images/unnamed-chunk-93-10.png)
+
+``` r
+anova(m1,m4)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Model 1: target_deathrate ~ medincome
+    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent + 
+    ##     pcths
+    ##   Res.Df     RSS Df Sum of Sq      F    Pr(>F)    
+    ## 1   1829 1146569                                  
+    ## 2   1826  762695  3    383874 306.35 < 2.2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+anova(m2,m4)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Model 1: target_deathrate ~ medincome + incidencerate
+    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent + 
+    ##     pcths
+    ##   Res.Df    RSS Df Sum of Sq     F    Pr(>F)    
+    ## 1   1828 868870                                 
+    ## 2   1826 762695  2    106175 127.1 < 2.2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+anova(m3,m4)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Model 1: target_deathrate ~ medincome + incidencerate + povertypercent
+    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent + 
+    ##     pcths
+    ##   Res.Df    RSS Df Sum of Sq      F    Pr(>F)    
+    ## 1   1827 838612                                  
+    ## 2   1826 762695  1     75917 181.76 < 2.2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+# The Breusch-Pagan test was conducted to check for heteroscedasticity 
+# (non-constant variance of residuals). With a p-value of 0.0086, the test
+# indicates evidence of heteroscedasticity in the model. This suggests that the
+# residuals' variance is not constant, potentially violating one of the
+# assumptions of linear regression
+bptest(m4)
+```
+
+    ## 
+    ##  studentized Breusch-Pagan test
+    ## 
+    ## data:  m4
+    ## BP = 23.091, df = 4, p-value = 0.0001214
+
+``` r
+# The reduction in residual sum of squares (RSS) from 1,008,488 in m1 to 724,598
+# in m3 is significant (p-value < 2.2e-16). The 
+# F-statistic of 342.62 confirms that adding incidencerate and pcths 
+# significantly improves the model.
+anova(m1,m3)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Model 1: target_deathrate ~ medincome
+    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent
+    ##   Res.Df     RSS Df Sum of Sq      F    Pr(>F)    
+    ## 1   1829 1146569                                  
+    ## 2   1827  838612  2    307957 335.46 < 2.2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+# The VIF values for all predictors in the model (medincome, incidencerate, and
+# pcths) are below 1.2, far below the common threshold of 5 or 10 for
+# multicollinearity concerns. This indicates that the predictors are not highly
+# correlated and do not pose a multicollinearity issue in the regression
+vif(m4)
+```
+
+    ##      medincome  incidencerate povertypercent          pcths 
+    ##       3.174008       1.008617       2.822583       1.224321
+
+``` r
+t <- summary(m4)
 1/(1-t$r.squared)
 ```
 
-    ## [1] 1.749791
+    ## [1] 1.871781
 
 ``` r
-lm_stepwise <- step(m3, direction = "both", trace = 0)
-plot(lm_stepwise)
+crPlots(m4)
 ```
 
-![](images/unnamed-chunk-92-3.png)![](images/unnamed-chunk-92-4.png)![](images/unnamed-chunk-92-5.png)![](images/unnamed-chunk-92-6.png)
+![](images/unnamed-chunk-93-11.png)
 
 ``` r
-coeftest(m3, vcov = vcovHC(m3, type = "HC1"))
+marginalModelPlots(m4)
 ```
 
-    ## 
-    ## t test of coefficients:
-    ## 
-    ##                  Estimate  Std. Error  t value  Pr(>|t|)    
-    ## (Intercept)    9.1399e+01  7.1680e+00  12.7510 < 2.2e-16 ***
-    ## medincome     -8.1146e-04  5.0227e-05 -16.1559 < 2.2e-16 ***
-    ## incidencerate  2.1363e-01  1.5952e-02  13.3922 < 2.2e-16 ***
-    ## pcths          4.2828e-01  5.0331e-02   8.5092 < 2.2e-16 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+![](images/unnamed-chunk-93-12.png)
 
 ``` r
-model <- m3
+model <- m4
 ```
 
 # Model Validation
