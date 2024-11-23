@@ -17,7 +17,8 @@ knitr::opts_chunk$set(
 ```
 
 # Data Preparation
-```{r, echo=FALSE}
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(crayon)
 library(car)
 library(FactoMineR)
@@ -301,14 +302,14 @@ We'll be performing lots of discretisation of continuous variables based on
 their quartiles, so let's create a function to do that.
 
 ```{r}
-discretize_quartiles <- function(column, label_name) {
+discretize_quartiles <- function(column, level_name) {
   res <- cut(column, breaks = quantile(column, probs = seq(0, 1, 0.25)), 
     include.lowest = T,
     labels=c(
-      sprintf("Low%s", label_name),
-      sprintf("LowMid%s", label_name),
-      sprintf("HighMid%s", label_name),
-      sprintf("High%s", label_name)
+      sprintf("Low%s", level_name),
+      sprintf("LowMid%s", level_name),
+      sprintf("HighMid%s", level_name),
+      sprintf("High%s", level_name)
     )
   )
   print(table(res)) # Print the table
@@ -485,9 +486,9 @@ time groupping the data in only 3 groups: 0, and the two median splits of the
 non-zero values.
 
 ```{r}
-non_zero_median <- median(df$studypercap[df$studypercap > 0])
+non_zero_studypercap_median <- median(df$studypercap[df$studypercap > 0])
 
-df$f.studypercap <- cut(df$studypercap, breaks = c(-Inf, 0, non_zero_median, Inf),
+df$f.studypercap <- cut(df$studypercap, breaks = c(-Inf, 0, non_zero_studypercap_median, Inf),
     include.lowest = T,
     labels=c("NoTrials", "MidTrials", "HighTrials")
   )
@@ -1268,13 +1269,13 @@ summary(lm_pctpubliccoveragealone)
 ## Interaction models 
 
 ```{r}
-m1 <- lm(target_deathrate ~ medincome, data = df[,c(1:21, 54:55)])
+m1 <- lm(target_deathrate ~ medincome, data = df)
 summary(m1)
 par(mar = c(5, 5, 4, 2)) 
-boxcox(target_deathrate ~ medincome , data=df[,c(1:21, 54:55)]) #No transformation of the target needed
+boxcox(target_deathrate ~ medincome , data=df) #No transformation of the target needed
 
-m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df[,c(1:21, 54:55)])
-boxcox(target_deathrate ~ medincome + incidencerate, data=df[,c(1:21, 54:55)]) #No transformation of the target needed. Log del target descartat
+m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df)
+boxcox(target_deathrate ~ medincome + incidencerate, data=df) #No transformation of the target needed. Log del target descartat
 summary(m2)
 t <- summary(m2)
 vif(m2)
@@ -1284,7 +1285,7 @@ anova(m1, m2)
 
 
 #The residuals indicate a fairly balanced distribution around zero, though the maximum residual of 140.048 suggests some outliers. The coefficients show that all predictors are statistically significant with p-values < 0.001. 
-m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data= df[,c(1:21, 54:55)])
+m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data= df)
 summary(m3)
 
 
@@ -1317,4 +1318,73 @@ preprocessing steps as we did for the training dataset.
 ```{r}
 test <- read_csv("data/test.csv")
 summary(test)
+
+# Type conversion
+test$f.binnedinc <- as.factor(test$binnedinc)
+test$binnedinc <- sapply(
+  strsplit(gsub("[\\[\\]()]", "", test$binnedinc, perl = T), ","),
+  function(x) mean(as.numeric(x))
+)
+test$state <- sub(".*,\\s*", "", test$geography)
+test$f.race <- as.factor(apply(test, 1, getRace))
+
+# Missing values
+test <- subset(test, select = -c(pctpubliccoveragealone, pctsomecol18_24))
+test$pctemployed16_over <- complete(mice(test), action = 1)$pctemployed16_over
+
+# Outliers
+test_out = which(test$medianage > 100)
+test$medianage[test_out] <- (test$medianagemale[test_out] + test$medianagefemale[test_out]) / 2
+test <- subset(test, select = -c(medianagemale, medianagefemale))
+
+# Variable discretization
+discretize_based_on <- function(col, base_col, level_name) {
+  # Discretize the column based on the quartiles of another column
+  res <- cut(col, breaks = quantile(base_col, probs = seq(0, 1, 0.25)),
+    include.lowest = T,
+    labels=c(
+      sprintf("Low%s", level_name),
+      sprintf("LowMid%s", level_name),
+      sprintf("HighMid%s", level_name),
+      sprintf("High%s", level_name)
+    )
+  )
+  return(res)
+}
+
+test$f.avganncount <- discretize_based_on(test$avganncount, df$avganncount, "CaseCount")
+test$f.avgdeathsperyear <- discretize_based_on(test$avgdeathsperyear, df$avgdeathsperyear, "MortCount")
+test$f.target_deathrate <- discretize_based_on(test$target_deathrate, df$target_deathrate, "DeathRate")
+test$f.incidencerate <- discretize_based_on(test$incidencerate, df$incidencerate, "DiagnPerCap")
+test$f.medincome <- discretize_based_on(test$medincome, df$medincome, "MedianInc")
+test$f.popest2015 <- discretize_based_on(test$popest2015, df$popest2015, "MidPop")
+test$f.povertypercent <- discretize_based_on(test$povertypercent, df$povertypercent, "Pov%")
+test$f.studypercap <- cut(
+  test$studypercap, breaks = c(-Inf, 0, non_zero_studypercap_median, Inf), # Use the breakpoints from training data
+  include.lowest = T,
+  labels=c("NoTrials", "MidTrials", "HighTrials")
+)
+test$f.medianage <- discretize_based_on(test$medianage, df$medianage, "Age")
+test$f.percentmarried <- discretize_based_on(test$percentmarried, df$percentmarried, "Married%")
+test$f.pctnohs18_24 <- discretize_based_on(test$pctnohs18_24, df$pctnohs18_24, "NoHighsc%")
+test$f.pcths18_24 <- discretize_based_on(test$pcths18_24, df$pcths18_24, "Highsc%")
+test$f.pcths25_over <- discretize_based_on(test$pcths25_over, df$pcths25_over, "25Highsc%")
+test$f.pctbachdeg25_over <- discretize_based_on(test$pctbachdeg25_over, df$pctbachdeg25_over, "Bach%")
+test$f.pctemployed16_over <- discretize_based_on(test$pctemployed16_over, df$pctemployed16_over, "Employ%")
+test$f.pctunemployed16_over <- discretize_based_on(test$pctunemployed16_over, df$pctunemployed16_over, "Unemploy%")
+test$f.pctprivatecoverage <- discretize_based_on(test$pctprivatecoverage, df$pctprivatecoverage, "Private%")
+test$f.pctempprivcoverage <- discretize_based_on(test$pctempprivcoverage, df$pctempprivcoverage, "EmployeeHealth%")
+test$f.pctpubliccoverage <- discretize_based_on(test$pctpubliccoverage, df$pctpubliccoverage, "GovHealth%")
+test$f.pctwhite <- discretize_based_on(test$pctwhite, df$pctwhite, "White%")
+test$f.pctblack <- discretize_based_on(test$pctblack, df$pctblack, "Black%")
+test$f.pctasian <- discretize_based_on(test$pctasian, df$pctasian, "Asian%")
+test$f.pctotherrace <- discretize_based_on(test$pctotherrace, df$pctotherrace, "OtherRace%")
+test$f.pctmarriedhouseholds <- discretize_based_on(test$pctmarriedhouseholds, df$pctmarriedhouseholds, "Married%")
+test$f.birthrate <- discretize_based_on(test$birthrate, df$birthrate, "Birth%")
+
+# Combining variables
+df$pcths <- df$pcths18_24 + df$pcths25_over
+df$pctbach <- df$pctbachdeg18_24 + df$pctbachdeg25_over
+df$racindex <- df$pctblack + df$pctasian + df$pctotherrace
+df$social_welfare <- df$pctpubliccoverage + df$povertypercent
 ```
