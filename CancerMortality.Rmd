@@ -1138,98 +1138,64 @@ df <- subset(df, select = -c(medianagemale, medianagefemale))
   related to the population. However, we won't be removing any of them, as there
   might be some information in the ratio of cases to population.
 
-# Profiling
-```{r}
- res.con = condes(df[, c(1:7, 9:12, 14:31)],3)
-
-correlation_matrix <- res.con$quanti
-correlation_values <- correlation_matrix[, "correlation"]
-variable_names <- rownames(correlation_matrix)
-
-correlation_df <- data.frame(
-  variable = variable_names,
-  correlation = correlation_values
-)
-
-filtered_correlation_df <- correlation_df[abs(correlation_df$correlation) > 0.35, ]
-
-sorted_correlation_df <- filtered_correlation_df[order(abs(filtered_correlation_df$correlation), decreasing = TRUE), ]
-
-print(sorted_correlation_df[,"variable"])
-
-
+```{r}	
+par(mfrow = c(1, 2))
+plot(df$popest2015, df$avgdeathsperyear)
+plot(df$popest2015, df$avganncount)
 ```
 
-# Check multicolinearity and low correlation with the target (remove or combine variables)
+```{r, echo=FALSE}
+# Roll back to the original layout
+par(mfrow = c(1, 1))
+```
 
-First,we must identify those variables that are very correlated and combine 
-them. We do so because high correlations (close to 1 or -1) between two or more 
-predictors indicate potential multicollinearity. Initially, we combine or 
-eliminate those variables with a correlation above 0.8 or below -0.8. 
+## Combining Variables
+
+Finally, we will combine those variables that are syntactically related, such as
+the percentage of people with a high school education in the 18-24 age range and
+the percentage of people with a bachelor's degree in the 25 and over age range
+into a single variable representing the percentage of people with a high school
+education.
 
 ```{r}
+# Education-related variables
+df$pcths <- df$pcths18_24 + df$pcths25_over
+df$pctbach <- df$pctbachdeg18_24 + df$pctbachdeg25_over
 
-cor_matrix <- cor(df[, c(1:7, 9:12, 14:31)])
-
-corrplot(cor_matrix, method = "circle")
-
-#Identify which varaibles present a correlation higher than 0.8 or lower than -0.8
-high_corr_vars <- c()
-
-for(i in 1:ncol(cor_matrix)){
-  for(j in i:ncol(cor_matrix)){
-    if(abs(cor_matrix[i,j]) > 0.9 & i != j){
-      # Append the variable name to remove (either i or j)
-      high_corr_vars <- c(high_corr_vars, colnames(cor_matrix)[j])
-    }
-  }
-}
-
-high_corr_vars <- unique(high_corr_vars)
-print("Highly multicollinearity variables")
-print(high_corr_vars)
-
-#binnedinc highly corralated with medincome
-
-#Medianage, medianagemale, medianagefemale can be treated as the same value as their correlation is very high. They are almost the same variable. Also all three of them very poorly correlated with the target
-
-#Remove non-correlated variables with the target variable
-cor_with_target <- cor_matrix[, "target_deathrate"]
-vars_to_remove <- names(cor_with_target[abs(cor_with_target) < 0.1])
-
-#Remove these variables from the dataset
-df_cleaned <- df[, !(colnames(df) %in% vars_to_remove)]
-
-#######
-# pcths18_24 with pcths25_over
-df_cleaned$pcths <- (df$pcths18_24 + df$pcths25_over)
-
-# pctbachdeg18_24 with pctbachdeg25_over
-df_cleaned$pctbach <- (df$pctbachdeg18_24 + df$pctbachdeg25_over)
-
-df_cleaned <- df_cleaned[, !colnames(df_cleaned) %in% c("pcths18_24", "pcths25_over", "pctbachdeg18_24", "pctbachdeg25_over")]
-
-#Combine Income-Related Variables
-#df_cleaned$pctincome <- df_cleaned$binnedinc
-#df_cleaned <- df_cleaned[, !colnames(df) %in% c("medincome")]
-
-# Combine Race and Ethnicity Variables
-#df_cleaned$racindex <- df_cleaned$pctblack + df$pctasian
-#df_cleaned <- df_cleaned[, !colnames(df) %in% c("pctwhite")]
+# Race and Ethnicity-related Variables
+df$racindex <- df$pctblack + df$pctasian + df$pctotherrace
 
 # Public Coverage and Poverty-related Variables
 df$social_welfare <- df$pctpubliccoverage + df$povertypercent
 
 new_cor_matrix <- cor(Filter(is.numeric, df))
 corrplot(new_cor_matrix, method = "circle")
-
 ```
 
+# Model Fitting
 
-#Analyze behaviour of what seem to be the main predictors
+Let's start by exploring a linear model with all the variables, with the 
+intention of getting a first glance at the most significant predictors.
 
 ```{r}
-library(MASS)
+base_df = Filter(is.numeric, df)
+base_df$f.race = df$f.race
+model <- lm(target_deathrate ~ ., data = base_df)
+summary(model)
+```
+
+According to this first model, the following variables seem to be very 
+significant (p-value < 0.01):
+
+```{r}
+coefs <- summary(model)$coefficients
+significant_vars <- coefs[coefs[,'Pr(>|t|)'] < 0.01,]
+significant_vars
+```
+
+## Analyze behaviour of what seem to be the main predictors
+
+```{r}
 #Boxplot most relevant predictors
 boxplot(target_deathrate ~ f.incidencerate, data = df, main = "Death Rate vs. Incidence Rate")
 boxplot(target_deathrate ~ f.medincome, data = df, main = "Death Rate vs. Median Income")
@@ -1259,9 +1225,8 @@ oneway.test(target_deathrate ~ f.medincome, data = df)
 pairwise.wilcox.test(df$target_deathrate, df$f.pcths18_24)
 oneway.test(target_deathrate ~ f.pcths18_24, data = df)
 
-pairwise.wilcox.test(df_cleaned$target_deathrate, df_cleaned$f.pctpubliccoverage)
-
-oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df_cleaned)
+pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoverage)
+oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df)
 
 pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoverage)
 oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df)
@@ -1303,7 +1268,7 @@ summary(lm_pctpubliccoveragealone)
 ```{r}
 library(lmtest)
 library(sandwich)
-m1 <- lm(target_deathrate ~ medincome, data = df_cleaned[,c(1:21, 54:55)])
+m1 <- lm(target_deathrate ~ medincome, data = df[,c(1:21, 54:55)])
 summary(m1)
 par(mar = c(5, 5, 4, 2)) 
 boxcox(target_deathrate ~ medincome , data=df[,c(1:21, 54:55)]) #No transformation of the target needed
@@ -1315,11 +1280,11 @@ t <- summary(m2)
 vif(m2)
 1/(1-t$r.squared)
 
-anova(m1,m2)
+anova(m1, m2)
 
 
 #The residuals indicate a fairly balanced distribution around zero, though the maximum residual of 140.048 suggests some outliers. The coefficients show that all predictors are statistically significant with p-values < 0.001. 
-m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data= df_cleaned[,c(1:21, 54:55)])
+m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data= df[,c(1:21, 54:55)])
 summary(m3)
 
 
@@ -1328,44 +1293,11 @@ bptest(m3)
 
 #The reduction in residual sum of squares (RSS) from 1,008,488 in m1 to 724,598 in m3 is significant (p-value < 2.2e-16). The 
 #F-statistic of 342.62 confirms that adding incidencerate and pcths significantly improves the model.
-anova(m1,m3)
+anova(m1, m3)
 
 #The VIF values for all predictors in the model (medincome, incidencerate, and pcths) are below 1.2, far below the common threshold of 5 or 10 for multicollinearity concerns. This indicates that the predictors are not highly correlated and do not pose a multicollinearity issue in the regression
 vif(m3)
 t <- summary(m3)
-1/(1-t$r.squared)
-
-
-lm_stepwise <- step(m3, direction = "both", trace = 0)
-plot(lm_stepwise)
-coeftest(m3, vcov = vcovHC(m3, type = "HC1"))
-
-
-
-#########################Fins aquí estic bastant segur que está be, no hi ha collinearity i el imporvement es considerable#########
-
-m4 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone, data= df)
-summary(m4)
-
-anova(m1,m4)
-
-m5 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over, data= df)
-summary(m5)
-
-anova(m4,m5)
-
-m6 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over + povertypercent  , data= df)
-summary(m6)
-
-anova(m5,m6)
-
-m7 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over + povertypercent 
-         , data= df)
-t <- summary(m7)
-anova(m6,m7)
-boxcox(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over + povertypercent, data=df)
-vif(m7)
-
 1/(1-t$r.squared)
 
 
