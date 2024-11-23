@@ -1326,7 +1326,6 @@ meaningful and effective prediction of the death rate, with the potential for
 clearer interpretations and easier implementation.
 
 ```{r}
-library(MASS)
 # Create a new model with all selected variables
 full_selected_model <- lm(target_deathrate ~ f.percentmarried + f.incidencerate + f.medincome + pcths + f.pctpubliccoverage + f.pctpubliccoveragealone + f.povertypercent, 
                           data = df)
@@ -1375,9 +1374,6 @@ iterations. This approach has ensured that we retain the most statistically
 significant variables while minimizing the risk of overfitting.
 
 ```{r}
-library(lmtest)
-library(sandwich)
-library(MASS)
 # target_deathrate ~ medincome
 m1 <- lm(target_deathrate ~ medincome, data = df)
 summary(m1)
