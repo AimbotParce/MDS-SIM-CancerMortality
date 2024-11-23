@@ -29,6 +29,7 @@ library(mice)
 library(dplyr)
 library(readr)
 library(stringr)
+library(MASS)
 ```
 
 First we import the data and save it as the variable "df" for future 
@@ -1187,12 +1188,12 @@ According to this first model, the following variables seem to be very
 significant (p-value < 0.01):
 
 ```{r}
-coefs = summary(model)$coefficients
-significant_vars <-coefs[coefs[,'Pr(>|t|)'] < 0.01,]
+coefs <- summary(model)$coefficients
+significant_vars <- coefs[coefs[,'Pr(>|t|)'] < 0.01,]
 significant_vars
 ```
 
-# Analyze behaviour of what seem to be the main predictors
+## Analyze behaviour of what seem to be the main predictors
 
 ```{r}
 #Boxplot most relevant predictors
@@ -1264,72 +1265,48 @@ summary(lm_pctpubliccoveragealone)
 
 ## Interaction models 
 
-
 ```{r}
-m1 <- lm(target_deathrate ~ f.medincome, data = df)
+library(lmtest)
+library(sandwich)
+m1 <- lm(target_deathrate ~ medincome, data = df[,c(1:21, 54:55)])
 summary(m1)
 par(mar = c(5, 5, 4, 2)) 
-boxcox(target_deathrate ~ f.medincome , data=df) #No transformation of the target needed
+boxcox(target_deathrate ~ medincome , data=df[,c(1:21, 54:55)]) #No transformation of the target needed
 
-m2 <- lm(target_deathrate ~ f.medincome + f.incidencerate, data= df)
-boxcox(target_deathrate ~ f.medincome + f.incidencerate, data=df) #No transformation of the target needed
+m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df[,c(1:21, 54:55)])
+boxcox(target_deathrate ~ medincome + incidencerate, data=df[,c(1:21, 54:55)]) #No transformation of the target needed. Log del target descartat
 summary(m2)
 t <- summary(m2)
 vif(m2)
 1/(1-t$r.squared)
-  
-anova(m1,m2)
 
-#########################Fins aquí estic bastant segur que está be, no hi ha collinearity i el imporvement es considerable#########
+anova(m1, m2)
 
-m3 <- lm(target_deathrate ~ medincome + incidencerate + pctpubliccoveragealone, data= df)
+
+#The residuals indicate a fairly balanced distribution around zero, though the maximum residual of 140.048 suggests some outliers. The coefficients show that all predictors are statistically significant with p-values < 0.001. 
+m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data= df[,c(1:21, 54:55)])
 summary(m3)
 
-anova(m1,m3)
 
-m4 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone, data= df)
-summary(m4)
+#The Breusch-Pagan test was conducted to check for heteroscedasticity (non-constant variance of residuals). With a p-value of 0.0086, the test indicates evidence of heteroscedasticity in the model. This suggests that the residuals’ variance is not constant, potentially violating one of the assumptions of linear regression
+bptest(m3)
 
-anova(m1,m4)
+#The reduction in residual sum of squares (RSS) from 1,008,488 in m1 to 724,598 in m3 is significant (p-value < 2.2e-16). The 
+#F-statistic of 342.62 confirms that adding incidencerate and pcths significantly improves the model.
+anova(m1, m3)
 
-m5 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over, data= df)
-summary(m5)
-
-anova(m4,m5)
-
-m6 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over + povertypercent  , data= df)
-summary(m6)
-
-anova(m5,m6)
-
-m7 <- lm(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over + povertypercent 
-         , data= df)
-t <- summary(m7)
-anova(m6,m7)
-boxcox(target_deathrate ~ medincome + incidencerate + pctbachdeg25_over + pctpubliccoveragealone + pctemployed16_over + povertypercent, data=df)
-vif(m7)
-
+#The VIF values for all predictors in the model (medincome, incidencerate, and pcths) are below 1.2, far below the common threshold of 5 or 10 for multicollinearity concerns. This indicates that the predictors are not highly correlated and do not pose a multicollinearity issue in the regression
+vif(m3)
+t <- summary(m3)
 1/(1-t$r.squared)
 
+
+lm_stepwise <- step(m3, direction = "both", trace = 0)
+plot(lm_stepwise)
+coeftest(m3, vcov = vcovHC(m3, type = "HC1"))
+
+model <- m3
 ```
-
-
-```{r}
-mm1 <- lm(target_deathrate ~ medincome + incidencerate + pctpubliccoverage + pctpubliccoveragealone + f.pcths18_24 + percentmarried, data= df)
-
-mm2 <- lm(target_deathrate ~ medincome + pctbachdeg25_over + pctpubliccoveragealone + povertypercent
-         + incidencerate + pctemployed16_over + pctpubliccoverage + pctprivatecoverage + binnedinc + pctunemployed16_over + pctunemployed16_over
-         , data = df)
-
-vif(mm1)
-```
-
-
-
-
-
-
-
-
 
 # Model Validation
+
