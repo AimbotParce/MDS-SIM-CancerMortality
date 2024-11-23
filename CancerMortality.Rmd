@@ -30,6 +30,8 @@ library(dplyr)
 library(readr)
 library(stringr)
 library(MASS)
+library(lmtest)
+library(sandwich)
 ```
 
 First we import the data and save it as the variable "df" for future 
@@ -1266,8 +1268,6 @@ summary(lm_pctpubliccoveragealone)
 ## Interaction models 
 
 ```{r}
-library(lmtest)
-library(sandwich)
 m1 <- lm(target_deathrate ~ medincome, data = df[,c(1:21, 54:55)])
 summary(m1)
 par(mar = c(5, 5, 4, 2)) 
@@ -1310,3 +1310,11 @@ model <- m3
 
 # Model Validation
 
+All the validation steps will be performed using the final model on the test
+dataset. Let's start by loading the test dataset and applying the same
+preprocessing steps as we did for the training dataset.
+
+```{r}
+test <- read_csv("data/test.csv")
+summary(test)
+```
