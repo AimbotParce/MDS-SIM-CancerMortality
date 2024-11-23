@@ -1198,45 +1198,81 @@ significant_vars
 
 ## Analyze behaviour of what seem to be the main predictors
 
-```{r}
-#Boxplot most relevant predictors
-boxplot(target_deathrate ~ f.incidencerate, data = df, main = "Death Rate vs. Incidence Rate")
-boxplot(target_deathrate ~ f.medincome, data = df, main = "Death Rate vs. Median Income")
-boxplot(target_deathrate ~ f.percentmarried, data = df, main = "Death Rate vs. Percent Married")
-boxplot(target_deathrate ~ f.pcths18_24, data = df, main = "Death Rate vs. Percent 18-24 HS")
-boxplot(target_deathrate ~ f.povertypercent, data = df, main = "Death Rate vs. Percent 18-24 HS")
-boxplot(target_deathrate ~ f.pctpubliccoverage, data = df, main = "Death Rate vs. Percent 18-24 HS")
-boxplot(target_deathrate ~ f.pctpubliccoveragealone, data = df, main = "Death Rate vs. Percent 18-24 HS")
+The analysis found significant relationships between target death rates and 
+socioeconomic factors. Marital status, incidence rates, and median income all 
+showed strong associations, with higher marriage and income levels linked to 
+lower death rates, while higher incidence rates correlated with higher death 
+rates. These results were supported by both pairwise Wilcoxon tests and ANOVA. 
 
-#Pairwise tests
-#The ANOVA result confirms that marital status percentage (f.percentmarried) has a significant effect on the target_deathrate, suggesting that different levels of marriage percentages correspond to different death rate levels.
-pairwise.wilcox.test(df$target_deathrate, df$f.percentmarried)
+```{r}
+# Boxplot for most relevant predictors with appropriate labels
+boxplot(target_deathrate ~ f.incidencerate, data = df, main = "Death Rate vs. Incidence Rate", 
+        xlab = "Incidence Rate (Factor)", ylab = "Death Rate")
+boxplot(target_deathrate ~ f.medincome, data = df, main = "Death Rate vs. Median Income", 
+        xlab = "Median Income (Factor)", ylab = "Death Rate")
+boxplot(target_deathrate ~ f.percentmarried, data = df, main = "Death Rate vs. Percent Married", 
+        xlab = "Percent Married (Factor)", ylab = "Death Rate")
+boxplot(target_deathrate ~ pcths, data = df, main = "Death Rate vs. Percent High School", 
+        xlab = "Percent High School", ylab = "Death Rate")
+boxplot(target_deathrate ~ f.povertypercent, data = df, main = "Death Rate vs. Poverty Percent", 
+        xlab = "Poverty Percent (Factor)", ylab = "Death Rate")
+boxplot(target_deathrate ~ f.pctpubliccoverage, data = df, main = "Death Rate vs. Public Coverage", 
+        xlab = "Public Coverage (Factor)", ylab = "Death Rate")
+boxplot(target_deathrate ~ f.pctpubliccoveragealone, data = df, main = "Death Rate vs. Public Coverage Alone", 
+        xlab = "Public Coverage Alone (Factor)", ylab = "Death Rate")
+
+# Pairwise tests and ANOVA for corresponding variables
+# Percent Married
+pairwise.wilcox.test(df$target_deathrate, df$f.percentmarried, p.adjust.method = "bonferroni")
 oneway.test(target_deathrate ~ f.percentmarried, data = df)
 
 # Incidence Rate
-#ANOVA results indicate that the f.incidencerate factor has a statistically significant impact on target_deathrate.
-pairwise.wilcox.test(df$target_deathrate, df$f.incidencerate)
+pairwise.wilcox.test(df$target_deathrate, df$f.incidencerate, p.adjust.method = "bonferroni")
 oneway.test(target_deathrate ~ f.incidencerate, data = df)
 
 # Median Income
-# ANOVA tests indicate that f.medincome (median income) has a statistically significant impact on target_deathrate. Specifically, different levels of median income (such as LowMedianInc, LowMidMedianInc, etc.) are associated with different death rates, with higher income groups generally showing lower death rates.
-pairwise.wilcox.test(df$target_deathrate, df$f.medincome)
+pairwise.wilcox.test(df$target_deathrate, df$f.medincome, p.adjust.method = "bonferroni")
 oneway.test(target_deathrate ~ f.medincome, data = df)
 
-# Percent 18-24 HS
-#ANOVA indicate a significant relationship between f.pcths18_24 (the percentage of people with high school education in the 18-24 age range) and target_deathrate. The results suggest that as the percentage of high school education increases, the death rates tend to decrease
-pairwise.wilcox.test(df$target_deathrate, df$f.pcths18_24)
-oneway.test(target_deathrate ~ f.pcths18_24, data = df)
+# Poverty Percent
+pairwise.wilcox.test(df$target_deathrate, df$f.povertypercent, p.adjust.method = "bonferroni")
+oneway.test(target_deathrate ~ f.povertypercent, data = df)
 
-pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoverage)
+# Public Coverage
+pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoverage, p.adjust.method = "bonferroni")
 oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df)
 
-pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoverage)
-oneway.test(target_deathrate ~ f.pctpubliccoverage, data = df)
+# Public Coverage Alone
+pairwise.wilcox.test(df$target_deathrate, df$f.pctpubliccoveragealone, p.adjust.method = "bonferroni")
+oneway.test(target_deathrate ~ f.pctpubliccoveragealone, data = df)
 
 ```
 
-## No-interaction models
+# No-interaction models
+
+This preliminary analysis involves building multiple linear regression models to
+explore how different predictors (e.g., poverty rate, marriage rate, incidence
+rate, median income, public coverage) relate to a target variable, 
+target_deathrate. Each model tests the relationship between target_deathrate and
+one predictor, while controlling for other factors.
+
+The analysis of various socio-economic and health-related factors reveals
+significant relationships with target_deathrate. Poverty percentage has a strong
+positive association with death rates, where a 1% increase in poverty
+corresponds to a 23.42 increase in death rates. Marriage rates show a negative
+relationship, with higher marriage percentages linked to lower death rates,
+particularly in the linear and quadratic terms. Incidence rates exhibit a
+positive effect, suggesting that higher disease rates contribute to higher death
+rates. Median income also has a negative relationship, with higher income
+associated with lower death rates, though the effect becomes more complex with
+higher-order terms. Interestingly, high school graduation rates are positively
+correlated with death rates, which may reflect underlying socio-economic factors
+not captured in the model. Public health coverage, both overall and alone, shows
+a positive association with death rates, indicating that more coverage could be
+linked to higher mortality, possibly due to disparities in healthcare access or
+reporting. Overall, these variables highlight key socio-economic and health
+influences on mortality, providing insights for further analysis and potential
+intervention strategies.
 
 ```{r}
 # Linear model: target_deathrate ~ f.percentmarried --> 5.47%
@@ -1251,9 +1287,9 @@ summary(lm_incidencerate)
 lm_medincome <- lm(target_deathrate ~ f.medincome, data = df)
 summary(lm_medincome)
 
-# Linear model: target_deathrate ~ f.pcths18_24 --> 5.1%
-lm_pcths18_24 <- lm(target_deathrate ~ f.pcths18_24, data = df)
-summary(lm_pcths18_24)
+# Linear model: target_deathrate ~ f.pcths --> 12.6%
+lm_pcths <- lm(target_deathrate ~ pcths, data = df)
+summary(lm_pcths)
 
 # Linear model: target_deathrate ~ f.pctpubliccoverage --> 15%
 lm_pctpubliccoverage <- lm(target_deathrate ~ f.pctpubliccoverage, data = df) 
@@ -1263,50 +1299,141 @@ summary(lm_pctpubliccoverage)
 lm_pctpubliccoveragealone <- lm(target_deathrate ~ f.pctpubliccoveragealone, data = df) 
 summary(lm_pctpubliccoveragealone)
 
+# Linear mdodel: target_deathrate ~ f.povertypercent --> 18.95
+lm_povertypercent <- lm(target_deathrate ~ f.povertypercent, data = df)
+summary(lm_povertypercent)
+
 
 ```
 
-## Interaction models 
+# Interaction models 
+
+We began by building a comprehensive linear model to predict the target death
+rate using a set of selected variables, including f.percentmarried,
+f.incidencerate, f.medincome, pcths, f.pctpubliccoverage,
+f.pctpubliccoveragealone, and f.povertypercent. The idea behind this is to
+examine the influence of various socioeconomic factors and health coverage on
+the target variable. Given the complexity of this model, we then applied
+stepwise regression (in both directions) to simplify it, seeking to retain only
+the most influential variables while removing any that may be redundant or
+contribute little explanatory power. Stepwise selection is a common approach to
+model simplification as it systematically evaluates each predictor's
+contribution, helping to ensure that the final model is parsimonious without
+losing predictive accuracy. The stepwise procedure both adds and removes terms
+based on the Akaike Information Criterion (AIC), optimizing the model by
+reducing unnecessary complexity while preserving the key predictors. By
+analyzing the results, we aim to identify a simpler model that still provides a
+meaningful and effective prediction of the death rate, with the potential for
+clearer interpretations and easier implementation.
 
 ```{r}
+# Create a new model with all selected variables
+full_selected_model <- lm(target_deathrate ~ f.percentmarried + f.incidencerate + f.medincome + pcths + f.pctpubliccoverage + f.pctpubliccoveragealone + f.povertypercent, 
+                          data = df)
+summary(full_selected_model)
+
+# Perform stepwise selection (both directions)
+lm_stepwise <- step(full_selected_model, direction = "both", trace = 0); lm_stepwise
+
+# Plot the stepwise regression result
+plot(lm_stepwise)
+
+```
+
+In this section, we are building a series of linear regression models to predict
+the target death rate. We started with a simple model (m1) that used only median
+income as a predictor, which provided some insight into its relationship with
+the death rate. Next, we expanded the model (m2) to include incidence rate as an
+additional predictor, and confirmed that no transformation of the target
+variable was needed through the Box-Cox transformation. The inclusion of
+incidence rate significantly improved the model, as evidenced by the higher
+R-squared and F-statistic.
+
+We continued to refine the model by adding poverty percentage (f.povertypercent)
+in model (m3), which further improved the fit, showing a significant reduction
+in residual sum of squares (RSS). The inclusion of poverty percentage, along
+with median income and incidence rate, captured more variance in the target
+death rate, as confirmed by an ANOVA comparison between m2 and m3. In model
+(m4), we added high school graduation rate (pcths), which was also found to be a
+significant predictor. The ANOVA results indicated that this addition further
+improved the model's fit, with a significant reduction in RSS and an increased
+F-statistic.
+
+Throughout this process, we monitored potential issues such as multicollinearity
+and heteroscedasticity. The Variance Inflation Factor (VIF) values for all
+predictors were low (well below 5), indicating that multicollinearity was not a
+concern. However, the Breusch-Pagan test for heteroscedasticity showed evidence
+of non-constant variance in the residuals in m4, which could violate one of the
+assumptions of linear regression.
+
+Overall, the model selection process allowed us to identify the most relevant
+socio-economic and health-related variables influencing the target death rate.
+The final model (m4) included median income, incidence rate, poverty percentage,
+and high school graduation rate. Although the model fits the data well, we noted
+the presence of heteroscedasticity, which we may need to address in future
+iterations. This approach has ensured that we retain the most statistically
+significant variables while minimizing the risk of overfitting.
+
+```{r}
+# target_deathrate ~ medincome
 m1 <- lm(target_deathrate ~ medincome, data = df)
 summary(m1)
-par(mar = c(5, 5, 4, 2)) 
+# plot(m1)
 boxcox(target_deathrate ~ medincome , data=df) #No transformation of the target needed
 
+# target_deathrate ~ medincome + incidencerate
 m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df)
-boxcox(target_deathrate ~ medincome + incidencerate, data=df) #No transformation of the target needed. Log del target descartat
+boxcox(target_deathrate ~ medincome + incidencerate, data=df) #No transformation of the target needed.
 summary(m2)
+# plot(m2)
 t <- summary(m2)
 vif(m2)
 1/(1-t$r.squared)
 
-anova(m1, m2)
+anova(m1,m2)
 
-
-#The residuals indicate a fairly balanced distribution around zero, though the maximum residual of 140.048 suggests some outliers. The coefficients show that all predictors are statistically significant with p-values < 0.001. 
-m3 <- lm(target_deathrate ~ medincome + incidencerate + pcths, data= df)
+# target_deathrate ~ medincome + incidencerate + f.povertypercent
+m3 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent, data= df)
 summary(m3)
+plot(m3)
 
+anova(m1,m3)
+anova(m2,m3)
 
-#The Breusch-Pagan test was conducted to check for heteroscedasticity (non-constant variance of residuals). With a p-value of 0.0086, the test indicates evidence of heteroscedasticity in the model. This suggests that the residuals’ variance is not constant, potentially violating one of the assumptions of linear regression
-bptest(m3)
+# target_deathrate ~ medincome + incidencerate + f.povertypercent + pcths
+m4 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent + pcths, data= df)
+summary(m4)
+plot(m4)
 
-#The reduction in residual sum of squares (RSS) from 1,008,488 in m1 to 724,598 in m3 is significant (p-value < 2.2e-16). The 
-#F-statistic of 342.62 confirms that adding incidencerate and pcths significantly improves the model.
-anova(m1, m3)
+anova(m1,m4)
+anova(m2,m4)
+anova(m3,m4)
 
-#The VIF values for all predictors in the model (medincome, incidencerate, and pcths) are below 1.2, far below the common threshold of 5 or 10 for multicollinearity concerns. This indicates that the predictors are not highly correlated and do not pose a multicollinearity issue in the regression
-vif(m3)
-t <- summary(m3)
+# The Breusch-Pagan test was conducted to check for heteroscedasticity 
+# (non-constant variance of residuals). With a p-value of 0.0086, the test
+# indicates evidence of heteroscedasticity in the model. This suggests that the
+# residuals' variance is not constant, potentially violating one of the
+# assumptions of linear regression
+bptest(m4)
+
+# The reduction in residual sum of squares (RSS) from 1,008,488 in m1 to 724,598
+# in m3 is significant (p-value < 2.2e-16). The 
+# F-statistic of 342.62 confirms that adding incidencerate and pcths 
+# significantly improves the model.
+anova(m1,m3)
+
+# The VIF values for all predictors in the model (medincome, incidencerate, and
+# pcths) are below 1.2, far below the common threshold of 5 or 10 for
+# multicollinearity concerns. This indicates that the predictors are not highly
+# correlated and do not pose a multicollinearity issue in the regression
+vif(m4)
+t <- summary(m4)
 1/(1-t$r.squared)
 
+crPlots(m4)
+marginalModelPlots(m4)
 
-lm_stepwise <- step(m3, direction = "both", trace = 0)
-plot(lm_stepwise)
-coeftest(m3, vcov = vcovHC(m3, type = "HC1"))
-
-model <- m3
+model <- m4
 ```
 
 # Model Validation
