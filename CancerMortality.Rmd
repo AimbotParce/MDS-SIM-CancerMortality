@@ -1519,7 +1519,7 @@ test$state <- sub(".*,\\s*", "", test$geography)
 test$f.race <- as.factor(apply(test, 1, getRace))
 
 # Missing values
-test <- subset(test, select = -c(pctpubliccoveragealone, pctsomecol18_24))
+test <- subset(test, select = -c(pctprivatecoveragealone, pctsomecol18_24))
 test$pctemployed16_over <- complete(mice(test), action = 1)$pctemployed16_over
 
 # Outliers
