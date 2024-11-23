@@ -1444,7 +1444,6 @@ preprocessing steps as we did for the training dataset.
 
 ```{r}
 test <- read_csv("data/test.csv")
-summary(test)
 
 # Type conversion
 test$f.binnedinc <- as.factor(test$binnedinc)
