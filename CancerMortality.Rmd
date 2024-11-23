@@ -1431,15 +1431,15 @@ to this code we tested other possible arrangements and used other variables in o
 find the best model. For sake of simplicity, this code only shows the last results. 
 
 ```{r}
-# target_deathrate ~ medincome
-m1 <- lm(target_deathrate ~ medincome, data = df)
+# target_deathrate ~ incidentrate
+m1 <- lm(target_deathrate ~ incidentrate, data = df)
 summary(m1)
 # plot(m1)
-boxcox(target_deathrate ~ medincome , data=df) #No transformation of the target needed
+boxcox(target_deathrate ~ incidentrate , data=df) #No transformation of the target needed
 
-# target_deathrate ~ medincome + incidencerate
-m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df)
-boxcox(target_deathrate ~ medincome + incidencerate, data=df) #No transformation of the target needed.
+# target_deathrate ~ povertypercent + incidencerate
+m2 <- lm(target_deathrate ~ povertypercent + incidencerate, data= df)
+boxcox(target_deathrate ~ povertypercent + incidencerate, data=df) #No transformation of the target needed.
 summary(m2)
 # plot(m2)
 t <- summary(m2)
@@ -1448,16 +1448,16 @@ vif(m2)
 
 anova(m1,m2)
 
-# target_deathrate ~ medincome + incidencerate + f.povertypercent
-m3 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent, data= df)
+# target_deathrate ~ pcths + incidencerate + povertypercent
+m3 <- lm(target_deathrate ~  pcths + incidencerate + povertypercent, data= df)
 summary(m3)
 plot(m3)
 
 anova(m1,m3)
 anova(m2,m3)
 
-# target_deathrate ~ medincome + incidencerate + f.povertypercent + pcths
-m4 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent + pcths, data= df)
+# target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent
+m4 <- lm(target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent, data= df)
 summary(m4)
 plot(m4)
 
