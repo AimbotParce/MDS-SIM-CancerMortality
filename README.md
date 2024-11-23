@@ -2,120 +2,6 @@
 
 # Data Preparation
 
-    ## Warning: package 'crayon' was built under R version 4.4.2
-
-    ## Warning: package 'car' was built under R version 4.4.2
-
-    ## Loading required package: carData
-
-    ## Warning: package 'carData' was built under R version 4.4.2
-
-    ## Warning: package 'FactoMineR' was built under R version 4.4.2
-
-    ## Warning: package 'chemometrics' was built under R version 4.4.2
-
-    ## Loading required package: rpart
-
-    ## Warning: package 'corrplot' was built under R version 4.4.2
-
-    ## corrplot 0.95 loaded
-
-    ## Warning: package 'PerformanceAnalytics' was built under R version 4.4.2
-
-    ## Loading required package: xts
-
-    ## Warning: package 'xts' was built under R version 4.4.2
-
-    ## Loading required package: zoo
-
-    ## Warning: package 'zoo' was built under R version 4.4.2
-
-    ## 
-    ## Attaching package: 'zoo'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     as.Date, as.Date.numeric
-
-    ## 
-    ## Attaching package: 'PerformanceAnalytics'
-
-    ## The following object is masked from 'package:graphics':
-    ## 
-    ##     legend
-
-    ## Warning: package 'mice' was built under R version 4.4.2
-
-    ## 
-    ## Attaching package: 'mice'
-
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     filter
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     cbind, rbind
-
-    ## Warning: package 'dplyr' was built under R version 4.4.2
-
-    ## 
-    ## ######################### Warning from 'xts' package ##########################
-    ## #                                                                             #
-    ## # The dplyr lag() function breaks how base R's lag() function is supposed to  #
-    ## # work, which breaks lag(my_xts). Calls to lag(my_xts) that you type or       #
-    ## # source() into this session won't work correctly.                            #
-    ## #                                                                             #
-    ## # Use stats::lag() to make sure you're not using dplyr::lag(), or you can add #
-    ## # conflictRules('dplyr', exclude = 'lag') to your .Rprofile to stop           #
-    ## # dplyr from breaking base R's lag() function.                                #
-    ## #                                                                             #
-    ## # Code in packages is not affected. It's protected by R's namespace mechanism #
-    ## # Set `options(xts.warn_dplyr_breaks_lag = FALSE)` to suppress this warning.  #
-    ## #                                                                             #
-    ## ###############################################################################
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following objects are masked from 'package:xts':
-    ## 
-    ##     first, last
-
-    ## The following object is masked from 'package:car':
-    ## 
-    ##     recode
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-    ## Warning: package 'readr' was built under R version 4.4.2
-
-    ## Warning: package 'stringr' was built under R version 4.4.2
-
-    ## 
-    ## Attaching package: 'MASS'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     select
-
-    ## Warning: package 'lmtest' was built under R version 4.4.2
-
-    ## 
-    ## Attaching package: 'lmtest'
-
-    ## The following object is masked from 'package:crayon':
-    ## 
-    ##     reset
-
-    ## Warning: package 'sandwich' was built under R version 4.4.2
-
 First we import the data and save it as the variable “df” for future
 modifications.
 
@@ -320,14 +206,14 @@ quantile(df$pctemployed16_over, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 23.9 43.3 47.4 50.0 52.5 54.6 57.2 59.2 61.5 64.4 80.1
+    ## 23.9 43.3 47.4 50.0 52.5 54.6 57.1 59.3 61.6 64.5 80.1
 
 ``` r
 quantile(df$pctprivatecoveragealone, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 16.8 35.3 39.7 42.9 45.8 48.9 51.6 54.3 57.0 61.6 78.9
+    ## 16.8 35.3 39.7 42.9 45.8 48.8 51.6 54.4 57.2 61.6 78.9
 
 Which they are.
 
@@ -372,7 +258,7 @@ for (colname in colnames(Filter(is.numeric, df))) {
     ## Column pctbachdeg18_24 has 46 mild outliers and 10 severe outliers
     ## Column pcths25_over has 18 mild outliers and 0 severe outliers
     ## Column pctbachdeg25_over has 56 mild outliers and 3 severe outliers
-    ## Column pctemployed16_over has 12 mild outliers and 0 severe outliers
+    ## Column pctemployed16_over has 11 mild outliers and 0 severe outliers
     ## Column pctunemployed16_over has 38 mild outliers and 4 severe outliers
     ## Column pctprivatecoverage has 17 mild outliers and 0 severe outliers
     ## Column pctprivatecoveragealone has 3 mild outliers and 0 severe outliers
@@ -491,7 +377,7 @@ multi_outliers_95 = which((res.out_95$md > res.out_95$cutoff)&(res.out_95$rd > r
 length(multi_outliers_95)
 ```
 
-    ## [1] 270
+    ## [1] 272
 
 ``` r
 res.out <- Moutlier(numeric.df, quantile = 0.9999995, plot=F)
@@ -527,14 +413,14 @@ We’ll be performing lots of discretisation of continuous variables based
 on their quartiles, so let’s create a function to do that.
 
 ``` r
-discretize_quartiles <- function(column, label_name) {
+discretize_quartiles <- function(column, level_name) {
   res <- cut(column, breaks = quantile(column, probs = seq(0, 1, 0.25)), 
     include.lowest = T,
     labels=c(
-      sprintf("Low%s", label_name),
-      sprintf("LowMid%s", label_name),
-      sprintf("HighMid%s", label_name),
-      sprintf("High%s", label_name)
+      sprintf("Low%s", level_name),
+      sprintf("LowMid%s", level_name),
+      sprintf("HighMid%s", level_name),
+      sprintf("High%s", level_name)
     )
   )
   print(table(res)) # Print the table
@@ -860,9 +746,9 @@ this time groupping the data in only 3 groups: 0, and the two median
 splits of the non-zero values.
 
 ``` r
-non_zero_median <- median(df$studypercap[df$studypercap > 0])
+non_zero_studypercap_median <- median(df$studypercap[df$studypercap > 0])
 
-df$f.studypercap <- cut(df$studypercap, breaks = c(-Inf, 0, non_zero_median, Inf),
+df$f.studypercap <- cut(df$studypercap, breaks = c(-Inf, 0, non_zero_studypercap_median, Inf),
     include.lowest = T,
     labels=c("NoTrials", "MidTrials", "HighTrials")
   )
@@ -1095,11 +981,11 @@ of them sparsly populated so it’s not feasible to convert it to factor.
 sample(df$geography, 10)
 ```
 
-    ##  [1] "Greene County, Indiana"             "Pine County, Minnesota"            
-    ##  [3] "Montgomery County, Illinois"        "Kerr County, Texas"                
-    ##  [5] "East Baton Rouge Parish, Louisiana" "Echols County, Georgia"            
-    ##  [7] "Martin County, Florida"             "Hall County, Georgia"              
-    ##  [9] "Rockingham County, Virginia"        "Morrow County, Ohio"
+    ##  [1] "Clinton County, Michigan"     "Lassen County, California"   
+    ##  [3] "Wadena County, Minnesota"     "Gosper County, Nebraska"     
+    ##  [5] "Yankton County, South Dakota" "Snohomish County, Washington"
+    ##  [7] "Ohio County, West Virginia"   "Houston County, Texas"       
+    ##  [9] "Douglas County, Nebraska"     "Decatur County, Tennessee"
 
 ``` r
 # Use regex to get the state (everything after the comma and white space):
@@ -1370,7 +1256,7 @@ summary(df$pctemployed16_over)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   23.90   48.65   54.60   54.24   60.30   80.10
+    ##   23.90   48.60   54.60   54.27   60.30   80.10
 
 ``` r
 hist(df$pctemployed16_over, breaks = 30, freq = F)
@@ -1386,7 +1272,7 @@ shapiro.test(df$pctemployed16_over)
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  df$pctemployed16_over
-    ## W = 0.99134, p-value = 5.925e-09
+    ## W = 0.99251, p-value = 4.787e-08
 
 An additional factor `f.pctemployed16_over` is created to discretize the
 data according to the quartiles.
@@ -1397,7 +1283,7 @@ df$f.pctemployed16_over <- discretize_quartiles(df$pctemployed16_over, "Employ%"
 
     ## res
     ##     LowEmploy%  LowMidEmploy% HighMidEmploy%    HighEmploy% 
-    ##            458            463            460            450
+    ##            459            465            453            454
 
 ### Variable 20 - pctunemployed16_over
 
@@ -1492,7 +1378,7 @@ summary(df$pctprivatecoveragealone)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   16.80   41.35   48.90   48.56   55.50   78.90
+    ##   16.80   41.35   48.80   48.57   55.50   78.90
 
 ``` r
 cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
@@ -1502,13 +1388,13 @@ cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
     ##  Pearson's product-moment correlation
     ## 
     ## data:  df$pctprivatecoverage and df$pctprivatecoveragealone
-    ## t = 109.73, df = 1829, p-value < 2.2e-16
+    ## t = 110.05, df = 1829, p-value < 2.2e-16
     ## alternative hypothesis: true correlation is not equal to 0
     ## 95 percent confidence interval:
-    ##  0.9254252 0.9375290
+    ##  0.9258157 0.9378581
     ## sample estimates:
-    ##       cor 
-    ## 0.9317354
+    ##      cor 
+    ## 0.932094
 
 ``` r
 df <- subset(df, select = -pctprivatecoveragealone)
@@ -1999,7 +1885,7 @@ sorted_correlation_df
     ## povertypercent           0.4500846  5.144264e-92
     ## incidencerate            0.4495485  8.953861e-92
     ## medincome               -0.4436828  3.606607e-89
-    ## pctemployed16_over      -0.4434942  4.365106e-89
+    ## pctemployed16_over      -0.4401976  1.204872e-87
     ## pctpubliccoverage        0.4243675  6.056303e-81
     ## pcths25_over             0.4069017  5.910723e-74
     ## binnedinc               -0.4046327  4.462085e-73
@@ -2153,50 +2039,50 @@ summary(model)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -98.535 -11.005  -0.323  10.438 133.326 
+    ## -98.882 -10.953  -0.303  10.541 133.230 
     ## 
     ## Coefficients: (4 not defined because of singularities)
     ##                          Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)             2.030e+02  2.665e+01   7.616 4.19e-14 ***
-    ## avganncount            -3.076e-03  9.759e-04  -3.152 0.001648 ** 
-    ## avgdeathsperyear        1.476e-02  4.680e-03   3.154 0.001636 ** 
-    ## incidencerate           1.859e-01  9.205e-03  20.195  < 2e-16 ***
-    ## medincome               1.219e-04  1.380e-04   0.883 0.377131    
-    ## popest2015             -1.110e-05  6.382e-06  -1.739 0.082263 .  
-    ## povertypercent          3.718e-01  2.173e-01   1.711 0.087282 .  
-    ## studypercap             1.268e-03  9.363e-04   1.354 0.175961    
-    ## binnedinc              -1.905e-06  7.189e-05  -0.026 0.978866    
-    ## medianage              -5.345e-01  2.024e-01  -2.640 0.008360 ** 
-    ## percentmarried          1.348e+00  2.241e-01   6.013 2.20e-09 ***
-    ## pctnohs18_24           -1.025e-01  7.332e-02  -1.397 0.162441    
-    ## pcths18_24              1.498e-01  6.551e-02   2.286 0.022366 *  
-    ## pctbachdeg18_24        -5.437e-02  1.436e-01  -0.379 0.705062    
-    ## pcths25_over            4.388e-01  1.269e-01   3.457 0.000559 ***
-    ## pctbachdeg25_over      -1.091e+00  2.016e-01  -5.414 7.00e-08 ***
-    ## pctemployed16_over     -7.462e-01  1.465e-01  -5.094 3.88e-07 ***
-    ## pctunemployed16_over    9.018e-02  2.184e-01   0.413 0.679668    
-    ## pctprivatecoverage     -3.557e-01  1.726e-01  -2.061 0.039484 *  
-    ## pctempprivcoverage      3.280e-01  1.327e-01   2.471 0.013580 *  
-    ## pctpubliccoverage      -4.206e-01  2.952e-01  -1.425 0.154381    
-    ## pctpubliccoveragealone  5.689e-01  3.641e-01   1.563 0.118299    
-    ## pctwhite               -1.255e-01  8.151e-02  -1.539 0.123879    
-    ## pctblack               -1.060e-04  8.295e-02  -0.001 0.998981    
-    ## pctasian               -1.933e-01  2.927e-01  -0.661 0.508948    
-    ## pctotherrace           -7.250e-01  1.599e-01  -4.533 6.21e-06 ***
-    ## pctmarriedhouseholds   -1.254e+00  2.123e-01  -5.906 4.19e-09 ***
-    ## birthrate              -8.118e-01  2.588e-01  -3.137 0.001734 ** 
+    ## (Intercept)             1.993e+02  2.665e+01   7.477 1.18e-13 ***
+    ## avganncount            -3.105e-03  9.765e-04  -3.180 0.001497 ** 
+    ## avgdeathsperyear        1.463e-02  4.687e-03   3.121 0.001833 ** 
+    ## incidencerate           1.868e-01  9.206e-03  20.295  < 2e-16 ***
+    ## medincome               1.235e-04  1.381e-04   0.895 0.371083    
+    ## popest2015             -1.085e-05  6.387e-06  -1.699 0.089433 .  
+    ## povertypercent          3.819e-01  2.181e-01   1.751 0.080083 .  
+    ## studypercap             1.267e-03  9.371e-04   1.352 0.176588    
+    ## binnedinc              -4.680e-06  7.196e-05  -0.065 0.948152    
+    ## medianage              -5.288e-01  2.026e-01  -2.609 0.009144 ** 
+    ## percentmarried          1.321e+00  2.247e-01   5.882 4.83e-09 ***
+    ## pctnohs18_24           -1.013e-01  7.338e-02  -1.380 0.167730    
+    ## pcths18_24              1.536e-01  6.552e-02   2.344 0.019196 *  
+    ## pctbachdeg18_24        -5.348e-02  1.437e-01  -0.372 0.709869    
+    ## pcths25_over            4.319e-01  1.270e-01   3.402 0.000682 ***
+    ## pctbachdeg25_over      -1.090e+00  2.019e-01  -5.398 7.62e-08 ***
+    ## pctemployed16_over     -7.103e-01  1.470e-01  -4.832 1.47e-06 ***
+    ## pctunemployed16_over    1.129e-01  2.182e-01   0.517 0.605034    
+    ## pctprivatecoverage     -3.554e-01  1.727e-01  -2.057 0.039810 *  
+    ## pctempprivcoverage      3.243e-01  1.329e-01   2.441 0.014761 *  
+    ## pctpubliccoverage      -4.026e-01  2.959e-01  -1.361 0.173820    
+    ## pctpubliccoveragealone  5.617e-01  3.650e-01   1.539 0.124066    
+    ## pctwhite               -1.269e-01  8.162e-02  -1.555 0.120120    
+    ## pctblack               -5.036e-04  8.303e-02  -0.006 0.995162    
+    ## pctasian               -1.811e-01  2.928e-01  -0.619 0.536248    
+    ## pctotherrace           -7.287e-01  1.601e-01  -4.552 5.68e-06 ***
+    ## pctmarriedhouseholds   -1.227e+00  2.127e-01  -5.770 9.31e-09 ***
+    ## birthrate              -8.105e-01  2.590e-01  -3.129 0.001783 ** 
     ## pcths                          NA         NA      NA       NA    
     ## pctbach                        NA         NA      NA       NA    
     ## racindex                       NA         NA      NA       NA    
     ## social_welfare                 NA         NA      NA       NA    
-    ## f.raceBlack            -3.932e+01  1.752e+01  -2.245 0.024904 *  
-    ## f.raceWhite            -3.656e+01  1.711e+01  -2.136 0.032781 *  
+    ## f.raceBlack            -3.895e+01  1.753e+01  -2.222 0.026411 *  
+    ## f.raceWhite            -3.591e+01  1.712e+01  -2.097 0.036103 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 19.49 on 1801 degrees of freedom
-    ## Multiple R-squared:  0.5206, Adjusted R-squared:  0.5129 
-    ## F-statistic: 67.45 on 29 and 1801 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 19.51 on 1801 degrees of freedom
+    ## Multiple R-squared:  0.5199, Adjusted R-squared:  0.5122 
+    ## F-statistic: 67.26 on 29 and 1801 DF,  p-value: < 2.2e-16
 
 According to this first model, the following variables seem to be very
 significant (p-value \< 0.01):
@@ -2208,18 +2094,18 @@ significant_vars
 ```
 
     ##                           Estimate   Std. Error   t value     Pr(>|t|)
-    ## (Intercept)          202.963373917 2.664909e+01  7.616147 4.194280e-14
-    ## avganncount           -0.003075979 9.758841e-04 -3.151993 1.648298e-03
-    ## avgdeathsperyear       0.014761763 4.680176e-03  3.154105 1.636481e-03
-    ## incidencerate          0.185895572 9.205196e-03 20.194635 6.502148e-82
-    ## medianage             -0.534485932 2.024488e-01 -2.640104 8.359621e-03
-    ## percentmarried         1.347629710 2.241071e-01  6.013328 2.195507e-09
-    ## pcths25_over           0.438759756 1.269205e-01  3.456964 5.589872e-04
-    ## pctbachdeg25_over     -1.091224469 2.015685e-01 -5.413665 7.003325e-08
-    ## pctemployed16_over    -0.746244939 1.465088e-01 -5.093515 3.882926e-07
-    ## pctotherrace          -0.724967244 1.599459e-01 -4.532579 6.210140e-06
-    ## pctmarriedhouseholds  -1.253730542 2.122934e-01 -5.905650 4.189280e-09
-    ## birthrate             -0.811841939 2.587952e-01 -3.137005 1.734439e-03
+    ## (Intercept)          199.263444558 2.664942e+01  7.477216 1.179052e-13
+    ## avganncount           -0.003105353 9.764936e-04 -3.180105 1.497260e-03
+    ## avgdeathsperyear       0.014625026 4.686599e-03  3.120605 1.833427e-03
+    ## incidencerate          0.186824803 9.205524e-03 20.294858 1.240192e-82
+    ## medianage             -0.528801512 2.026484e-01 -2.609453 9.143811e-03
+    ## percentmarried         1.321430824 2.246690e-01  5.881677 4.830400e-09
+    ## pcths25_over           0.431941349 1.269505e-01  3.402440 6.824847e-04
+    ## pctbachdeg25_over     -1.090074636 2.019263e-01 -5.398379 7.616508e-08
+    ## pctemployed16_over    -0.710302618 1.469957e-01 -4.832131 1.465305e-06
+    ## pctotherrace          -0.728748287 1.601060e-01 -4.551661 5.678404e-06
+    ## pctmarriedhouseholds  -1.227387576 2.127204e-01 -5.769958 9.314526e-09
+    ## birthrate             -0.810499718 2.590368e-01 -3.128898 1.782741e-03
 
 ## Analyze behaviour of what seem to be the main predictors
 
@@ -3775,41 +3661,41 @@ other variables in order to find the best model. For sake of simplicity,
 this code only shows the last results.
 
 ``` r
-# target_deathrate ~ medincome
-m1 <- lm(target_deathrate ~ medincome, data = df)
+# target_deathrate ~ incidencerate
+m1 <- lm(target_deathrate ~ incidencerate, data = df)
 summary(m1)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = target_deathrate ~ medincome, data = df)
+    ## lm(formula = target_deathrate ~ incidencerate, data = df)
     ## 
     ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -125.59  -14.34    0.74   14.73  176.88 
+    ##      Min       1Q   Median       3Q      Max 
+    ## -143.812  -16.221   -1.731   15.129  111.093 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)  2.263e+02  2.317e+00   97.66   <2e-16 ***
-    ## medincome   -1.004e-03  4.742e-05  -21.17   <2e-16 ***
+    ## (Intercept)   77.85985    4.72685   16.47   <2e-16 ***
+    ## incidencerate  0.22486    0.01045   21.52   <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 25.04 on 1829 degrees of freedom
-    ## Multiple R-squared:  0.1969, Adjusted R-squared:  0.1964 
-    ## F-statistic: 448.3 on 1 and 1829 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 24.96 on 1829 degrees of freedom
+    ## Multiple R-squared:  0.2021, Adjusted R-squared:  0.2017 
+    ## F-statistic: 463.2 on 1 and 1829 DF,  p-value: < 2.2e-16
 
 ``` r
 # plot(m1)
-boxcox(target_deathrate ~ medincome , data=df) #No transformation of the target needed
+boxcox(target_deathrate ~ incidencerate , data=df) #No transformation of the target needed
 ```
 
 ![](images/unnamed-chunk-93-1.png)
 
 ``` r
-# target_deathrate ~ medincome + incidencerate
-m2 <- lm(target_deathrate ~ medincome + incidencerate, data= df)
-boxcox(target_deathrate ~ medincome + incidencerate, data=df) #No transformation of the target needed.
+# target_deathrate ~ povertypercent + incidencerate
+m2 <- lm(target_deathrate ~ povertypercent + incidencerate, data= df)
+boxcox(target_deathrate ~ povertypercent + incidencerate, data=df) #No transformation of the target needed.
 ```
 
 ![](images/unnamed-chunk-93-2.png)
@@ -3820,23 +3706,24 @@ summary(m2)
 
     ## 
     ## Call:
-    ## lm(formula = target_deathrate ~ medincome + incidencerate, data = df)
+    ## lm(formula = target_deathrate ~ povertypercent + incidencerate, 
+    ##     data = df)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -141.750  -12.714   -0.495   12.530  130.239 
+    ## -145.429  -13.272   -0.285   13.208  118.163 
     ## 
     ## Coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)    1.263e+02  4.602e+00   27.45   <2e-16 ***
-    ## medincome     -9.848e-04  4.130e-05  -23.84   <2e-16 ***
-    ## incidencerate  2.206e-01  9.129e-03   24.17   <2e-16 ***
+    ## (Intercept)    49.812623   4.300017   11.58   <2e-16 ***
+    ## povertypercent  1.889498   0.079644   23.72   <2e-16 ***
+    ## incidencerate   0.216661   0.009144   23.69   <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 21.8 on 1828 degrees of freedom
-    ## Multiple R-squared:  0.3914, Adjusted R-squared:  0.3907 
-    ## F-statistic: 587.7 on 2 and 1828 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 21.83 on 1828 degrees of freedom
+    ## Multiple R-squared:  0.3899, Adjusted R-squared:  0.3893 
+    ## F-statistic: 584.2 on 2 and 1828 DF,  p-value: < 2.2e-16
 
 ``` r
 # plot(m2)
@@ -3844,14 +3731,14 @@ t <- summary(m2)
 vif(m2)
 ```
 
-    ##     medincome incidencerate 
-    ##      1.000375      1.000375
+    ## povertypercent  incidencerate 
+    ##        1.00143        1.00143
 
 ``` r
 1/(1-t$r.squared)
 ```
 
-    ## [1] 1.643051
+    ## [1] 1.63917
 
 ``` r
 anova(m1,m2)
@@ -3859,41 +3746,41 @@ anova(m1,m2)
 
     ## Analysis of Variance Table
     ## 
-    ## Model 1: target_deathrate ~ medincome
-    ## Model 2: target_deathrate ~ medincome + incidencerate
+    ## Model 1: target_deathrate ~ incidencerate
+    ## Model 2: target_deathrate ~ povertypercent + incidencerate
     ##   Res.Df     RSS Df Sum of Sq      F    Pr(>F)    
-    ## 1   1829 1146569                                  
-    ## 2   1828  868870  1    277699 584.25 < 2.2e-16 ***
+    ## 1   1829 1139089                                  
+    ## 2   1828  870928  1    268162 562.85 < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
-# target_deathrate ~ medincome + incidencerate + f.povertypercent
-m3 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent, data= df)
+# target_deathrate ~ pcths + incidencerate + povertypercent
+m3 <- lm(target_deathrate ~  pcths + incidencerate + povertypercent, data= df)
 summary(m3)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = target_deathrate ~ medincome + incidencerate + povertypercent, 
+    ## lm(formula = target_deathrate ~ pcths + incidencerate + povertypercent, 
     ##     data = df)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -143.534  -12.525   -0.129   12.625  125.821 
+    ## -110.706  -11.818    0.317   11.728  136.687 
     ## 
     ## Coefficients:
-    ##                  Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)     8.987e+01  6.372e+00  14.104  < 2e-16 ***
-    ## medincome      -5.576e-04  6.645e-05  -8.391  < 2e-16 ***
-    ## incidencerate   2.180e-01  8.977e-03  24.281  < 2e-16 ***
-    ## povertypercent  1.039e+00  1.280e-01   8.119 8.54e-16 ***
+    ##                 Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)    -1.722217   5.148202  -0.335    0.738    
+    ## pcths           3.504566   0.218176  16.063   <2e-16 ***
+    ## incidencerate   0.207268   0.008582  24.152   <2e-16 ***
+    ## povertypercent  1.689318   0.075608  22.343   <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 21.42 on 1827 degrees of freedom
-    ## Multiple R-squared:  0.4126, Adjusted R-squared:  0.4116 
-    ## F-statistic: 427.7 on 3 and 1827 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 20.44 on 1827 degrees of freedom
+    ## Multiple R-squared:  0.4654, Adjusted R-squared:  0.4646 
+    ## F-statistic: 530.2 on 3 and 1827 DF,  p-value: < 2.2e-16
 
 ``` r
 plot(m3)
@@ -3907,11 +3794,11 @@ anova(m1,m3)
 
     ## Analysis of Variance Table
     ## 
-    ## Model 1: target_deathrate ~ medincome
-    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent
-    ##   Res.Df     RSS Df Sum of Sq      F    Pr(>F)    
-    ## 1   1829 1146569                                  
-    ## 2   1827  838612  2    307957 335.46 < 2.2e-16 ***
+    ## Model 1: target_deathrate ~ incidencerate
+    ## Model 2: target_deathrate ~ pcths + incidencerate + povertypercent
+    ##   Res.Df     RSS Df Sum of Sq   F    Pr(>F)    
+    ## 1   1829 1139089                               
+    ## 2   1827  763150  2    375939 450 < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -3921,42 +3808,42 @@ anova(m2,m3)
 
     ## Analysis of Variance Table
     ## 
-    ## Model 1: target_deathrate ~ medincome + incidencerate
-    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent
-    ##   Res.Df    RSS Df Sum of Sq     F    Pr(>F)    
-    ## 1   1828 868870                                 
-    ## 2   1827 838612  1     30258 65.92 8.542e-16 ***
+    ## Model 1: target_deathrate ~ povertypercent + incidencerate
+    ## Model 2: target_deathrate ~ pcths + incidencerate + povertypercent
+    ##   Res.Df    RSS Df Sum of Sq      F    Pr(>F)    
+    ## 1   1828 870928                                  
+    ## 2   1827 763150  1    107777 258.02 < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
-# target_deathrate ~ medincome + incidencerate + f.povertypercent + pcths
-m4 <- lm(target_deathrate ~ medincome + incidencerate + povertypercent + pcths, data= df)
+# target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent
+m4 <- lm(target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent, data= df)
 summary(m4)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = target_deathrate ~ medincome + incidencerate + povertypercent + 
-    ##     pcths, data = df)
+    ## lm(formula = target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
+    ##     povertypercent, data = df)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -112.527  -11.715    0.388   11.451  137.818 
+    ## -104.820  -11.905    0.517   11.494  136.932 
     ## 
     ## Coefficients:
-    ##                  Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)     1.454e+01  8.190e+00   1.775   0.0761 .  
-    ## medincome      -1.763e-04  6.914e-05  -2.550   0.0108 *  
-    ## incidencerate   2.083e-01  8.579e-03  24.284   <2e-16 ***
-    ## povertypercent  1.434e+00  1.253e-01  11.449   <2e-16 ***
-    ## pcths           3.260e+00  2.380e-01  13.701   <2e-16 ***
+    ##                         Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)            -0.312697   5.142539  -0.061 0.951520    
+    ## incidencerate           0.205297   0.008566  23.967  < 2e-16 ***
+    ## pcths                   3.258983   0.226714  14.375  < 2e-16 ***
+    ## pctpubliccoveragealone  0.534798   0.140264   3.813 0.000142 ***
+    ## povertypercent          1.294877   0.127972  10.118  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 20.41 on 1826 degrees of freedom
-    ## Multiple R-squared:  0.4673, Adjusted R-squared:  0.4662 
-    ## F-statistic: 400.5 on 4 and 1826 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 20.36 on 1826 degrees of freedom
+    ## Multiple R-squared:  0.4697, Adjusted R-squared:  0.4685 
+    ## F-statistic: 404.3 on 4 and 1826 DF,  p-value: < 2.2e-16
 
 ``` r
 plot(m4)
@@ -3971,12 +3858,12 @@ anova(m1,m4)
 
     ## Analysis of Variance Table
     ## 
-    ## Model 1: target_deathrate ~ medincome
-    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent + 
-    ##     pcths
+    ## Model 1: target_deathrate ~ incidencerate
+    ## Model 2: target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
+    ##     povertypercent
     ##   Res.Df     RSS Df Sum of Sq      F    Pr(>F)    
-    ## 1   1829 1146569                                  
-    ## 2   1826  760442  3    386127 309.06 < 2.2e-16 ***
+    ## 1   1829 1139089                                  
+    ## 2   1826  757123  3    381966 307.07 < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -3986,12 +3873,12 @@ anova(m2,m4)
 
     ## Analysis of Variance Table
     ## 
-    ## Model 1: target_deathrate ~ medincome + incidencerate
-    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent + 
-    ##     pcths
+    ## Model 1: target_deathrate ~ povertypercent + incidencerate
+    ## Model 2: target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
+    ##     povertypercent
     ##   Res.Df    RSS Df Sum of Sq      F    Pr(>F)    
-    ## 1   1828 868870                                  
-    ## 2   1826 760442  2    108428 130.18 < 2.2e-16 ***
+    ## 1   1828 870928                                  
+    ## 2   1826 757123  2    113805 137.24 < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -4001,12 +3888,12 @@ anova(m3,m4)
 
     ## Analysis of Variance Table
     ## 
-    ## Model 1: target_deathrate ~ medincome + incidencerate + povertypercent
-    ## Model 2: target_deathrate ~ medincome + incidencerate + povertypercent + 
-    ##     pcths
-    ##   Res.Df    RSS Df Sum of Sq     F    Pr(>F)    
-    ## 1   1827 838612                                 
-    ## 2   1826 760442  1     78170 187.7 < 2.2e-16 ***
+    ## Model 1: target_deathrate ~ pcths + incidencerate + povertypercent
+    ## Model 2: target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
+    ##     povertypercent
+    ##   Res.Df    RSS Df Sum of Sq      F   Pr(>F)    
+    ## 1   1827 763150                                 
+    ## 2   1826 757123  1    6027.7 14.537 0.000142 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -4023,7 +3910,7 @@ bptest(m4)
     ##  studentized Breusch-Pagan test
     ## 
     ## data:  m4
-    ## BP = 23.49, df = 4, p-value = 0.0001011
+    ## BP = 29.569, df = 4, p-value = 5.989e-06
 
 ``` r
 # The VIF values for all predictors in the model (medincome, incidencerate, and
@@ -4033,15 +3920,17 @@ bptest(m4)
 vif(m4)
 ```
 
-    ##      medincome  incidencerate povertypercent          pcths 
-    ##       3.199913       1.008501       2.834728       1.233253
+    ##          incidencerate                  pcths pctpubliccoveragealone 
+    ##               1.009780               1.124244               3.185215 
+    ##         povertypercent 
+    ##               2.970894
 
 ``` r
 t <- summary(m4)
 1/(1-t$r.squared)
 ```
 
-    ## [1] 1.877326
+    ## [1] 1.885557
 
 ``` r
 model <- m4
@@ -4090,78 +3979,160 @@ test <- read_csv("data/test.csv")
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-summary(test)
+# Type conversion
+test$f.binnedinc <- as.factor(test$binnedinc)
+test$binnedinc <- sapply(
+  strsplit(gsub("[\\[\\]()]", "", test$binnedinc, perl = T), ","),
+  function(x) mean(as.numeric(x))
+)
+test$state <- sub(".*,\\s*", "", test$geography)
+test$f.race <- as.factor(apply(test, 1, getRace))
+
+# Missing values
+test <- subset(test, select = -c(pctprivatecoveragealone, pctsomecol18_24))
+test$pctemployed16_over <- complete(mice(test), action = 1)$pctemployed16_over
 ```
 
-    ##   avganncount       avgdeathsperyear target_deathrate incidencerate  
-    ##  Min.   :    6.00   Min.   :   3.0   Min.   : 87.6    Min.   :214.8  
-    ##  1st Qu.:   70.75   1st Qu.:  26.0   1st Qu.:161.1    1st Qu.:419.6  
-    ##  Median :  168.00   Median :  60.0   Median :177.8    Median :453.5  
-    ##  Mean   :  580.91   Mean   : 177.4   Mean   :178.4    Mean   :447.2  
-    ##  3rd Qu.:  534.50   3rd Qu.: 156.0   3rd Qu.:195.0    3rd Qu.:480.0  
-    ##  Max.   :13294.00   Max.   :4895.0   Max.   :293.9    Max.   :718.9  
-    ##                                                                      
-    ##    medincome        popest2015      povertypercent   studypercap     
-    ##  Min.   : 23047   Min.   :    827   Min.   : 3.20   Min.   :   0.00  
-    ##  1st Qu.: 38492   1st Qu.:  11170   1st Qu.:12.18   1st Qu.:   0.00  
-    ##  Median : 44785   Median :  25962   Median :16.20   Median :   0.00  
-    ##  Mean   : 46740   Mean   :  96307   Mean   :17.01   Mean   : 166.24  
-    ##  3rd Qu.: 52387   3rd Qu.:  71517   3rd Qu.:20.40   3rd Qu.:  96.16  
-    ##  Max.   :125635   Max.   :3299521   Max.   :47.40   Max.   :9439.20  
-    ##                                                                      
-    ##   binnedinc           medianage      medianagemale   medianagefemale
-    ##  Length:1216        Min.   : 22.30   Min.   :22.40   Min.   :22.30  
-    ##  Class :character   1st Qu.: 37.60   1st Qu.:36.30   1st Qu.:38.77  
-    ##  Mode  :character   Median : 41.00   Median :39.70   Median :42.30  
-    ##                     Mean   : 45.31   Mean   :39.55   Mean   :42.11  
-    ##                     3rd Qu.: 43.92   3rd Qu.:42.50   3rd Qu.:45.40  
-    ##                     Max.   :619.20   Max.   :64.70   Max.   :65.70  
-    ##                                                                     
-    ##   geography         percentmarried   pctnohs18_24     pcths18_24   
-    ##  Length:1216        Min.   :25.30   Min.   : 0.00   Min.   : 7.10  
-    ##  Class :character   1st Qu.:47.67   1st Qu.:12.50   1st Qu.:29.00  
-    ##  Mode  :character   Median :52.30   Median :17.10   Median :34.85  
-    ##                     Mean   :51.58   Mean   :18.13   Mean   :35.01  
-    ##                     3rd Qu.:56.30   3rd Qu.:22.62   3rd Qu.:40.90  
-    ##                     Max.   :72.50   Max.   :64.10   Max.   :66.20  
-    ##                                                                    
-    ##  pctsomecol18_24 pctbachdeg18_24   pcths25_over   pctbachdeg25_over
-    ##  Min.   : 7.10   Min.   : 0.000   Min.   : 7.50   Min.   : 3.20    
-    ##  1st Qu.:34.65   1st Qu.: 2.900   1st Qu.:30.50   1st Qu.: 9.40    
-    ##  Median :40.70   Median : 5.300   Median :35.30   Median :12.30    
-    ##  Mean   :41.72   Mean   : 6.071   Mean   :34.91   Mean   :13.26    
-    ##  3rd Qu.:47.05   3rd Qu.: 8.300   3rd Qu.:39.62   3rd Qu.:16.20    
-    ##  Max.   :79.00   Max.   :43.400   Max.   :54.80   Max.   :40.40    
-    ##  NA's   :909                                                       
-    ##  pctemployed16_over pctunemployed16_over pctprivatecoverage
-    ##  Min.   :17.60      Min.   : 0.40        Min.   :22.30     
-    ##  1st Qu.:48.40      1st Qu.: 5.60        1st Qu.:56.80     
-    ##  Median :54.50      Median : 7.60        Median :65.00     
-    ##  Mean   :54.06      Mean   : 7.84        Mean   :64.17     
-    ##  3rd Qu.:60.40      3rd Qu.: 9.70        3rd Qu.:72.00     
-    ##  Max.   :76.50      Max.   :27.00        Max.   :92.30     
-    ##  NA's   :70                                                
-    ##  pctprivatecoveragealone pctempprivcoverage pctpubliccoverage
-    ##  Min.   :15.70           Min.   :13.50      Min.   :13.50    
-    ##  1st Qu.:40.60           1st Qu.:34.20      1st Qu.:30.88    
-    ##  Median :48.30           Median :41.15      Median :36.50    
-    ##  Mean   :48.16           Mean   :41.05      Mean   :36.40    
-    ##  3rd Qu.:55.80           3rd Qu.:47.52      3rd Qu.:41.80    
-    ##  Max.   :78.20           Max.   :70.70      Max.   :65.10    
-    ##  NA's   :253                                                 
-    ##  pctpubliccoveragealone    pctwhite         pctblack          pctasian      
-    ##  Min.   : 2.70          Min.   : 10.20   Min.   : 0.0000   Min.   : 0.0000  
-    ##  1st Qu.:14.78          1st Qu.: 77.31   1st Qu.: 0.6108   1st Qu.: 0.2489  
-    ##  Median :19.00          Median : 90.12   Median : 2.1584   Median : 0.5503  
-    ##  Mean   :19.38          Mean   : 83.34   Mean   : 9.1478   Mean   : 1.2233  
-    ##  3rd Qu.:23.30          3rd Qu.: 95.13   3rd Qu.:10.0581   3rd Qu.: 1.1626  
-    ##  Max.   :43.30          Max.   :100.00   Max.   :81.2819   Max.   :42.6194  
-    ##                                                                             
-    ##   pctotherrace     pctmarriedhouseholds   birthrate     
-    ##  Min.   : 0.0000   Min.   :23.89        Min.   : 0.000  
-    ##  1st Qu.: 0.3074   1st Qu.:47.56        1st Qu.: 4.515  
-    ##  Median : 0.8908   Median :51.55        Median : 5.451  
-    ##  Mean   : 1.9540   Mean   :51.01        Mean   : 5.705  
-    ##  3rd Qu.: 2.2318   3rd Qu.:55.10        3rd Qu.: 6.602  
-    ##  Max.   :38.7437   Max.   :78.08        Max.   :18.557  
     ## 
+    ##  iter imp variable
+    ##   1   1  pctemployed16_over
+    ##   1   2  pctemployed16_over
+    ##   1   3  pctemployed16_over
+    ##   1   4  pctemployed16_over
+    ##   1   5  pctemployed16_over
+    ##   2   1  pctemployed16_over
+    ##   2   2  pctemployed16_over
+    ##   2   3  pctemployed16_over
+    ##   2   4  pctemployed16_over
+    ##   2   5  pctemployed16_over
+    ##   3   1  pctemployed16_over
+    ##   3   2  pctemployed16_over
+    ##   3   3  pctemployed16_over
+    ##   3   4  pctemployed16_over
+    ##   3   5  pctemployed16_over
+    ##   4   1  pctemployed16_over
+    ##   4   2  pctemployed16_over
+    ##   4   3  pctemployed16_over
+    ##   4   4  pctemployed16_over
+    ##   4   5  pctemployed16_over
+    ##   5   1  pctemployed16_over
+    ##   5   2  pctemployed16_over
+    ##   5   3  pctemployed16_over
+    ##   5   4  pctemployed16_over
+    ##   5   5  pctemployed16_over
+
+    ## Warning: Number of logged events: 27
+
+``` r
+# Outliers
+test_out = which(test$medianage > 100)
+test$medianage[test_out] <- (test$medianagemale[test_out] + test$medianagefemale[test_out]) / 2
+test <- subset(test, select = -c(medianagemale, medianagefemale))
+
+# Variable discretization
+discretize_based_on <- function(col, base_col, level_name) {
+  # Discretize the column based on the quartiles of another column
+  res <- cut(col, breaks = quantile(base_col, probs = seq(0, 1, 0.25)),
+    include.lowest = T,
+    labels=c(
+      sprintf("Low%s", level_name),
+      sprintf("LowMid%s", level_name),
+      sprintf("HighMid%s", level_name),
+      sprintf("High%s", level_name)
+    )
+  )
+  return(res)
+}
+
+test$f.avganncount <- discretize_based_on(test$avganncount, df$avganncount, "CaseCount")
+test$f.avgdeathsperyear <- discretize_based_on(test$avgdeathsperyear, df$avgdeathsperyear, "MortCount")
+test$f.target_deathrate <- discretize_based_on(test$target_deathrate, df$target_deathrate, "DeathRate")
+test$f.incidencerate <- discretize_based_on(test$incidencerate, df$incidencerate, "DiagnPerCap")
+test$f.medincome <- discretize_based_on(test$medincome, df$medincome, "MedianInc")
+test$f.popest2015 <- discretize_based_on(test$popest2015, df$popest2015, "MidPop")
+test$f.povertypercent <- discretize_based_on(test$povertypercent, df$povertypercent, "Pov%")
+test$f.studypercap <- cut(
+  test$studypercap, breaks = c(-Inf, 0, non_zero_studypercap_median, Inf), # Use the breakpoints from training data
+  include.lowest = T,
+  labels=c("NoTrials", "MidTrials", "HighTrials")
+)
+test$f.medianage <- discretize_based_on(test$medianage, df$medianage, "Age")
+test$f.percentmarried <- discretize_based_on(test$percentmarried, df$percentmarried, "Married%")
+test$f.pctnohs18_24 <- discretize_based_on(test$pctnohs18_24, df$pctnohs18_24, "NoHighsc%")
+test$f.pcths18_24 <- discretize_based_on(test$pcths18_24, df$pcths18_24, "Highsc%")
+test$f.pcths25_over <- discretize_based_on(test$pcths25_over, df$pcths25_over, "25Highsc%")
+test$f.pctbachdeg25_over <- discretize_based_on(test$pctbachdeg25_over, df$pctbachdeg25_over, "Bach%")
+test$f.pctemployed16_over <- discretize_based_on(test$pctemployed16_over, df$pctemployed16_over, "Employ%")
+test$f.pctunemployed16_over <- discretize_based_on(test$pctunemployed16_over, df$pctunemployed16_over, "Unemploy%")
+test$f.pctprivatecoverage <- discretize_based_on(test$pctprivatecoverage, df$pctprivatecoverage, "Private%")
+test$f.pctempprivcoverage <- discretize_based_on(test$pctempprivcoverage, df$pctempprivcoverage, "EmployeeHealth%")
+test$f.pctpubliccoverage <- discretize_based_on(test$pctpubliccoverage, df$pctpubliccoverage, "GovHealth%")
+test$f.pctwhite <- discretize_based_on(test$pctwhite, df$pctwhite, "White%")
+test$f.pctblack <- discretize_based_on(test$pctblack, df$pctblack, "Black%")
+test$f.pctasian <- discretize_based_on(test$pctasian, df$pctasian, "Asian%")
+test$f.pctotherrace <- discretize_based_on(test$pctotherrace, df$pctotherrace, "OtherRace%")
+test$f.pctmarriedhouseholds <- discretize_based_on(test$pctmarriedhouseholds, df$pctmarriedhouseholds, "Married%")
+test$f.birthrate <- discretize_based_on(test$birthrate, df$birthrate, "Birth%")
+
+# Combining variables
+test$pcths <- test$pcths18_24 + test$pcths25_over
+test$pctbach <- test$pctbachdeg18_24 + test$pctbachdeg25_over
+test$racindex <- test$pctblack + test$pctasian + test$pctotherrace
+test$social_welfare <- test$pctpubliccoverage + test$povertypercent
+```
+
+## Model Evaluation
+
+Let’s evaluate the model on the test dataset. We will start by
+predicting the target variable using the model and calculating the mean
+squared error (MSE) and the R-squared value.
+
+``` r
+test$predicted_deathrate <- predict(model, newdata = test)
+
+mse <- mean((test$target_deathrate - test$predicted_deathrate)^2)
+r_squared <- 1 - mse / var(test$target_deathrate)
+cat("Mean Squared Error:", mse, "\n")
+```
+
+    ## Mean Squared Error: 31862.95
+
+``` r
+cat("R-squared:", r_squared, "\n")
+```
+
+    ## R-squared: -41.16434
+
+The model has an R-squared value of 0.46 on the test dataset, indicating
+that it explains 46% of the variance in the target death rate.
+
+Looking at the residuals, we can see that they are correctly centered
+around 0, which is expected for a well-fitted model. However, there’s
+one clear indicator of the necessity of a more complex model: The
+residuals do not seem to follow a normal distribution independent of the
+actual death rate. Looking at the plot, there’s a clear trend of the
+residuals being higher for higher death rates.
+
+``` r
+par(mfrow = c(2, 2))
+plot(test$target_deathrate, test$predicted_deathrate, 
+  main = "Predicted vs. Actual Death Rate", 
+  xlab = "Actual Death Rate", ylab = "Predicted Death Rate"
+)
+abline(0, 1, col = "red")
+
+plot(test$target_deathrate, test$target_deathrate - test$predicted_deathrate, 
+  main = "Residuals vs. Actual Death Rate", 
+  xlab = "Actual Death Rate", ylab = "Residuals"
+)
+abline(h = 0, col = "red")
+
+plot(1, type = "n", axes = F, xlab = "", ylab = "")
+
+hist(test$target_deathrate - test$predicted_deathrate, 
+  main = "Histogram of Residuals", 
+  xlab = "Residuals"
+)
+```
+
+![](images/unnamed-chunk-98-1.png)
