@@ -206,14 +206,14 @@ quantile(df$pctemployed16_over, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 23.9 43.3 47.3 50.0 52.5 54.6 57.1 59.2 61.5 64.5 80.1
+    ## 23.9 43.3 47.3 50.1 52.5 54.6 57.1 59.3 61.5 64.5 80.1
 
 ``` r
 quantile(df$pctprivatecoveragealone, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 16.8 35.3 39.7 42.9 45.8 49.0 51.6 54.4 57.1 61.6 78.9
+    ## 16.8 35.4 39.7 43.1 45.8 48.9 51.6 54.4 57.2 61.6 78.9
 
 Which they are.
 
@@ -258,10 +258,10 @@ for (colname in colnames(Filter(is.numeric, df))) {
     ## Column pctbachdeg18_24 has 46 mild outliers and 10 severe outliers
     ## Column pcths25_over has 18 mild outliers and 0 severe outliers
     ## Column pctbachdeg25_over has 56 mild outliers and 3 severe outliers
-    ## Column pctemployed16_over has 12 mild outliers and 0 severe outliers
+    ## Column pctemployed16_over has 11 mild outliers and 0 severe outliers
     ## Column pctunemployed16_over has 38 mild outliers and 4 severe outliers
     ## Column pctprivatecoverage has 17 mild outliers and 0 severe outliers
-    ## Column pctprivatecoveragealone has 3 mild outliers and 0 severe outliers
+    ## Column pctprivatecoveragealone has 4 mild outliers and 0 severe outliers
     ## Column pctempprivcoverage has 7 mild outliers and 0 severe outliers
     ## Column pctpubliccoverage has 13 mild outliers and 0 severe outliers
     ## Column pctpubliccoveragealone has 21 mild outliers and 0 severe outliers
@@ -377,7 +377,7 @@ multi_outliers_95 = which((res.out_95$md > res.out_95$cutoff)&(res.out_95$rd > r
 length(multi_outliers_95)
 ```
 
-    ## [1] 274
+    ## [1] 273
 
 ``` r
 res.out <- Moutlier(numeric.df, quantile = 0.9999995, plot=F)
@@ -981,11 +981,11 @@ of them sparsly populated so it’s not feasible to convert it to factor.
 sample(df$geography, 10)
 ```
 
-    ##  [1] "Miller County, Georgia"             "Jenkins County, Georgia"           
-    ##  [3] "Glynn County, Georgia"              "Panola County, Mississippi"        
-    ##  [5] "Pottawattamie County, Iowa"         "Bear Lake County, Idaho"           
-    ##  [7] "Cortland County, New York"          "Amite County, Mississippi"         
-    ##  [9] "Hillsborough County, New Hampshire" "Chatham County, Georgia"
+    ##  [1] "Walla Walla County, Washington" "Simpson County, Mississippi"   
+    ##  [3] "Catawba County, North Carolina" "Dawson County, Nebraska"       
+    ##  [5] "Mahnomen County, Minnesota"     "Wright County, Minnesota"      
+    ##  [7] "Platte County, Nebraska"        "Lincoln County, Oklahoma"      
+    ##  [9] "Minnehaha County, South Dakota" "Hartley County, Texas"
 
 ``` r
 # Use regex to get the state (everything after the comma and white space):
@@ -1256,7 +1256,7 @@ summary(df$pctemployed16_over)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   23.90   48.60   54.60   54.25   60.20   80.10
+    ##   23.90   48.60   54.60   54.26   60.30   80.10
 
 ``` r
 hist(df$pctemployed16_over, breaks = 30, freq = F)
@@ -1272,7 +1272,7 @@ shapiro.test(df$pctemployed16_over)
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  df$pctemployed16_over
-    ## W = 0.99262, p-value = 5.941e-08
+    ## W = 0.99159, p-value = 9.049e-09
 
 An additional factor `f.pctemployed16_over` is created to discretize the
 data according to the quartiles.
@@ -1283,7 +1283,7 @@ df$f.pctemployed16_over <- discretize_quartiles(df$pctemployed16_over, "Employ%"
 
     ## res
     ##     LowEmploy%  LowMidEmploy% HighMidEmploy%    HighEmploy% 
-    ##            459            464            452            456
+    ##            459            465            453            454
 
 ### Variable 20 - pctunemployed16_over
 
@@ -1378,7 +1378,7 @@ summary(df$pctprivatecoveragealone)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   16.80   41.30   49.00   48.59   55.50   78.90
+    ##   16.80   41.20   48.90   48.61   55.55   78.90
 
 ``` r
 cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
@@ -1388,13 +1388,13 @@ cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
     ##  Pearson's product-moment correlation
     ## 
     ## data:  df$pctprivatecoverage and df$pctprivatecoveragealone
-    ## t = 109.91, df = 1829, p-value < 2.2e-16
+    ## t = 110.64, df = 1829, p-value < 2.2e-16
     ## alternative hypothesis: true correlation is not equal to 0
     ## 95 percent confidence interval:
-    ##  0.9256419 0.9377117
+    ##  0.9265198 0.9384516
     ## sample estimates:
     ##       cor 
-    ## 0.9319344
+    ## 0.9327407
 
 ``` r
 df <- subset(df, select = -pctprivatecoveragealone)
@@ -1885,7 +1885,7 @@ sorted_correlation_df
     ## povertypercent           0.4500846  5.144264e-92
     ## incidencerate            0.4495485  8.953861e-92
     ## medincome               -0.4436828  3.606607e-89
-    ## pctemployed16_over      -0.4391853  3.312866e-87
+    ## pctemployed16_over      -0.4404401  9.451095e-88
     ## pctpubliccoverage        0.4243675  6.056303e-81
     ## pcths25_over             0.4069017  5.910723e-74
     ## binnedinc               -0.4046327  4.462085e-73
@@ -2039,50 +2039,50 @@ summary(model)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -98.960 -11.117  -0.283  10.546 133.148 
+    ## -99.602 -11.011  -0.424  10.513 133.185 
     ## 
     ## Coefficients: (4 not defined because of singularities)
     ##                          Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)             2.007e+02  2.665e+01   7.531 7.90e-14 ***
-    ## avganncount            -3.123e-03  9.757e-04  -3.200 0.001397 ** 
-    ## avgdeathsperyear        1.480e-02  4.682e-03   3.161 0.001597 ** 
-    ## incidencerate           1.869e-01  9.202e-03  20.312  < 2e-16 ***
-    ## medincome               1.184e-04  1.380e-04   0.858 0.391219    
-    ## popest2015             -1.101e-05  6.385e-06  -1.724 0.084868 .  
-    ## povertypercent          3.760e-01  2.179e-01   1.725 0.084642 .  
-    ## studypercap             1.263e-03  9.367e-04   1.348 0.177896    
-    ## binnedinc              -7.987e-07  7.192e-05  -0.011 0.991141    
-    ## medianage              -5.263e-01  2.024e-01  -2.600 0.009396 ** 
-    ## percentmarried          1.327e+00  2.240e-01   5.925 3.73e-09 ***
-    ## pctnohs18_24           -1.023e-01  7.337e-02  -1.395 0.163300    
-    ## pcths18_24              1.522e-01  6.551e-02   2.323 0.020279 *  
-    ## pctbachdeg18_24        -5.181e-02  1.437e-01  -0.361 0.718436    
-    ## pcths25_over            4.340e-01  1.269e-01   3.419 0.000643 ***
-    ## pctbachdeg25_over      -1.093e+00  2.017e-01  -5.419 6.81e-08 ***
-    ## pctemployed16_over     -7.225e-01  1.464e-01  -4.934 8.80e-07 ***
-    ## pctunemployed16_over    1.007e-01  2.185e-01   0.461 0.644875    
-    ## pctprivatecoverage     -3.546e-01  1.727e-01  -2.054 0.040161 *  
-    ## pctempprivcoverage      3.263e-01  1.328e-01   2.456 0.014138 *  
-    ## pctpubliccoverage      -4.110e-01  2.957e-01  -1.390 0.164727    
-    ## pctpubliccoveragealone  5.673e-01  3.648e-01   1.555 0.120093    
-    ## pctwhite               -1.283e-01  8.161e-02  -1.572 0.116156    
-    ## pctblack               -1.560e-04  8.300e-02  -0.002 0.998501    
-    ## pctasian               -1.939e-01  2.928e-01  -0.662 0.507935    
-    ## pctotherrace           -7.263e-01  1.600e-01  -4.538 6.05e-06 ***
-    ## pctmarriedhouseholds   -1.233e+00  2.121e-01  -5.815 7.16e-09 ***
-    ## birthrate              -8.203e-01  2.588e-01  -3.169 0.001555 ** 
+    ## (Intercept)             2.047e+02  2.658e+01   7.701 2.21e-14 ***
+    ## avganncount            -3.079e-03  9.750e-04  -3.158 0.001613 ** 
+    ## avgdeathsperyear        1.463e-02  4.679e-03   3.127 0.001792 ** 
+    ## incidencerate           1.872e-01  9.193e-03  20.359  < 2e-16 ***
+    ## medincome               1.198e-04  1.379e-04   0.868 0.385253    
+    ## popest2015             -1.090e-05  6.379e-06  -1.708 0.087748 .  
+    ## povertypercent          3.577e-01  2.173e-01   1.646 0.099923 .  
+    ## studypercap             1.265e-03  9.358e-04   1.352 0.176628    
+    ## binnedinc              -4.249e-06  7.187e-05  -0.059 0.952858    
+    ## medianage              -5.409e-01  2.024e-01  -2.673 0.007591 ** 
+    ## percentmarried          1.368e+00  2.240e-01   6.105 1.26e-09 ***
+    ## pctnohs18_24           -1.021e-01  7.326e-02  -1.393 0.163661    
+    ## pcths18_24              1.502e-01  6.544e-02   2.295 0.021875 *  
+    ## pctbachdeg18_24        -5.396e-02  1.435e-01  -0.376 0.707042    
+    ## pcths25_over            4.333e-01  1.268e-01   3.418 0.000645 ***
+    ## pctbachdeg25_over      -1.087e+00  2.015e-01  -5.397 7.69e-08 ***
+    ## pctemployed16_over     -7.687e-01  1.460e-01  -5.266 1.57e-07 ***
+    ## pctunemployed16_over    8.557e-02  2.178e-01   0.393 0.694469    
+    ## pctprivatecoverage     -3.504e-01  1.725e-01  -2.031 0.042387 *  
+    ## pctempprivcoverage      3.268e-01  1.326e-01   2.465 0.013785 *  
+    ## pctpubliccoverage      -4.473e-01  2.957e-01  -1.513 0.130566    
+    ## pctpubliccoveragealone  5.949e-01  3.644e-01   1.632 0.102754    
+    ## pctwhite               -1.249e-01  8.145e-02  -1.533 0.125453    
+    ## pctblack                2.340e-03  8.286e-02   0.028 0.977474    
+    ## pctasian               -1.937e-01  2.925e-01  -0.662 0.507861    
+    ## pctotherrace           -7.260e-01  1.599e-01  -4.541 5.97e-06 ***
+    ## pctmarriedhouseholds   -1.267e+00  2.116e-01  -5.988 2.57e-09 ***
+    ## birthrate              -8.144e-01  2.586e-01  -3.149 0.001665 ** 
     ## pcths                          NA         NA      NA       NA    
     ## pctbach                        NA         NA      NA       NA    
     ## racindex                       NA         NA      NA       NA    
     ## social_welfare                 NA         NA      NA       NA    
-    ## f.raceBlack            -3.929e+01  1.753e+01  -2.242 0.025107 *  
-    ## f.raceWhite            -3.634e+01  1.712e+01  -2.122 0.033950 *  
+    ## f.raceBlack            -3.980e+01  1.751e+01  -2.273 0.023161 *  
+    ## f.raceWhite            -3.700e+01  1.711e+01  -2.163 0.030700 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 19.5 on 1801 degrees of freedom
-    ## Multiple R-squared:  0.5202, Adjusted R-squared:  0.5125 
-    ## F-statistic: 67.33 on 29 and 1801 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 19.48 on 1801 degrees of freedom
+    ## Multiple R-squared:  0.5211, Adjusted R-squared:  0.5134 
+    ## F-statistic: 67.57 on 29 and 1801 DF,  p-value: < 2.2e-16
 
 According to this first model, the following variables seem to be very
 significant (p-value \< 0.01):
@@ -2094,18 +2094,18 @@ significant_vars
 ```
 
     ##                           Estimate   Std. Error   t value     Pr(>|t|)
-    ## (Intercept)          200.711665671 2.665015e+01  7.531353 7.897898e-14
-    ## avganncount           -0.003122541 9.756974e-04 -3.200317 1.396673e-03
-    ## avgdeathsperyear       0.014802025 4.682324e-03  3.161256 1.597045e-03
-    ## incidencerate          0.186921912 9.202368e-03 20.312371 9.279445e-83
-    ## medianage             -0.526347094 2.024351e-01 -2.600078 9.396459e-03
-    ## percentmarried         1.327057333 2.239633e-01  5.925334 3.725543e-09
-    ## pcths25_over           0.433954959 1.269312e-01  3.418821 6.429445e-04
-    ## pctbachdeg25_over     -1.093066191 2.017154e-01 -5.418854 6.806293e-08
-    ## pctemployed16_over    -0.722497277 1.464315e-01 -4.934028 8.797332e-07
-    ## pctotherrace          -0.726274991 1.600343e-01 -4.538247 6.047415e-06
-    ## pctmarriedhouseholds  -1.233211702 2.120759e-01 -5.814954 7.159812e-09
-    ## birthrate             -0.820306418 2.588430e-01 -3.169128 1.554652e-03
+    ## (Intercept)          204.713461557 2.658125e+01  7.701422 2.205123e-14
+    ## avganncount           -0.003079421 9.750327e-04 -3.158275 1.613378e-03
+    ## avgdeathsperyear       0.014632581 4.678876e-03  3.127371 1.791976e-03
+    ## incidencerate          0.187153415 9.192606e-03 20.359125 4.274713e-83
+    ## medianage             -0.540939695 2.023915e-01 -2.672739 7.591372e-03
+    ## percentmarried         1.367565474 2.240240e-01  6.104548 1.259516e-09
+    ## pcths25_over           0.433341890 1.267787e-01  3.418096 6.446479e-04
+    ## pctbachdeg25_over     -1.087195021 2.014616e-01 -5.396538 7.693797e-08
+    ## pctemployed16_over    -0.768662080 1.459802e-01 -5.265522 1.565396e-07
+    ## pctotherrace          -0.725968171 1.598676e-01 -4.541058 5.968238e-06
+    ## pctmarriedhouseholds  -1.267235361 2.116453e-01 -5.987544 2.565352e-09
+    ## birthrate             -0.814387056 2.586202e-01 -3.148969 1.665351e-03
 
 ## Analyzing the behaviour of the main predictors
 
@@ -4371,3 +4371,24 @@ actual death rate. However, there is a clear trend in the residuals when
 plotting them against the actual death rate. The residuals are higher
 for higher death rates, indicating that the model is not capturing all
 the variance in the target variable and may need further refinement.
+
+# A word from the authors
+
+In this analysis, we have explored the relationship between various
+socio-economic and health-related factors and the rate of death related
+to cancer of US counties. We have built a linear regression model that
+predicts the death rate based on these factors and evaluated its
+performance on a test dataset.
+
+This work was an interesting exercise in data analysis and modeling, and
+possibly our first glance at the complexity of finding the best
+techniques to model a real-world problem. We have learned a lot about
+the importance of data preprocessing, feature selection, and model
+evaluation in building a predictive model.
+
+Pretty much the entirety of the analysis was done in collaboration
+between the three of us, although some parts were more heavily
+influenced by one of us. For instance, Dani Reverter lead the way with
+the preliminary data analysis, whilst Albert Puiggròs centered their
+efforts on model discovery and fitting, and Marc Parcerisa focused on
+model validation and influence analysis.
