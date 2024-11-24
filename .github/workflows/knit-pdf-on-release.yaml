@@ -28,6 +28,9 @@ jobs:
       uses: r-lib/actions/setup-pandoc@v2
 
     - name: Install dependencies
+      uses: r-lib/actions/setup-r-dependencies@v2
+
+    - name: Install project packages
       run: Rscript .github/scripts/install_packages.R
 
     - name: Render Rmd to md
