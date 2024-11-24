@@ -41,17 +41,17 @@ jobs:
         choco install pandoc -y
         pandoc --version
 
-    - name: Remove old $TARGET_MD
-      run: rm $TARGET_MD
+    - name: Remove old ${{ env.TARGET_MD }}
+      run: rm -f ${{ env.TARGET_MD }}
 
-    - name: Render Rmd to md
-      run: Rscript -e 'rmarkdown::render("$RMD_FILE", output_format = "md_document", output_file = "$TARGET_MD")'
+    - name: Render Rmd to ${{ env.TARGET_MD }}
+      run: Rscript -e 'rmarkdown::render("${{ RMD_FILE }}", output_format = "md_document", output_file = "${{ env.TARGET_MD }}")'
 
     - name: Commit changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add $TARGET_MD
+        git add ${{ env.TARGET_MD }}
         git add images/*
-        git commit -m 'Update $TARGET_MD with contents of $RMD_FILE'
+        git commit -m 'Update ${{ env.TARGET_MD }} with contents of ${{ RMD_FILE }}'
         git push
