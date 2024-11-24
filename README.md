@@ -206,14 +206,14 @@ quantile(df$pctemployed16_over, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 23.9 43.5 47.4 50.1 52.5 54.4 57.1 59.2 61.5 64.5 80.1
+    ## 23.9 43.5 47.5 50.0 52.5 54.5 57.1 59.2 61.5 64.5 80.1
 
 ``` r
 quantile(df$pctprivatecoveragealone, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 16.8 35.3 39.6 42.8 45.8 48.9 51.6 54.3 57.1 61.6 78.9
+    ## 16.8 35.3 39.7 42.9 45.8 48.9 51.6 54.3 57.2 61.6 78.9
 
 Which they are.
 
@@ -258,7 +258,7 @@ for (colname in colnames(Filter(is.numeric, df))) {
     ## Column pctbachdeg18_24 has 46 mild outliers and 10 severe outliers
     ## Column pcths25_over has 18 mild outliers and 0 severe outliers
     ## Column pctbachdeg25_over has 56 mild outliers and 3 severe outliers
-    ## Column pctemployed16_over has 11 mild outliers and 0 severe outliers
+    ## Column pctemployed16_over has 13 mild outliers and 0 severe outliers
     ## Column pctunemployed16_over has 38 mild outliers and 4 severe outliers
     ## Column pctprivatecoverage has 17 mild outliers and 0 severe outliers
     ## Column pctprivatecoveragealone has 3 mild outliers and 0 severe outliers
@@ -981,11 +981,11 @@ of them sparsly populated so it’s not feasible to convert it to factor.
 sample(df$geography, 10)
 ```
 
-    ##  [1] "Gallatin County, Montana"          "McCurtain County, Oklahoma"       
-    ##  [3] "Dorchester County, South Carolina" "Gillespie County, Texas"          
-    ##  [5] "Brunswick County, Virginia"        "White County, Illinois"           
-    ##  [7] "Lake County, Illinois"             "Fairfield County, Ohio"           
-    ##  [9] "Lycoming County, Pennsylvania"     "Montgomery County, North Carolina"
+    ##  [1] "Pleasants County, West Virginia" "Washington County, Ohio"        
+    ##  [3] "Marshall County, South Dakota"   "Meeker County, Minnesota"       
+    ##  [5] "Wyandot County, Ohio"            "Wake County, North Carolina"    
+    ##  [7] "Alfalfa County, Oklahoma"        "Page County, Iowa"              
+    ##  [9] "Ottawa County, Michigan"         "Van Wert County, Ohio"
 
 ``` r
 # Use regex to get the state (everything after the comma and white space):
@@ -1256,7 +1256,7 @@ summary(df$pctemployed16_over)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   23.90   48.60   54.40   54.25   60.30   80.10
+    ##   23.90   48.70   54.50   54.27   60.30   80.10
 
 ``` r
 hist(df$pctemployed16_over, breaks = 30, freq = F)
@@ -1272,7 +1272,7 @@ shapiro.test(df$pctemployed16_over)
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  df$pctemployed16_over
-    ## W = 0.99215, p-value = 2.492e-08
+    ## W = 0.99246, p-value = 4.336e-08
 
 An additional factor `f.pctemployed16_over` is created to discretize the
 data according to the quartiles.
@@ -1283,7 +1283,7 @@ df$f.pctemployed16_over <- discretize_quartiles(df$pctemployed16_over, "Employ%"
 
     ## res
     ##     LowEmploy%  LowMidEmploy% HighMidEmploy%    HighEmploy% 
-    ##            459            457            462            453
+    ##            460            456            465            450
 
 ### Variable 20 - pctunemployed16_over
 
@@ -1378,7 +1378,7 @@ summary(df$pctprivatecoveragealone)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   16.80   41.30   48.90   48.56   55.50   78.90
+    ##   16.80   41.45   48.90   48.58   55.60   78.90
 
 ``` r
 cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
@@ -1388,13 +1388,13 @@ cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
     ##  Pearson's product-moment correlation
     ## 
     ## data:  df$pctprivatecoverage and df$pctprivatecoveragealone
-    ## t = 110.09, df = 1829, p-value < 2.2e-16
+    ## t = 109.82, df = 1829, p-value < 2.2e-16
     ## alternative hypothesis: true correlation is not equal to 0
     ## 95 percent confidence interval:
-    ##  0.9258625 0.9378976
+    ##  0.9255392 0.9376251
     ## sample estimates:
-    ##      cor 
-    ## 0.932137
+    ##       cor 
+    ## 0.9318401
 
 ``` r
 df <- subset(df, select = -pctprivatecoveragealone)
@@ -1885,7 +1885,7 @@ sorted_correlation_df
     ## povertypercent           0.4500846  5.144264e-92
     ## incidencerate            0.4495485  8.953861e-92
     ## medincome               -0.4436828  3.606607e-89
-    ## pctemployed16_over      -0.4400708  1.367861e-87
+    ## pctemployed16_over      -0.4388289  4.726263e-87
     ## pctpubliccoverage        0.4243675  6.056303e-81
     ## pcths25_over             0.4069017  5.910723e-74
     ## binnedinc               -0.4046327  4.462085e-73
@@ -2039,50 +2039,50 @@ summary(model)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -99.122 -10.951  -0.445  10.549 133.252 
+    ## -99.778 -11.040  -0.463  10.461 133.303 
     ## 
     ## Coefficients: (4 not defined because of singularities)
     ##                          Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)             2.008e+02  2.655e+01   7.563 6.26e-14 ***
-    ## avganncount            -3.065e-03  9.765e-04  -3.139 0.001724 ** 
-    ## avgdeathsperyear        1.444e-02  4.686e-03   3.081 0.002097 ** 
-    ## incidencerate           1.871e-01  9.200e-03  20.332  < 2e-16 ***
-    ## medincome               1.184e-04  1.380e-04   0.858 0.391105    
-    ## popest2015             -1.069e-05  6.385e-06  -1.675 0.094139 .  
-    ## povertypercent          3.717e-01  2.178e-01   1.707 0.088080 .  
-    ## studypercap             1.238e-03  9.363e-04   1.323 0.186159    
-    ## binnedinc              -4.373e-06  7.192e-05  -0.061 0.951525    
-    ## medianage              -5.235e-01  2.023e-01  -2.588 0.009724 ** 
-    ## percentmarried          1.333e+00  2.236e-01   5.959 3.04e-09 ***
-    ## pctnohs18_24           -1.013e-01  7.333e-02  -1.382 0.167228    
-    ## pcths18_24              1.500e-01  6.554e-02   2.289 0.022176 *  
-    ## pctbachdeg18_24        -6.260e-02  1.437e-01  -0.436 0.663104    
-    ## pcths25_over            4.378e-01  1.269e-01   3.449 0.000577 ***
-    ## pctbachdeg25_over      -1.078e+00  2.020e-01  -5.335 1.08e-07 ***
-    ## pctemployed16_over     -7.328e-01  1.463e-01  -5.008 6.03e-07 ***
-    ## pctunemployed16_over    9.767e-02  2.183e-01   0.447 0.654636    
-    ## pctprivatecoverage     -3.509e-01  1.727e-01  -2.033 0.042243 *  
-    ## pctempprivcoverage      3.255e-01  1.328e-01   2.452 0.014295 *  
-    ## pctpubliccoverage      -4.295e-01  2.964e-01  -1.449 0.147550    
-    ## pctpubliccoveragealone  5.937e-01  3.657e-01   1.623 0.104671    
-    ## pctwhite               -1.294e-01  8.160e-02  -1.586 0.112895    
-    ## pctblack               -1.350e-03  8.299e-02  -0.016 0.987025    
-    ## pctasian               -1.887e-01  2.927e-01  -0.645 0.519137    
-    ## pctotherrace           -7.305e-01  1.600e-01  -4.565 5.34e-06 ***
-    ## pctmarriedhouseholds   -1.232e+00  2.110e-01  -5.837 6.28e-09 ***
-    ## birthrate              -8.119e-01  2.589e-01  -3.136 0.001738 ** 
+    ## (Intercept)             2.037e+02  2.663e+01   7.652 3.21e-14 ***
+    ## avganncount            -3.099e-03  9.751e-04  -3.178 0.001507 ** 
+    ## avgdeathsperyear        1.457e-02  4.682e-03   3.111 0.001892 ** 
+    ## incidencerate           1.878e-01  9.194e-03  20.432  < 2e-16 ***
+    ## medincome               1.213e-04  1.379e-04   0.880 0.379246    
+    ## popest2015             -1.075e-05  6.382e-06  -1.684 0.092371 .  
+    ## povertypercent          3.627e-01  2.175e-01   1.667 0.095631 .  
+    ## studypercap             1.254e-03  9.360e-04   1.340 0.180464    
+    ## binnedinc              -5.870e-06  7.190e-05  -0.082 0.934941    
+    ## medianage              -5.218e-01  2.020e-01  -2.583 0.009872 ** 
+    ## percentmarried          1.342e+00  2.227e-01   6.026 2.03e-09 ***
+    ## pctnohs18_24           -1.051e-01  7.334e-02  -1.433 0.152027    
+    ## pcths18_24              1.495e-01  6.549e-02   2.283 0.022528 *  
+    ## pctbachdeg18_24        -5.253e-02  1.436e-01  -0.366 0.714503    
+    ## pcths25_over            4.347e-01  1.268e-01   3.427 0.000624 ***
+    ## pctbachdeg25_over      -1.086e+00  2.016e-01  -5.388 8.07e-08 ***
+    ## pctemployed16_over     -7.540e-01  1.460e-01  -5.164 2.69e-07 ***
+    ## pctunemployed16_over    8.102e-02  2.186e-01   0.371 0.710939    
+    ## pctprivatecoverage     -3.618e-01  1.726e-01  -2.096 0.036200 *  
+    ## pctempprivcoverage      3.281e-01  1.327e-01   2.473 0.013497 *  
+    ## pctpubliccoverage      -4.428e-01  2.962e-01  -1.495 0.135051    
+    ## pctpubliccoveragealone  5.853e-01  3.645e-01   1.606 0.108441    
+    ## pctwhite               -1.282e-01  8.153e-02  -1.573 0.115995    
+    ## pctblack               -1.678e-03  8.295e-02  -0.020 0.983860    
+    ## pctasian               -1.948e-01  2.926e-01  -0.666 0.505666    
+    ## pctotherrace           -7.272e-01  1.599e-01  -4.547 5.80e-06 ***
+    ## pctmarriedhouseholds   -1.246e+00  2.107e-01  -5.914 3.98e-09 ***
+    ## birthrate              -8.079e-01  2.588e-01  -3.122 0.001825 ** 
     ## pcths                          NA         NA      NA       NA    
     ## pctbach                        NA         NA      NA       NA    
     ## racindex                       NA         NA      NA       NA    
     ## social_welfare                 NA         NA      NA       NA    
-    ## f.raceBlack            -3.929e+01  1.752e+01  -2.242 0.025065 *  
-    ## f.raceWhite            -3.631e+01  1.712e+01  -2.121 0.034034 *  
+    ## f.raceBlack            -3.950e+01  1.751e+01  -2.255 0.024236 *  
+    ## f.raceWhite            -3.671e+01  1.711e+01  -2.145 0.032069 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 19.5 on 1801 degrees of freedom
-    ## Multiple R-squared:  0.5204, Adjusted R-squared:  0.5127 
-    ## F-statistic: 67.39 on 29 and 1801 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 19.49 on 1801 degrees of freedom
+    ## Multiple R-squared:  0.5208, Adjusted R-squared:  0.5131 
+    ## F-statistic:  67.5 on 29 and 1801 DF,  p-value: < 2.2e-16
 
 According to this first model, the following variables seem to be very
 significant (p-value \< 0.01):
@@ -2093,19 +2093,19 @@ significant_vars <- coefs[coefs[,'Pr(>|t|)'] < 0.01,]
 significant_vars
 ```
 
-    ##                           Estimate   Std. Error   t value     Pr(>|t|)
-    ## (Intercept)          200.803680277 2.655245e+01  7.562530 6.262919e-14
-    ## avganncount           -0.003064975 9.765083e-04 -3.138709 1.724441e-03
-    ## avgdeathsperyear       0.014436644 4.686341e-03  3.080579 2.097233e-03
-    ## incidencerate          0.187053035 9.199827e-03 20.332235 6.676812e-83
-    ## medianage             -0.523497109 2.022577e-01 -2.588268 9.723583e-03
-    ## percentmarried         1.332501892 2.236067e-01  5.959132 3.043310e-09
-    ## pcths25_over           0.437783766 1.269469e-01  3.448557 5.765630e-04
-    ## pctbachdeg25_over     -1.077894870 2.020371e-01 -5.335134 1.075417e-07
-    ## pctemployed16_over    -0.732813954 1.463212e-01 -5.008256 6.029906e-07
-    ## pctotherrace          -0.730502278 1.600345e-01 -4.564655 5.341599e-06
-    ## pctmarriedhouseholds  -1.231929099 2.110495e-01 -5.837156 6.283863e-09
-    ## birthrate             -0.811918110 2.588683e-01 -3.136414 1.737919e-03
+    ##                          Estimate   Std. Error   t value     Pr(>|t|)
+    ## (Intercept)          203.74245175 2.662711e+01  7.651692 3.210769e-14
+    ## avganncount           -0.00309913 9.751251e-04 -3.178187 1.507146e-03
+    ## avgdeathsperyear       0.01456553 4.681574e-03  3.111247 1.892221e-03
+    ## incidencerate          0.18784350 9.193798e-03 20.431544 1.283991e-83
+    ## medianage             -0.52181778 2.020177e-01 -2.583030 9.871908e-03
+    ## percentmarried         1.34206303 2.227082e-01  6.026106 2.032031e-09
+    ## pcths25_over           0.43465051 1.268382e-01  3.426811 6.244406e-04
+    ## pctbachdeg25_over     -1.08625173 2.016087e-01 -5.387922 8.065630e-08
+    ## pctemployed16_over    -0.75403822 1.460213e-01 -5.163891 2.686419e-07
+    ## pctotherrace          -0.72719390 1.599280e-01 -4.547007 5.803924e-06
+    ## pctmarriedhouseholds  -1.24608790 2.106940e-01 -5.914206 3.981186e-09
+    ## birthrate             -0.80788289 2.587761e-01 -3.121938 1.825196e-03
 
 ## Analyze behaviour of what seem to be the main predictors
 
@@ -4095,7 +4095,8 @@ squared error (MSE) and the R-squared value.
 ``` r
 test$predicted_deathrate <- predict(model, newdata = test)
 
-mse <- mean((test$target_deathrate - test$predicted_deathrate)^2)
+test$predicted_residuals <- test$target_deathrate - test$predicted_deathrate
+mse <- mean((test$predicted_residuals)^2)
 r_squared <- 1 - mse / var(test$target_deathrate)
 cat("Mean Squared Error:", mse, "\n")
 ```
@@ -4108,36 +4109,80 @@ cat("R-squared:", r_squared, "\n")
 
     ## R-squared: 0.4670399
 
-The model has an R-squared value of 0.46 on the test dataset, indicating
-that it explains 46% of the variance in the target death rate.
+The model has an R-squared value of 0.47 on the test dataset, indicating
+that it can account for 47% of the variance in the target death rate.
 
-Looking at the residuals, we can see that they are correctly centered
-around 0, which is expected for a well-fitted model. However, there’s
-one clear indicator of the necessity of a more complex model: The
-residuals do not seem to follow a normal distribution independent of the
-actual death rate. Looking at the plot, there’s a clear trend of the
-residuals being higher for higher death rates.
+Another interesting metric to look at for determining the model’s
+performance is the mean absolute error (MAE), which gives a better sense
+of the model’s accuracy in predicting the target variable.
+
+``` r
+mae <- mean(abs(test$predicted_residuals))
+cat("Mean Absolute Error:", mae, "\n")
+```
+
+    ## Mean Absolute Error: 15.24858
+
+The model has a mean absolute error of 15.2 on the test dataset, which
+means that, on average, the model’s predictions are off by 15.2 units
+from the actual death rate.
+
+This becomes more evident when plotting the predicted death rate against
+the actual death rate, as well as the residuals against the actual death
+rate.
 
 ``` r
 par(mfrow = c(2, 2))
-plot(test$target_deathrate, test$predicted_deathrate, 
-  main = "Predicted vs. Actual Death Rate", 
+plot(test$target_deathrate, test$predicted_deathrate,
+  main = "Predicted vs. Actual Death Rate",
   xlab = "Actual Death Rate", ylab = "Predicted Death Rate"
 )
 abline(0, 1, col = "red")
 
-plot(test$target_deathrate, test$target_deathrate - test$predicted_deathrate, 
-  main = "Residuals vs. Actual Death Rate", 
+plot(test$predicted_residuals, test$predicted_deathrate,
+  main = "Predicted Death Rate vs. Residuals",
+  ylab = "Actual Death Rate", xlab = "Residuals"
+)
+abline(v = 0, col = "red")
+
+plot(test$target_deathrate, test$predicted_residuals,
+  main = "Residuals vs. Actual Death Rate",
   xlab = "Actual Death Rate", ylab = "Residuals"
 )
 abline(h = 0, col = "red")
 
-plot(1, type = "n", axes = F, xlab = "", ylab = "")
-
-hist(test$target_deathrate - test$predicted_deathrate, 
-  main = "Histogram of Residuals", 
-  xlab = "Residuals"
+hist_data = hist(test$predicted_residuals, plot = FALSE)
+barplot(hist_data$counts,
+  names.arg = hist_data$breaks[-length(hist_data$breaks)],
+  axes= TRUE,
+  space = 0,
+  xlab = "Residuals", main = "Histogram of Residuals"
 )
 ```
 
-![](images/unnamed-chunk-98-1.png)
+![](images/unnamed-chunk-99-1.png)
+
+``` r
+# Check whether the residuals are centered around 0 (if p>0.01, we can reject
+# the null hypothesis that the residuals are centered around 0)
+t.test(test$predicted_residuals)
+```
+
+    ## 
+    ##  One Sample t-test
+    ## 
+    ## data:  test$predicted_residuals
+    ## t = -0.87955, df = 1215, p-value = 0.3793
+    ## alternative hypothesis: true mean is not equal to 0
+    ## 95 percent confidence interval:
+    ##  -1.6354399  0.6229672
+    ## sample estimates:
+    ##  mean of x 
+    ## -0.5062364
+
+As expected from an Ordinary Least Squares (OLS) model, the residuals
+are centered around 0, and the predicted death rate is close to the
+actual death rate. However, there is a clear trend in the residuals when
+plotting them against the actual death rate. The residuals are higher
+for higher death rates, indicating that the model is not capturing all
+the variance in the target variable and may need further refinement.
