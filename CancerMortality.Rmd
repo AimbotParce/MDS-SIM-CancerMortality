@@ -33,6 +33,7 @@ library(stringr)
 library(MASS)
 library(lmtest)
 library(sandwich)
+library(cluster)
 ```
 
 First we import the data and save it as the variable "df" for future 
@@ -1196,7 +1197,7 @@ significant_vars <- coefs[coefs[,'Pr(>|t|)'] < 0.01,]
 significant_vars
 ```
 
-## Analyze behaviour of what seem to be the main predictors
+## Analyzing the behaviour of the main predictors
 
 The analysis found significant relationships between target death rates and 
 socioeconomic factors. Marital status, incidence rates, and median income all 
@@ -1248,7 +1249,7 @@ oneway.test(target_deathrate ~ f.pctpubliccoveragealone, data = df)
 
 ```
 
-# No-interaction models
+## Models without variable interactions
 
 This preliminary analysis involves building multiple linear regression models to
 explore how different predictors (e.g., poverty rate, marriage rate, incidence
@@ -1336,7 +1337,7 @@ optimal_lambda_povertypercent
 
 ```
 
-# Interaction models 
+## Models with variable interactions 
 
 We began by building a comprehensive linear model to predict the target death
 rate using a set of selected variables, including percentmarried,
@@ -1485,7 +1486,7 @@ t <- summary(m4)
 model <- m4
 ```
 
-#Visualize final model
+## Visualization and model diagnostics of the chosen model
 ```{r}
 lmBest <- model
 plot(model)
@@ -1494,10 +1495,113 @@ marginalModelPlots(model)
 
 ```
 
+## Influential data
 
-# Influential data
+Before proceeding with the current model, let us determine whether there are any
+data points that are particularly influential on the regression coefficients.
+
+### A-priori influential data
+
+These are data points that are considerably far from the rest of the cloud of
+points. They tend to have a high leverage and can significantly affect the
+regression coefficients.
+
+A common measure of leverage is the hat value, which is the diagonal element of
+the hat matrix. Observations with a hat value greater than 2p/n, where p is the
+number of predictors and n is the number of observations, are considered
+influential as a rule of thumb.
+
 ```{r}
+hat_values = hatvalues(model)
+hat_threshold = 2 * length(coefficients(model)) / nrow(df)
+influential_data = which(hat_values > hat_threshold)
+length(influential_data)
+```
 
+144 data points are found to be highly influential according to the hat value
+criterion. We can see them visually via a simple Multidimensional Scaling (MDS)
+plot.
+
+```{r}
+par(mfrow = c(1, 1))
+used_variables = attr(model$terms, "term.labels")
+mds <- cmdscale(daisy(df[, used_variables]), k = 2) # Use dasy for mixed data types
+plot(mds, col = ifelse(1:nrow(df) %in% influential_data, "red", "black"))
+```
+
+As we can see, the influential data points are scattered throughout the plot,
+indicating that they are not clustered in any particular region of the feature
+space. However, as expected, most of them are far from the center of the cloud
+of points.
+
+Let us remove these influential data points and re-fit the model to see if the
+results change significantly.
+
+```{r}
+model_no_priori = update(model, data = df[-influential_data, ])
+summary(model_no_priori)
+```
+
+Surprisingly, the model's $R^2$ value has decreased slightly after removing the
+influential data points. This suggests that the influential data points were
+actually contributing to the model's fit. We will keep the original model for
+now.
+
+### A-posteriori influential data
+
+Having already a model defined, we can now search data points that have
+actually significantly altered the regression coefficients.The Cook's distance 
+is a measure of the influence of each observation on the regression 
+coefficients. Observations with a high Cook's distance are considered
+influential and can significantly affect the regression coefficients.
+
+```{r}
+cooks_distance = cooks.distance(model)
+Boxplot(cooks_distance, id=list(labels=df$geography))
+```
+
+Only one data point seems to have a Cook's distance significantly higher than
+the rest: the county of "Williamsburg city, Viriginia". This can be further 
+visualized using an influence plot.
+
+```{r}
+influencePlot(model, id=list(labels=df$geography),
+  main="Influence Plot", sub="Circle size is proportional to Cook's distance")
+```
+
+This plot shows as well the points that were determined as a-priori influential
+in the previous step. 
+
+As a rule of thumb, observations with a Cook's distance greater than 4/n are
+considered influential. Let us remove the a-posteriori influential points and
+re-fit the model.
+
+```{r}
+influential_data = which(cooks_distance > 4/nrow(df)); length(influential_data)
+model_no_posteriori = update(model, data = df[-influential_data, ])
+summary(model_no_posteriori)
+```
+
+135 data points are found to be highly influential according to the Cook's
+distance criterion. We can see them visually via a simple Multidimensional
+Scaling (MDS) plot.
+
+```{r}
+par(mfrow = c(1, 1))
+used_variables = attr(model$terms, "term.labels")
+mds <- cmdscale(daisy(df[, used_variables]), k = 2) # Use dasy for mixed data types
+plot(mds, col = ifelse(1:nrow(df) %in% influential_data, "red", "black"))
+```
+
+As before, the influential data points are scattered throughout the plot, not
+clustered, and most of them are far from the center of the cloud of points. When
+removing these influential data points, the model's $R^2$ value has increased
+significantly (To a 0.56), suggesting that the influential data points were
+indeed distorting the model's fit. We will keep the model without the
+a-posteriori influential data points.
+
+```{r}
+model <- model_no_posteriori
 ```
 
 # Model Validation
@@ -1598,8 +1702,8 @@ cat("Mean Squared Error:", mse, "\n")
 cat("R-squared:", r_squared, "\n")
 ```
 
-The model has an R-squared value of 0.47 on the test dataset, indicating that it
-can account for 47% of the variance in the target death rate.
+The model has an R-squared value of 0.46 on the test dataset, indicating that it
+can account for 46% of the variance in the target death rate.
 
 Another interesting metric to look at for determining the model's performance is
 the mean absolute error (MAE), which gives a better sense of the model's

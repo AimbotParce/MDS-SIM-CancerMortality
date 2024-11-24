@@ -1,7 +1,7 @@
 required_packages <- c(
     "crayon", "car", "FactoMineR", "chemometrics", "corrplot", "readr",
     "RColorBrewer", "PerformanceAnalytics", "mice", "dplyr", "rmarkdown",
-    "stringr", "MASS", "lmtest", "sandwich"
+    "stringr", "MASS", "lmtest", "sandwich", "cluster"
 )
 
 install_if_missing <- function(packages) {
