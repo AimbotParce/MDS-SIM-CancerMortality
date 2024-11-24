@@ -1762,3 +1762,22 @@ against the actual death rate. The residuals are higher for higher death rates,
 indicating that the model is not capturing all the variance in the target 
 variable and may need further refinement.
 
+# A word from the authors
+
+In this analysis, we have explored the relationship between various 
+socio-economic and health-related factors and the rate of death related to 
+cancer of US counties. We have built a linear regression model that predicts the
+death rate based on these factors and evaluated its performance on a test
+dataset. 
+
+This work was an interesting exercise in data analysis and modeling, and 
+possibly our first glance at the complexity of finding the best techniques to
+model a real-world problem. We have learned a lot about the importance of data
+preprocessing, feature selection, and model evaluation in building a predictive
+model.
+
+Pretty much the entirety of the analysis was done in collaboration between the
+three of us, although some parts were more heavily influenced by one of us. For
+instance, Dani Reverter lead the way with the preliminary data analysis, whilst 
+Albert Puiggròs centered their efforts on model discovery and fitting, and Marc
+Parcerisa focused on model validation and influence analysis.
