@@ -1307,7 +1307,7 @@ summary(lm_pcths)
 lambda_pcths <- boxcox(target_deathrate ~ pcths, data = df)
 optimal_lambda_pcths <- lambda_pcths$x[which.max(lambda_pcths$y)]
 optimal_lambda_pcths
-df$pcths <- df$pcths^optimal_lambda_pcths
+df$pcths_raised <- df$pcths^optimal_lambda_pcths
 
 # Linear model: target_deathrate ~ pctpubliccoverage
 lm_pctpubliccoverage <- lm(target_deathrate ~ pctpubliccoverage, data = df)
@@ -1458,7 +1458,7 @@ anova(m1,m3)
 anova(m2,m3)
 
 # target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent
-m4 <- lm(target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent, data= df)
+m4 <- lm(target_deathrate ~ incidencerate + pcths_raised + pctpubliccoveragealone + povertypercent, data= df)
 summary(m4)
 plot(m4)
 
@@ -1577,6 +1577,9 @@ test$pcths <- test$pcths18_24 + test$pcths25_over
 test$pctbach <- test$pctbachdeg18_24 + test$pctbachdeg25_over
 test$racindex <- test$pctblack + test$pctasian + test$pctotherrace
 test$social_welfare <- test$pctpubliccoverage + test$povertypercent
+
+# Raising to the optimal lambda
+test$pcths_raised <- test$pcths^optimal_lambda_pcths
 ```
 
 ## Model Evaluation
