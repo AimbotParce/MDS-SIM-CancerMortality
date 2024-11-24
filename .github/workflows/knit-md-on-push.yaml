@@ -41,10 +41,10 @@ jobs:
         choco install pandoc -y
         pandoc --version
 
-    - name: Remove old ${{ env.TARGET_MD }}
+    - name: Remove old target md file
       run: rm -f ${{ env.TARGET_MD }}
 
-    - name: Render Rmd to ${{ env.TARGET_MD }}
+    - name: Render Rmd to target md file
       run: Rscript -e 'rmarkdown::render("${{ env.RMD_FILE }}", output_format = "md_document", output_file = "${{ env.TARGET_MD }}")'
 
     - name: Commit changes
