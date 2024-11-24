@@ -206,14 +206,14 @@ quantile(df$pctemployed16_over, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 23.9 43.3 47.3 50.1 52.5 54.6 57.1 59.3 61.5 64.5 80.1
+    ## 23.9 43.2 47.3 50.0 52.4 54.4 57.1 59.2 61.5 64.5 80.1
 
 ``` r
 quantile(df$pctprivatecoveragealone, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 16.8 35.4 39.7 43.1 45.8 48.9 51.6 54.4 57.2 61.6 78.9
+    ## 16.8 35.4 39.8 42.9 45.8 48.9 51.6 54.3 57.2 61.6 78.9
 
 Which they are.
 
@@ -261,7 +261,7 @@ for (colname in colnames(Filter(is.numeric, df))) {
     ## Column pctemployed16_over has 11 mild outliers and 0 severe outliers
     ## Column pctunemployed16_over has 38 mild outliers and 4 severe outliers
     ## Column pctprivatecoverage has 17 mild outliers and 0 severe outliers
-    ## Column pctprivatecoveragealone has 4 mild outliers and 0 severe outliers
+    ## Column pctprivatecoveragealone has 3 mild outliers and 0 severe outliers
     ## Column pctempprivcoverage has 7 mild outliers and 0 severe outliers
     ## Column pctpubliccoverage has 13 mild outliers and 0 severe outliers
     ## Column pctpubliccoveragealone has 21 mild outliers and 0 severe outliers
@@ -377,7 +377,7 @@ multi_outliers_95 = which((res.out_95$md > res.out_95$cutoff)&(res.out_95$rd > r
 length(multi_outliers_95)
 ```
 
-    ## [1] 273
+    ## [1] 269
 
 ``` r
 res.out <- Moutlier(numeric.df, quantile = 0.9999995, plot=F)
@@ -385,7 +385,7 @@ multi_outliers = which((res.out$md > res.out$cutoff)&(res.out$rd > res.out$cutof
 length(multi_outliers)
 ```
 
-    ## [1] 81
+    ## [1] 82
 
 ``` r
 par(mfrow = c(1,1))
@@ -981,11 +981,11 @@ of them sparsly populated so it’s not feasible to convert it to factor.
 sample(df$geography, 10)
 ```
 
-    ##  [1] "Walla Walla County, Washington" "Simpson County, Mississippi"   
-    ##  [3] "Catawba County, North Carolina" "Dawson County, Nebraska"       
-    ##  [5] "Mahnomen County, Minnesota"     "Wright County, Minnesota"      
-    ##  [7] "Platte County, Nebraska"        "Lincoln County, Oklahoma"      
-    ##  [9] "Minnehaha County, South Dakota" "Hartley County, Texas"
+    ##  [1] "Miner County, South Dakota"    "Douglas County, Washington"   
+    ##  [3] "Mason County, Washington"      "Calhoun County, Michigan"     
+    ##  [5] "Trousdale County, Tennessee"   "Malheur County, Oregon"       
+    ##  [7] "Lincoln County, Washington"    "Rock County, Minnesota"       
+    ##  [9] "Shelby County, Kentucky"       "Carroll County, New Hampshire"
 
 ``` r
 # Use regex to get the state (everything after the comma and white space):
@@ -1256,7 +1256,7 @@ summary(df$pctemployed16_over)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   23.90   48.60   54.60   54.26   60.30   80.10
+    ##   23.90   48.60   54.40   54.21   60.30   80.10
 
 ``` r
 hist(df$pctemployed16_over, breaks = 30, freq = F)
@@ -1272,7 +1272,7 @@ shapiro.test(df$pctemployed16_over)
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  df$pctemployed16_over
-    ## W = 0.99159, p-value = 9.049e-09
+    ## W = 0.99195, p-value = 1.729e-08
 
 An additional factor `f.pctemployed16_over` is created to discretize the
 data according to the quartiles.
@@ -1283,7 +1283,7 @@ df$f.pctemployed16_over <- discretize_quartiles(df$pctemployed16_over, "Employ%"
 
     ## res
     ##     LowEmploy%  LowMidEmploy% HighMidEmploy%    HighEmploy% 
-    ##            459            465            453            454
+    ##            463            453            465            450
 
 ### Variable 20 - pctunemployed16_over
 
@@ -1378,7 +1378,7 @@ summary(df$pctprivatecoveragealone)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   16.80   41.20   48.90   48.61   55.55   78.90
+    ##   16.80   41.45   48.90   48.60   55.60   78.90
 
 ``` r
 cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
@@ -1388,13 +1388,13 @@ cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
     ##  Pearson's product-moment correlation
     ## 
     ## data:  df$pctprivatecoverage and df$pctprivatecoveragealone
-    ## t = 110.64, df = 1829, p-value < 2.2e-16
+    ## t = 110.58, df = 1829, p-value < 2.2e-16
     ## alternative hypothesis: true correlation is not equal to 0
     ## 95 percent confidence interval:
-    ##  0.9265198 0.9384516
+    ##  0.9264558 0.9383977
     ## sample estimates:
     ##       cor 
-    ## 0.9327407
+    ## 0.9326819
 
 ``` r
 df <- subset(df, select = -pctprivatecoveragealone)
@@ -1885,7 +1885,7 @@ sorted_correlation_df
     ## povertypercent           0.4500846  5.144264e-92
     ## incidencerate            0.4495485  8.953861e-92
     ## medincome               -0.4436828  3.606607e-89
-    ## pctemployed16_over      -0.4404401  9.451095e-88
+    ## pctemployed16_over      -0.4405446  8.511183e-88
     ## pctpubliccoverage        0.4243675  6.056303e-81
     ## pcths25_over             0.4069017  5.910723e-74
     ## binnedinc               -0.4046327  4.462085e-73
@@ -2039,50 +2039,50 @@ summary(model)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -99.602 -11.011  -0.424  10.513 133.185 
+    ## -98.548 -10.971  -0.367  10.568 133.206 
     ## 
     ## Coefficients: (4 not defined because of singularities)
     ##                          Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)             2.047e+02  2.658e+01   7.701 2.21e-14 ***
-    ## avganncount            -3.079e-03  9.750e-04  -3.158 0.001613 ** 
-    ## avgdeathsperyear        1.463e-02  4.679e-03   3.127 0.001792 ** 
-    ## incidencerate           1.872e-01  9.193e-03  20.359  < 2e-16 ***
-    ## medincome               1.198e-04  1.379e-04   0.868 0.385253    
-    ## popest2015             -1.090e-05  6.379e-06  -1.708 0.087748 .  
-    ## povertypercent          3.577e-01  2.173e-01   1.646 0.099923 .  
-    ## studypercap             1.265e-03  9.358e-04   1.352 0.176628    
-    ## binnedinc              -4.249e-06  7.187e-05  -0.059 0.952858    
-    ## medianage              -5.409e-01  2.024e-01  -2.673 0.007591 ** 
-    ## percentmarried          1.368e+00  2.240e-01   6.105 1.26e-09 ***
-    ## pctnohs18_24           -1.021e-01  7.326e-02  -1.393 0.163661    
-    ## pcths18_24              1.502e-01  6.544e-02   2.295 0.021875 *  
-    ## pctbachdeg18_24        -5.396e-02  1.435e-01  -0.376 0.707042    
-    ## pcths25_over            4.333e-01  1.268e-01   3.418 0.000645 ***
-    ## pctbachdeg25_over      -1.087e+00  2.015e-01  -5.397 7.69e-08 ***
-    ## pctemployed16_over     -7.687e-01  1.460e-01  -5.266 1.57e-07 ***
-    ## pctunemployed16_over    8.557e-02  2.178e-01   0.393 0.694469    
-    ## pctprivatecoverage     -3.504e-01  1.725e-01  -2.031 0.042387 *  
-    ## pctempprivcoverage      3.268e-01  1.326e-01   2.465 0.013785 *  
-    ## pctpubliccoverage      -4.473e-01  2.957e-01  -1.513 0.130566    
-    ## pctpubliccoveragealone  5.949e-01  3.644e-01   1.632 0.102754    
-    ## pctwhite               -1.249e-01  8.145e-02  -1.533 0.125453    
-    ## pctblack                2.340e-03  8.286e-02   0.028 0.977474    
-    ## pctasian               -1.937e-01  2.925e-01  -0.662 0.507861    
-    ## pctotherrace           -7.260e-01  1.599e-01  -4.541 5.97e-06 ***
-    ## pctmarriedhouseholds   -1.267e+00  2.116e-01  -5.988 2.57e-09 ***
-    ## birthrate              -8.144e-01  2.586e-01  -3.149 0.001665 ** 
+    ## (Intercept)             2.019e+02  2.663e+01   7.580 5.48e-14 ***
+    ## avganncount            -3.085e-03  9.760e-04  -3.161 0.001598 ** 
+    ## avgdeathsperyear        1.471e-02  4.682e-03   3.141 0.001711 ** 
+    ## incidencerate           1.862e-01  9.204e-03  20.234  < 2e-16 ***
+    ## medincome               1.180e-04  1.380e-04   0.855 0.392660    
+    ## popest2015             -1.101e-05  6.383e-06  -1.724 0.084858 .  
+    ## povertypercent          3.649e-01  2.181e-01   1.673 0.094490 .  
+    ## studypercap             1.262e-03  9.364e-04   1.348 0.177827    
+    ## binnedinc              -4.208e-06  7.192e-05  -0.059 0.953350    
+    ## medianage              -5.324e-01  2.025e-01  -2.629 0.008628 ** 
+    ## percentmarried          1.343e+00  2.244e-01   5.984 2.62e-09 ***
+    ## pctnohs18_24           -1.018e-01  7.333e-02  -1.388 0.165233    
+    ## pcths18_24              1.526e-01  6.547e-02   2.331 0.019881 *  
+    ## pctbachdeg18_24        -4.793e-02  1.436e-01  -0.334 0.738629    
+    ## pcths25_over            4.342e-01  1.269e-01   3.422 0.000636 ***
+    ## pctbachdeg25_over      -1.086e+00  2.018e-01  -5.381 8.38e-08 ***
+    ## pctemployed16_over     -7.358e-01  1.463e-01  -5.030 5.40e-07 ***
+    ## pctunemployed16_over    1.008e-01  2.180e-01   0.463 0.643766    
+    ## pctprivatecoverage     -3.600e-01  1.727e-01  -2.085 0.037225 *  
+    ## pctempprivcoverage      3.390e-01  1.331e-01   2.546 0.010968 *  
+    ## pctpubliccoverage      -4.161e-01  2.954e-01  -1.409 0.159104    
+    ## pctpubliccoveragealone  5.779e-01  3.648e-01   1.584 0.113343    
+    ## pctwhite               -1.308e-01  8.162e-02  -1.603 0.109186    
+    ## pctblack               -8.049e-04  8.298e-02  -0.010 0.992261    
+    ## pctasian               -1.956e-01  2.928e-01  -0.668 0.504207    
+    ## pctotherrace           -7.314e-01  1.600e-01  -4.571 5.20e-06 ***
+    ## pctmarriedhouseholds   -1.243e+00  2.120e-01  -5.866 5.31e-09 ***
+    ## birthrate              -8.032e-01  2.590e-01  -3.102 0.001953 ** 
     ## pcths                          NA         NA      NA       NA    
     ## pctbach                        NA         NA      NA       NA    
     ## racindex                       NA         NA      NA       NA    
     ## social_welfare                 NA         NA      NA       NA    
-    ## f.raceBlack            -3.980e+01  1.751e+01  -2.273 0.023161 *  
-    ## f.raceWhite            -3.700e+01  1.711e+01  -2.163 0.030700 *  
+    ## f.raceBlack            -3.940e+01  1.752e+01  -2.249 0.024635 *  
+    ## f.raceWhite            -3.637e+01  1.712e+01  -2.125 0.033699 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 19.48 on 1801 degrees of freedom
-    ## Multiple R-squared:  0.5211, Adjusted R-squared:  0.5134 
-    ## F-statistic: 67.57 on 29 and 1801 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 19.5 on 1801 degrees of freedom
+    ## Multiple R-squared:  0.5205, Adjusted R-squared:  0.5127 
+    ## F-statistic:  67.4 on 29 and 1801 DF,  p-value: < 2.2e-16
 
 According to this first model, the following variables seem to be very
 significant (p-value \< 0.01):
@@ -2093,19 +2093,19 @@ significant_vars <- coefs[coefs[,'Pr(>|t|)'] < 0.01,]
 significant_vars
 ```
 
-    ##                           Estimate   Std. Error   t value     Pr(>|t|)
-    ## (Intercept)          204.713461557 2.658125e+01  7.701422 2.205123e-14
-    ## avganncount           -0.003079421 9.750327e-04 -3.158275 1.613378e-03
-    ## avgdeathsperyear       0.014632581 4.678876e-03  3.127371 1.791976e-03
-    ## incidencerate          0.187153415 9.192606e-03 20.359125 4.274713e-83
-    ## medianage             -0.540939695 2.023915e-01 -2.672739 7.591372e-03
-    ## percentmarried         1.367565474 2.240240e-01  6.104548 1.259516e-09
-    ## pcths25_over           0.433341890 1.267787e-01  3.418096 6.446479e-04
-    ## pctbachdeg25_over     -1.087195021 2.014616e-01 -5.396538 7.693797e-08
-    ## pctemployed16_over    -0.768662080 1.459802e-01 -5.265522 1.565396e-07
-    ## pctotherrace          -0.725968171 1.598676e-01 -4.541058 5.968238e-06
-    ## pctmarriedhouseholds  -1.267235361 2.116453e-01 -5.987544 2.565352e-09
-    ## birthrate             -0.814387056 2.586202e-01 -3.148969 1.665351e-03
+    ##                          Estimate   Std. Error   t value     Pr(>|t|)
+    ## (Intercept)          201.85824104 2.662897e+01  7.580401 5.481049e-14
+    ## avganncount           -0.00308513 9.759978e-04 -3.161001 1.598438e-03
+    ## avgdeathsperyear       0.01470602 4.681994e-03  3.140973 1.711239e-03
+    ## incidencerate          0.18623815 9.204163e-03 20.234122 3.387013e-82
+    ## medianage             -0.53238179 2.024771e-01 -2.629343 8.627808e-03
+    ## percentmarried         1.34277603 2.244009e-01  5.983827 2.623449e-09
+    ## pcths25_over           0.43420213 1.268923e-01  3.421817 6.359459e-04
+    ## pctbachdeg25_over     -1.08582355 2.017886e-01 -5.380996 8.377124e-08
+    ## pctemployed16_over    -0.73581106 1.462961e-01 -5.029600 5.404200e-07
+    ## pctotherrace          -0.73142904 1.600322e-01 -4.570511 5.196152e-06
+    ## pctmarriedhouseholds  -1.24348706 2.119973e-01 -5.865579 5.313525e-09
+    ## birthrate             -0.80322080 2.589503e-01 -3.101834 1.953098e-03
 
 ## Analyzing the behaviour of the main predictors
 
