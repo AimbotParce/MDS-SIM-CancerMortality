@@ -32,6 +32,11 @@ jobs:
         choco install pandoc -y
         pandoc --version
 
+    - name: Install PdfLatex
+      run: |
+        choco install miktex -y
+        miktexsetup finish
+
     - name: Render Rmd to md
       run: Rscript -e 'rmarkdown::render("${{ env.RMD_FILE }}", output_format = "pdf_document", output_file = "${{ env.TARGET_PDF }}.pdf")'
        
