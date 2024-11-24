@@ -206,14 +206,14 @@ quantile(df$pctemployed16_over, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 23.9 43.3 47.4 50.0 52.5 54.6 57.1 59.3 61.6 64.5 80.1
+    ## 23.9 43.5 47.4 50.1 52.5 54.4 57.1 59.2 61.5 64.5 80.1
 
 ``` r
 quantile(df$pctprivatecoveragealone, na.rm = TRUE, probs = seq(0, 1, 0.1))
 ```
 
     ##   0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
-    ## 16.8 35.3 39.7 42.9 45.8 48.8 51.6 54.4 57.2 61.6 78.9
+    ## 16.8 35.3 39.6 42.8 45.8 48.9 51.6 54.3 57.1 61.6 78.9
 
 Which they are.
 
@@ -377,7 +377,7 @@ multi_outliers_95 = which((res.out_95$md > res.out_95$cutoff)&(res.out_95$rd > r
 length(multi_outliers_95)
 ```
 
-    ## [1] 272
+    ## [1] 269
 
 ``` r
 res.out <- Moutlier(numeric.df, quantile = 0.9999995, plot=F)
@@ -385,7 +385,7 @@ multi_outliers = which((res.out$md > res.out$cutoff)&(res.out$rd > res.out$cutof
 length(multi_outliers)
 ```
 
-    ## [1] 81
+    ## [1] 82
 
 ``` r
 par(mfrow = c(1,1))
@@ -981,11 +981,11 @@ of them sparsly populated so it’s not feasible to convert it to factor.
 sample(df$geography, 10)
 ```
 
-    ##  [1] "Clinton County, Michigan"     "Lassen County, California"   
-    ##  [3] "Wadena County, Minnesota"     "Gosper County, Nebraska"     
-    ##  [5] "Yankton County, South Dakota" "Snohomish County, Washington"
-    ##  [7] "Ohio County, West Virginia"   "Houston County, Texas"       
-    ##  [9] "Douglas County, Nebraska"     "Decatur County, Tennessee"
+    ##  [1] "Gallatin County, Montana"          "McCurtain County, Oklahoma"       
+    ##  [3] "Dorchester County, South Carolina" "Gillespie County, Texas"          
+    ##  [5] "Brunswick County, Virginia"        "White County, Illinois"           
+    ##  [7] "Lake County, Illinois"             "Fairfield County, Ohio"           
+    ##  [9] "Lycoming County, Pennsylvania"     "Montgomery County, North Carolina"
 
 ``` r
 # Use regex to get the state (everything after the comma and white space):
@@ -1256,7 +1256,7 @@ summary(df$pctemployed16_over)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   23.90   48.60   54.60   54.27   60.30   80.10
+    ##   23.90   48.60   54.40   54.25   60.30   80.10
 
 ``` r
 hist(df$pctemployed16_over, breaks = 30, freq = F)
@@ -1272,7 +1272,7 @@ shapiro.test(df$pctemployed16_over)
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  df$pctemployed16_over
-    ## W = 0.99251, p-value = 4.787e-08
+    ## W = 0.99215, p-value = 2.492e-08
 
 An additional factor `f.pctemployed16_over` is created to discretize the
 data according to the quartiles.
@@ -1283,7 +1283,7 @@ df$f.pctemployed16_over <- discretize_quartiles(df$pctemployed16_over, "Employ%"
 
     ## res
     ##     LowEmploy%  LowMidEmploy% HighMidEmploy%    HighEmploy% 
-    ##            459            465            453            454
+    ##            459            457            462            453
 
 ### Variable 20 - pctunemployed16_over
 
@@ -1378,7 +1378,7 @@ summary(df$pctprivatecoveragealone)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   16.80   41.35   48.80   48.57   55.50   78.90
+    ##   16.80   41.30   48.90   48.56   55.50   78.90
 
 ``` r
 cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
@@ -1388,13 +1388,13 @@ cor.test(df$pctprivatecoverage, df$pctprivatecoveragealone)
     ##  Pearson's product-moment correlation
     ## 
     ## data:  df$pctprivatecoverage and df$pctprivatecoveragealone
-    ## t = 110.05, df = 1829, p-value < 2.2e-16
+    ## t = 110.09, df = 1829, p-value < 2.2e-16
     ## alternative hypothesis: true correlation is not equal to 0
     ## 95 percent confidence interval:
-    ##  0.9258157 0.9378581
+    ##  0.9258625 0.9378976
     ## sample estimates:
     ##      cor 
-    ## 0.932094
+    ## 0.932137
 
 ``` r
 df <- subset(df, select = -pctprivatecoveragealone)
@@ -1885,7 +1885,7 @@ sorted_correlation_df
     ## povertypercent           0.4500846  5.144264e-92
     ## incidencerate            0.4495485  8.953861e-92
     ## medincome               -0.4436828  3.606607e-89
-    ## pctemployed16_over      -0.4401976  1.204872e-87
+    ## pctemployed16_over      -0.4400708  1.367861e-87
     ## pctpubliccoverage        0.4243675  6.056303e-81
     ## pcths25_over             0.4069017  5.910723e-74
     ## binnedinc               -0.4046327  4.462085e-73
@@ -2039,50 +2039,50 @@ summary(model)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -98.882 -10.953  -0.303  10.541 133.230 
+    ## -99.122 -10.951  -0.445  10.549 133.252 
     ## 
     ## Coefficients: (4 not defined because of singularities)
     ##                          Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)             1.993e+02  2.665e+01   7.477 1.18e-13 ***
-    ## avganncount            -3.105e-03  9.765e-04  -3.180 0.001497 ** 
-    ## avgdeathsperyear        1.463e-02  4.687e-03   3.121 0.001833 ** 
-    ## incidencerate           1.868e-01  9.206e-03  20.295  < 2e-16 ***
-    ## medincome               1.235e-04  1.381e-04   0.895 0.371083    
-    ## popest2015             -1.085e-05  6.387e-06  -1.699 0.089433 .  
-    ## povertypercent          3.819e-01  2.181e-01   1.751 0.080083 .  
-    ## studypercap             1.267e-03  9.371e-04   1.352 0.176588    
-    ## binnedinc              -4.680e-06  7.196e-05  -0.065 0.948152    
-    ## medianage              -5.288e-01  2.026e-01  -2.609 0.009144 ** 
-    ## percentmarried          1.321e+00  2.247e-01   5.882 4.83e-09 ***
-    ## pctnohs18_24           -1.013e-01  7.338e-02  -1.380 0.167730    
-    ## pcths18_24              1.536e-01  6.552e-02   2.344 0.019196 *  
-    ## pctbachdeg18_24        -5.348e-02  1.437e-01  -0.372 0.709869    
-    ## pcths25_over            4.319e-01  1.270e-01   3.402 0.000682 ***
-    ## pctbachdeg25_over      -1.090e+00  2.019e-01  -5.398 7.62e-08 ***
-    ## pctemployed16_over     -7.103e-01  1.470e-01  -4.832 1.47e-06 ***
-    ## pctunemployed16_over    1.129e-01  2.182e-01   0.517 0.605034    
-    ## pctprivatecoverage     -3.554e-01  1.727e-01  -2.057 0.039810 *  
-    ## pctempprivcoverage      3.243e-01  1.329e-01   2.441 0.014761 *  
-    ## pctpubliccoverage      -4.026e-01  2.959e-01  -1.361 0.173820    
-    ## pctpubliccoveragealone  5.617e-01  3.650e-01   1.539 0.124066    
-    ## pctwhite               -1.269e-01  8.162e-02  -1.555 0.120120    
-    ## pctblack               -5.036e-04  8.303e-02  -0.006 0.995162    
-    ## pctasian               -1.811e-01  2.928e-01  -0.619 0.536248    
-    ## pctotherrace           -7.287e-01  1.601e-01  -4.552 5.68e-06 ***
-    ## pctmarriedhouseholds   -1.227e+00  2.127e-01  -5.770 9.31e-09 ***
-    ## birthrate              -8.105e-01  2.590e-01  -3.129 0.001783 ** 
+    ## (Intercept)             2.008e+02  2.655e+01   7.563 6.26e-14 ***
+    ## avganncount            -3.065e-03  9.765e-04  -3.139 0.001724 ** 
+    ## avgdeathsperyear        1.444e-02  4.686e-03   3.081 0.002097 ** 
+    ## incidencerate           1.871e-01  9.200e-03  20.332  < 2e-16 ***
+    ## medincome               1.184e-04  1.380e-04   0.858 0.391105    
+    ## popest2015             -1.069e-05  6.385e-06  -1.675 0.094139 .  
+    ## povertypercent          3.717e-01  2.178e-01   1.707 0.088080 .  
+    ## studypercap             1.238e-03  9.363e-04   1.323 0.186159    
+    ## binnedinc              -4.373e-06  7.192e-05  -0.061 0.951525    
+    ## medianage              -5.235e-01  2.023e-01  -2.588 0.009724 ** 
+    ## percentmarried          1.333e+00  2.236e-01   5.959 3.04e-09 ***
+    ## pctnohs18_24           -1.013e-01  7.333e-02  -1.382 0.167228    
+    ## pcths18_24              1.500e-01  6.554e-02   2.289 0.022176 *  
+    ## pctbachdeg18_24        -6.260e-02  1.437e-01  -0.436 0.663104    
+    ## pcths25_over            4.378e-01  1.269e-01   3.449 0.000577 ***
+    ## pctbachdeg25_over      -1.078e+00  2.020e-01  -5.335 1.08e-07 ***
+    ## pctemployed16_over     -7.328e-01  1.463e-01  -5.008 6.03e-07 ***
+    ## pctunemployed16_over    9.767e-02  2.183e-01   0.447 0.654636    
+    ## pctprivatecoverage     -3.509e-01  1.727e-01  -2.033 0.042243 *  
+    ## pctempprivcoverage      3.255e-01  1.328e-01   2.452 0.014295 *  
+    ## pctpubliccoverage      -4.295e-01  2.964e-01  -1.449 0.147550    
+    ## pctpubliccoveragealone  5.937e-01  3.657e-01   1.623 0.104671    
+    ## pctwhite               -1.294e-01  8.160e-02  -1.586 0.112895    
+    ## pctblack               -1.350e-03  8.299e-02  -0.016 0.987025    
+    ## pctasian               -1.887e-01  2.927e-01  -0.645 0.519137    
+    ## pctotherrace           -7.305e-01  1.600e-01  -4.565 5.34e-06 ***
+    ## pctmarriedhouseholds   -1.232e+00  2.110e-01  -5.837 6.28e-09 ***
+    ## birthrate              -8.119e-01  2.589e-01  -3.136 0.001738 ** 
     ## pcths                          NA         NA      NA       NA    
     ## pctbach                        NA         NA      NA       NA    
     ## racindex                       NA         NA      NA       NA    
     ## social_welfare                 NA         NA      NA       NA    
-    ## f.raceBlack            -3.895e+01  1.753e+01  -2.222 0.026411 *  
-    ## f.raceWhite            -3.591e+01  1.712e+01  -2.097 0.036103 *  
+    ## f.raceBlack            -3.929e+01  1.752e+01  -2.242 0.025065 *  
+    ## f.raceWhite            -3.631e+01  1.712e+01  -2.121 0.034034 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 19.51 on 1801 degrees of freedom
-    ## Multiple R-squared:  0.5199, Adjusted R-squared:  0.5122 
-    ## F-statistic: 67.26 on 29 and 1801 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 19.5 on 1801 degrees of freedom
+    ## Multiple R-squared:  0.5204, Adjusted R-squared:  0.5127 
+    ## F-statistic: 67.39 on 29 and 1801 DF,  p-value: < 2.2e-16
 
 According to this first model, the following variables seem to be very
 significant (p-value \< 0.01):
@@ -2094,18 +2094,18 @@ significant_vars
 ```
 
     ##                           Estimate   Std. Error   t value     Pr(>|t|)
-    ## (Intercept)          199.263444558 2.664942e+01  7.477216 1.179052e-13
-    ## avganncount           -0.003105353 9.764936e-04 -3.180105 1.497260e-03
-    ## avgdeathsperyear       0.014625026 4.686599e-03  3.120605 1.833427e-03
-    ## incidencerate          0.186824803 9.205524e-03 20.294858 1.240192e-82
-    ## medianage             -0.528801512 2.026484e-01 -2.609453 9.143811e-03
-    ## percentmarried         1.321430824 2.246690e-01  5.881677 4.830400e-09
-    ## pcths25_over           0.431941349 1.269505e-01  3.402440 6.824847e-04
-    ## pctbachdeg25_over     -1.090074636 2.019263e-01 -5.398379 7.616508e-08
-    ## pctemployed16_over    -0.710302618 1.469957e-01 -4.832131 1.465305e-06
-    ## pctotherrace          -0.728748287 1.601060e-01 -4.551661 5.678404e-06
-    ## pctmarriedhouseholds  -1.227387576 2.127204e-01 -5.769958 9.314526e-09
-    ## birthrate             -0.810499718 2.590368e-01 -3.128898 1.782741e-03
+    ## (Intercept)          200.803680277 2.655245e+01  7.562530 6.262919e-14
+    ## avganncount           -0.003064975 9.765083e-04 -3.138709 1.724441e-03
+    ## avgdeathsperyear       0.014436644 4.686341e-03  3.080579 2.097233e-03
+    ## incidencerate          0.187053035 9.199827e-03 20.332235 6.676812e-83
+    ## medianage             -0.523497109 2.022577e-01 -2.588268 9.723583e-03
+    ## percentmarried         1.332501892 2.236067e-01  5.959132 3.043310e-09
+    ## pcths25_over           0.437783766 1.269469e-01  3.448557 5.765630e-04
+    ## pctbachdeg25_over     -1.077894870 2.020371e-01 -5.335134 1.075417e-07
+    ## pctemployed16_over    -0.732813954 1.463212e-01 -5.008256 6.029906e-07
+    ## pctotherrace          -0.730502278 1.600345e-01 -4.564655 5.341599e-06
+    ## pctmarriedhouseholds  -1.231929099 2.110495e-01 -5.837156 6.283863e-09
+    ## birthrate             -0.811918110 2.588683e-01 -3.136414 1.737919e-03
 
 ## Analyze behaviour of what seem to be the main predictors
 
@@ -2531,7 +2531,7 @@ optimal_lambda_pcths
     ## [1] 0.6666667
 
 ``` r
-df$pcths <- df$pcths^optimal_lambda_pcths
+df$pcths_raised <- df$pcths^optimal_lambda_pcths
 
 # Linear model: target_deathrate ~ pctpubliccoverage
 lm_pctpubliccoverage <- lm(target_deathrate ~ pctpubliccoverage, data = df)
@@ -2694,85 +2694,85 @@ summary(full_selected_model)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -107.502  -11.883    0.368   11.238  138.181 
+    ## -110.388  -11.799    0.308   11.132  137.015 
     ## 
     ## Coefficients:
     ##                          Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)             2.367e+01  1.132e+01   2.092 0.036577 *  
-    ## percentmarried         -4.876e-02  1.022e-01  -0.477 0.633292    
-    ## incidencerate           2.058e-01  8.705e-03  23.639  < 2e-16 ***
-    ## medincome              -2.104e-04  7.972e-05  -2.640 0.008361 ** 
-    ## pcths                   3.152e+00  2.496e-01  12.630  < 2e-16 ***
-    ## pctpubliccoverage      -2.416e-01  1.483e-01  -1.630 0.103304    
-    ## pctpubliccoveragealone  7.471e-01  2.117e-01   3.530 0.000426 ***
-    ## povertypercent          9.825e-01  1.828e-01   5.374  8.7e-08 ***
+    ## (Intercept)             4.125e+01  1.101e+01   3.746 0.000185 ***
+    ## percentmarried         -3.743e-02  1.022e-01  -0.366 0.714144    
+    ## incidencerate           2.059e-01  8.716e-03  23.621  < 2e-16 ***
+    ## medincome              -2.202e-04  7.969e-05  -2.764 0.005771 ** 
+    ## pcths                   5.066e-01  4.073e-02  12.438  < 2e-16 ***
+    ## pctpubliccoverage      -2.391e-01  1.484e-01  -1.611 0.107350    
+    ## pctpubliccoveragealone  7.687e-01  2.118e-01   3.629 0.000292 ***
+    ## povertypercent          9.583e-01  1.829e-01   5.241 1.79e-07 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 20.34 on 1823 degrees of freedom
-    ## Multiple R-squared:  0.4718, Adjusted R-squared:  0.4698 
-    ## F-statistic: 232.6 on 7 and 1823 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 20.36 on 1823 degrees of freedom
+    ## Multiple R-squared:  0.4705, Adjusted R-squared:  0.4685 
+    ## F-statistic: 231.4 on 7 and 1823 DF,  p-value: < 2.2e-16
 
 ``` r
 # Perform stepwise selection (both directions)
 lm_stepwise <- step(full_selected_model, direction = "both", k=log(nrow(df))); lm_stepwise
 ```
 
-    ## Start:  AIC=11083.87
+    ## Start:  AIC=11088.32
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + pctpubliccoverage + pctpubliccoveragealone + povertypercent
     ## 
     ##                          Df Sum of Sq    RSS   AIC
-    ## - percentmarried          1        94 754166 11077
-    ## - pctpubliccoverage       1      1099 755171 11079
-    ## - medincome               1      2883 756955 11083
-    ## <none>                                754072 11084
-    ## - pctpubliccoveragealone  1      5154 759226 11089
-    ## - povertypercent          1     11946 766018 11105
-    ## - pcths                   1     65982 820054 11230
-    ## - incidencerate           1    231144 985216 11566
+    ## - percentmarried          1        56 755965 11081
+    ## - pctpubliccoverage       1      1076 756985 11083
+    ## <none>                                755909 11088
+    ## - medincome               1      3167 759076 11088
+    ## - pctpubliccoveragealone  1      5462 761371 11094
+    ## - povertypercent          1     11388 767297 11108
+    ## - pcths                   1     64145 820054 11230
+    ## - incidencerate           1    231357 987266 11570
     ## 
-    ## Step:  AIC=11076.58
+    ## Step:  AIC=11080.94
     ## target_deathrate ~ incidencerate + medincome + pcths + pctpubliccoverage + 
     ##     pctpubliccoveragealone + povertypercent
     ## 
     ##                          Df Sum of Sq    RSS   AIC
-    ## - pctpubliccoverage       1      1284 755450 11072
-    ## - medincome               1      2817 756984 11076
-    ## <none>                                754166 11077
-    ## - pctpubliccoveragealone  1      5511 759677 11082
-    ## + percentmarried          1        94 754072 11084
-    ## - povertypercent          1     15965 770132 11107
-    ## - pcths                   1     68086 822252 11227
-    ## - incidencerate           1    240109 994275 11575
+    ## - pctpubliccoverage       1      1227 757192 11076
+    ## <none>                                755965 11081
+    ## - medincome               1      3119 759084 11081
+    ## - pctpubliccoveragealone  1      5774 761739 11087
+    ## + percentmarried          1        56 755909 11088
+    ## - povertypercent          1     15045 771010 11110
+    ## - pcths                   1     66288 822252 11227
+    ## - incidencerate           1    239913 995877 11578
     ## 
-    ## Step:  AIC=11072.18
+    ## Step:  AIC=11076.4
     ## target_deathrate ~ incidencerate + medincome + pcths + pctpubliccoveragealone + 
     ##     povertypercent
     ## 
     ##                          Df Sum of Sq    RSS   AIC
-    ## - medincome               1      1673 757123 11069
-    ## <none>                                755450 11072
-    ## + pctpubliccoverage       1      1284 754166 11077
-    ## - pctpubliccoveragealone  1      4992 760442 11077
-    ## + percentmarried          1       279 755171 11079
-    ## - povertypercent          1     22140 777591 11118
-    ## - pcths                   1     66912 822362 11220
-    ## - incidencerate           1    239684 995135 11569
+    ## - medincome               1      1977 759169 11074
+    ## <none>                                757192 11076
+    ## + pctpubliccoverage       1      1227 755965 11081
+    ## - pctpubliccoveragealone  1      5503 762695 11082
+    ## + percentmarried          1       207 756985 11083
+    ## - povertypercent          1     20969 778161 11119
+    ## - pcths                   1     65171 822362 11220
+    ## - incidencerate           1    239499 996691 11572
     ## 
-    ## Step:  AIC=11068.72
+    ## Step:  AIC=11073.66
     ## target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
     ##     povertypercent
     ## 
     ##                          Df Sum of Sq    RSS   AIC
-    ## <none>                                757123 11069
-    ## + medincome               1      1673 755450 11072
-    ## - pctpubliccoveragealone  1      6028 763150 11076
-    ## + pctpubliccoverage       1       139 756984 11076
-    ## + percentmarried          1        69 757054 11076
-    ## - povertypercent          1     42452 799574 11161
-    ## - pcths                   1     85679 842801 11258
-    ## - incidencerate           1    238165 995287 11562
+    ## <none>                                759169 11074
+    ## + medincome               1      1977 757192 11076
+    ## + pctpubliccoverage       1        85 759084 11081
+    ## + percentmarried          1        26 759143 11081
+    ## - pctpubliccoveragealone  1      6742 765911 11082
+    ## - povertypercent          1     41152 800321 11163
+    ## - pcths                   1     83632 842801 11258
+    ## - incidencerate           1    237775 996944 11565
 
     ## 
     ## Call:
@@ -2781,9 +2781,9 @@ lm_stepwise <- step(full_selected_model, direction = "both", k=log(nrow(df))); l
     ## 
     ## Coefficients:
     ##            (Intercept)           incidencerate                   pcths  
-    ##                -0.3127                  0.2053                  3.2590  
+    ##                17.7706                  0.2051                  0.5272  
     ## pctpubliccoveragealone          povertypercent  
-    ##                 0.5348                  1.2949
+    ##                 0.5638                  1.2732
 
 ``` r
 ## BEST MODEL PREDICTED BY FUNCTION STEP
@@ -2804,43 +2804,43 @@ full_selected_model <- lm(target_deathrate ~ (percentmarried + incidencerate + m
 full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
 ```
 
-    ## Start:  AIC=11121.31
+    ## Start:  AIC=11121.91
     ## target_deathrate ~ (percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach)^2
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - pcths:povertypercent                      1       0.1 683312 11114
-    ## - pcths:pctbach                             1      21.8 683334 11114
-    ## - medincome:povertypercent                  1      50.7 683363 11114
-    ## - percentmarried:pcths                      1      76.5 683388 11114
-    ## - percentmarried:povertypercent             1     147.0 683459 11114
-    ## - incidencerate:pcths                       1     174.6 683486 11114
-    ## - percentmarried:pctpubliccoverage          1     195.2 683507 11114
-    ## - incidencerate:medincome                   1     232.4 683544 11114
-    ## - percentmarried:pctpubliccoveragealone     1     257.2 683569 11114
-    ## - pcths:pctpubliccoverage                   1     485.5 683797 11115
-    ## - pctpubliccoveragealone:pctbach            1     634.7 683947 11116
-    ## - medincome:pcths                           1     670.6 683982 11116
-    ## - pctpubliccoverage:pctbach                 1     686.7 683999 11116
-    ## - incidencerate:povertypercent              1     758.9 684071 11116
-    ## - pctpubliccoverage:pctpubliccoveragealone  1     996.9 684309 11116
-    ## - incidencerate:pctbach                     1    1008.3 684320 11116
-    ## - pcths:pctpubliccoveragealone              1    1284.6 684596 11117
-    ## - medincome:pctbach                         1    1680.4 684992 11118
-    ## - medincome:pctpubliccoverage               1    1752.4 685064 11118
-    ## - incidencerate:pctpubliccoverage           1    1873.6 685185 11119
-    ## - percentmarried:medincome                  1    1961.3 685273 11119
-    ## - percentmarried:pctbach                    1    2356.1 685668 11120
-    ## - percentmarried:incidencerate              1    2794.9 686107 11121
-    ## <none>                                                  683312 11121
-    ## - povertypercent:pctpubliccoveragealone     1    3344.1 686656 11123
-    ## - povertypercent:pctbach                    1    3394.9 686707 11123
-    ## - medincome:pctpubliccoveragealone          1    4014.0 687326 11124
-    ## - incidencerate:pctpubliccoveragealone      1    4825.0 688137 11127
-    ## - povertypercent:pctpubliccoverage          1    5363.1 688675 11128
+    ## - pcths:povertypercent                      1       1.0 683536 11114
+    ## - medincome:povertypercent                  1      52.8 683587 11114
+    ## - percentmarried:pcths                      1      56.5 683591 11114
+    ## - incidencerate:pcths                       1      73.4 683608 11115
+    ## - pcths:pctbach                             1     106.4 683641 11115
+    ## - percentmarried:povertypercent             1     154.7 683689 11115
+    ## - percentmarried:pctpubliccoverage          1     184.1 683719 11115
+    ## - percentmarried:pctpubliccoveragealone     1     258.8 683794 11115
+    ## - incidencerate:medincome                   1     296.2 683831 11115
+    ## - pcths:pctpubliccoverage                   1     499.6 684034 11116
+    ## - incidencerate:povertypercent              1     735.6 684270 11116
+    ## - medincome:pcths                           1     748.4 684283 11116
+    ## - pctpubliccoveragealone:pctbach            1     749.2 684284 11116
+    ## - pctpubliccoverage:pctbach                 1     753.6 684288 11116
+    ## - incidencerate:pctbach                     1     818.0 684353 11117
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1067.2 684602 11117
+    ## - pcths:pctpubliccoveragealone              1    1443.6 684978 11118
+    ## - medincome:pctpubliccoverage               1    1766.5 685301 11119
+    ## - medincome:pctbach                         1    1795.5 685330 11119
+    ## - incidencerate:pctpubliccoverage           1    1821.2 685356 11119
+    ## - percentmarried:medincome                  1    1981.4 685516 11120
+    ## - percentmarried:pctbach                    1    2497.3 686032 11121
+    ## <none>                                                  683535 11122
+    ## - percentmarried:incidencerate              1    2934.5 686469 11122
+    ## - povertypercent:pctpubliccoveragealone     1    3332.2 686867 11123
+    ## - povertypercent:pctbach                    1    3416.2 686951 11124
+    ## - medincome:pctpubliccoveragealone          1    4091.9 687627 11125
+    ## - incidencerate:pctpubliccoveragealone      1    4959.6 688494 11128
+    ## - povertypercent:pctpubliccoverage          1    5355.9 688891 11129
     ## 
-    ## Step:  AIC=11113.8
+    ## Step:  AIC=11114.4
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -2856,80 +2856,36 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoverage:pctbach + pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - pcths:pctbach                             1      21.9 683334 11106
-    ## - medincome:povertypercent                  1      51.5 683363 11106
-    ## - percentmarried:pcths                      1      90.8 683403 11106
-    ## - percentmarried:povertypercent             1     148.2 683460 11107
-    ## - incidencerate:pcths                       1     175.4 683487 11107
-    ## - percentmarried:pctpubliccoverage          1     195.2 683507 11107
-    ## - incidencerate:medincome                   1     234.1 683546 11107
-    ## - percentmarried:pctpubliccoveragealone     1     260.5 683572 11107
-    ## - pcths:pctpubliccoverage                   1     512.2 683824 11108
-    ## - pctpubliccoveragealone:pctbach            1     662.5 683974 11108
-    ## - pctpubliccoverage:pctbach                 1     688.4 684000 11108
-    ## - incidencerate:povertypercent              1     774.6 684087 11108
-    ## - medincome:pcths                           1     991.5 684303 11109
-    ## - pctpubliccoverage:pctpubliccoveragealone  1     997.8 684310 11109
-    ## - incidencerate:pctbach                     1    1008.5 684320 11109
-    ## - pcths:pctpubliccoveragealone              1    1634.6 684947 11111
-    ## - medincome:pctpubliccoverage               1    1753.8 685066 11111
-    ## - incidencerate:pctpubliccoverage           1    1878.1 685190 11111
-    ## - medincome:pctbach                         1    1928.7 685241 11111
-    ## - percentmarried:medincome                  1    1961.2 685273 11112
-    ## - percentmarried:pctbach                    1    2467.1 685779 11113
-    ## - percentmarried:incidencerate              1    2806.7 686119 11114
-    ## <none>                                                  683312 11114
-    ## - povertypercent:pctpubliccoveragealone     1    3365.7 686678 11115
-    ## - medincome:pctpubliccoveragealone          1    4014.2 687326 11117
-    ## - incidencerate:pctpubliccoveragealone      1    4860.0 688172 11119
-    ## - povertypercent:pctbach                    1    4953.2 688265 11120
-    ## - povertypercent:pctpubliccoverage          1    5429.6 688742 11121
+    ## - medincome:povertypercent                  1      51.9 683588 11107
+    ## - incidencerate:pcths                       1      72.8 683608 11107
+    ## - percentmarried:pcths                      1      75.7 683611 11107
+    ## - pcths:pctbach                             1     106.0 683642 11107
+    ## - percentmarried:povertypercent             1     158.8 683695 11107
+    ## - percentmarried:pctpubliccoverage          1     185.3 683721 11107
+    ## - percentmarried:pctpubliccoveragealone     1     265.9 683802 11108
+    ## - incidencerate:medincome                   1     301.7 683837 11108
+    ## - pcths:pctpubliccoverage                   1     540.6 684076 11108
+    ## - incidencerate:povertypercent              1     757.7 684293 11109
+    ## - pctpubliccoverage:pctbach                 1     758.2 684294 11109
+    ## - pctpubliccoveragealone:pctbach            1     794.1 684330 11109
+    ## - incidencerate:pctbach                     1     817.6 684353 11109
+    ## - medincome:pcths                           1    1039.8 684575 11110
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1070.0 684606 11110
+    ## - medincome:pctpubliccoverage               1    1765.5 685301 11112
+    ## - incidencerate:pctpubliccoverage           1    1820.9 685357 11112
+    ## - pcths:pctpubliccoveragealone              1    1909.1 685445 11112
+    ## - percentmarried:medincome                  1    1981.9 685518 11112
+    ## - medincome:pctbach                         1    2002.4 685538 11112
+    ## - percentmarried:pctbach                    1    2581.9 686118 11114
+    ## <none>                                                  683536 11114
+    ## - percentmarried:incidencerate              1    2953.6 686489 11115
+    ## - povertypercent:pctpubliccoveragealone     1    3362.1 686898 11116
+    ## - medincome:pctpubliccoveragealone          1    4093.4 687629 11118
+    ## - povertypercent:pctbach                    1    4735.0 688271 11120
+    ## - incidencerate:pctpubliccoveragealone      1    4979.2 688515 11120
+    ## - povertypercent:pctpubliccoverage          1    5434.4 688970 11121
     ## 
-    ## Step:  AIC=11106.35
-    ## target_deathrate ~ percentmarried + incidencerate + medincome + 
-    ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
-    ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
-    ##     percentmarried:pcths + percentmarried:povertypercent + percentmarried:pctpubliccoverage + 
-    ##     percentmarried:pctpubliccoveragealone + percentmarried:pctbach + 
-    ##     incidencerate:medincome + incidencerate:pcths + incidencerate:povertypercent + 
-    ##     incidencerate:pctpubliccoverage + incidencerate:pctpubliccoveragealone + 
-    ##     incidencerate:pctbach + medincome:pcths + medincome:povertypercent + 
-    ##     medincome:pctpubliccoverage + medincome:pctpubliccoveragealone + 
-    ##     medincome:pctbach + pcths:pctpubliccoverage + pcths:pctpubliccoveragealone + 
-    ##     povertypercent:pctpubliccoverage + povertypercent:pctpubliccoveragealone + 
-    ##     povertypercent:pctbach + pctpubliccoverage:pctpubliccoveragealone + 
-    ##     pctpubliccoverage:pctbach + pctpubliccoveragealone:pctbach
-    ## 
-    ##                                            Df Sum of Sq    RSS   AIC
-    ## - medincome:povertypercent                  1      58.5 683392 11099
-    ## - percentmarried:pcths                      1      98.6 683432 11099
-    ## - percentmarried:povertypercent             1     160.5 683494 11099
-    ## - incidencerate:pcths                       1     179.9 683514 11099
-    ## - percentmarried:pctpubliccoverage          1     187.6 683521 11099
-    ## - incidencerate:medincome                   1     230.2 683564 11099
-    ## - percentmarried:pctpubliccoveragealone     1     249.6 683583 11100
-    ## - pcths:pctpubliccoverage                   1     500.8 683835 11100
-    ## - pctpubliccoveragealone:pctbach            1     671.5 684005 11101
-    ## - pctpubliccoverage:pctbach                 1     675.2 684009 11101
-    ## - incidencerate:povertypercent              1     764.4 684098 11101
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1062.8 684397 11102
-    ## - incidencerate:pctbach                     1    1070.8 684405 11102
-    ## - medincome:pcths                           1    1111.1 684445 11102
-    ## - pcths:pctpubliccoveragealone              1    1618.8 684953 11103
-    ## - medincome:pctpubliccoverage               1    1757.3 685091 11104
-    ## - incidencerate:pctpubliccoverage           1    1887.3 685221 11104
-    ## - medincome:pctbach                         1    1907.6 685241 11104
-    ## - percentmarried:medincome                  1    1965.4 685299 11104
-    ## - percentmarried:pctbach                    1    2697.2 686031 11106
-    ## - percentmarried:incidencerate              1    2788.6 686122 11106
-    ## <none>                                                  683334 11106
-    ## - povertypercent:pctpubliccoveragealone     1    3346.7 686680 11108
-    ## - medincome:pctpubliccoveragealone          1    4047.2 687381 11110
-    ## - incidencerate:pctpubliccoveragealone      1    4943.1 688277 11112
-    ## - povertypercent:pctbach                    1    5090.6 688424 11112
-    ## - povertypercent:pctpubliccoverage          1    5457.3 688791 11113
-    ## 
-    ## Step:  AIC=11098.99
+    ## Step:  AIC=11107.03
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -2939,40 +2895,41 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     incidencerate:pctpubliccoverage + incidencerate:pctpubliccoveragealone + 
     ##     incidencerate:pctbach + medincome:pcths + medincome:pctpubliccoverage + 
     ##     medincome:pctpubliccoveragealone + medincome:pctbach + pcths:pctpubliccoverage + 
-    ##     pcths:pctpubliccoveragealone + povertypercent:pctpubliccoverage + 
+    ##     pcths:pctpubliccoveragealone + pcths:pctbach + povertypercent:pctpubliccoverage + 
     ##     povertypercent:pctpubliccoveragealone + povertypercent:pctbach + 
     ##     pctpubliccoverage:pctpubliccoveragealone + pctpubliccoverage:pctbach + 
     ##     pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - percentmarried:pcths                      1      89.6 683482 11092
-    ## - percentmarried:povertypercent             1     116.3 683509 11092
-    ## - incidencerate:pcths                       1     190.9 683583 11092
-    ## - percentmarried:pctpubliccoveragealone     1     206.7 683599 11092
-    ## - percentmarried:pctpubliccoverage          1     226.1 683618 11092
-    ## - incidencerate:medincome                   1     284.7 683677 11092
-    ## - pcths:pctpubliccoverage                   1     481.9 683874 11093
-    ## - pctpubliccoverage:pctbach                 1     621.8 684014 11093
-    ## - pctpubliccoveragealone:pctbach            1     701.2 684093 11093
-    ## - incidencerate:povertypercent              1     764.0 684156 11094
-    ## - incidencerate:pctbach                     1    1087.6 684480 11094
-    ## - medincome:pcths                           1    1208.0 684600 11095
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1374.1 684766 11095
-    ## - pcths:pctpubliccoveragealone              1    1645.1 685037 11096
-    ## - medincome:pctpubliccoverage               1    1699.8 685092 11096
-    ## - incidencerate:pctpubliccoverage           1    1864.1 685256 11096
-    ## - percentmarried:medincome                  1    1967.8 685360 11097
-    ## - medincome:pctbach                         1    2122.6 685515 11097
-    ## - percentmarried:pctbach                    1    2645.2 686038 11099
-    ## - percentmarried:incidencerate              1    2792.3 686185 11099
-    ## <none>                                                  683392 11099
-    ## - povertypercent:pctpubliccoveragealone     1    3292.3 686685 11100
-    ## - medincome:pctpubliccoveragealone          1    4754.7 688147 11104
-    ## - incidencerate:pctpubliccoveragealone      1    5065.0 688457 11105
-    ## - povertypercent:pctbach                    1    5283.7 688676 11106
-    ## - povertypercent:pctpubliccoverage          1    5846.0 689238 11107
+    ## - percentmarried:pcths                      1      67.6 683655 11100
+    ## - incidencerate:pcths                       1      78.2 683666 11100
+    ## - percentmarried:povertypercent             1     117.4 683705 11100
+    ## - pcths:pctbach                             1     120.3 683708 11100
+    ## - percentmarried:pctpubliccoverage          1     222.9 683810 11100
+    ## - percentmarried:pctpubliccoveragealone     1     226.1 683814 11100
+    ## - incidencerate:medincome                   1     365.7 683953 11100
+    ## - pcths:pctpubliccoverage                   1     524.9 684112 11101
+    ## - pctpubliccoverage:pctbach                 1     709.3 684297 11101
+    ## - incidencerate:povertypercent              1     759.2 684347 11102
+    ## - pctpubliccoveragealone:pctbach            1     821.4 684409 11102
+    ## - incidencerate:pctbach                     1     824.1 684412 11102
+    ## - medincome:pcths                           1    1097.6 684685 11102
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1339.4 684927 11103
+    ## - medincome:pctpubliccoverage               1    1713.8 685301 11104
+    ## - incidencerate:pctpubliccoverage           1    1797.3 685385 11104
+    ## - pcths:pctpubliccoveragealone              1    1946.1 685534 11105
+    ## - percentmarried:medincome                  1    2001.3 685589 11105
+    ## - medincome:pctbach                         1    2208.7 685796 11105
+    ## - percentmarried:pctbach                    1    2531.4 686119 11106
+    ## <none>                                                  683588 11107
+    ## - percentmarried:incidencerate              1    2960.5 686548 11107
+    ## - povertypercent:pctpubliccoveragealone     1    3313.5 686901 11108
+    ## - medincome:pctpubliccoveragealone          1    4754.0 688342 11112
+    ## - povertypercent:pctbach                    1    4940.3 688528 11113
+    ## - incidencerate:pctpubliccoveragealone      1    5082.6 688670 11113
+    ## - povertypercent:pctpubliccoverage          1    5787.9 689375 11115
     ## 
-    ## Step:  AIC=11091.72
+    ## Step:  AIC=11099.69
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -2982,84 +2939,88 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     incidencerate:pctpubliccoverage + incidencerate:pctpubliccoveragealone + 
     ##     incidencerate:pctbach + medincome:pcths + medincome:pctpubliccoverage + 
     ##     medincome:pctpubliccoveragealone + medincome:pctbach + pcths:pctpubliccoverage + 
-    ##     pcths:pctpubliccoveragealone + povertypercent:pctpubliccoverage + 
+    ##     pcths:pctpubliccoveragealone + pcths:pctbach + povertypercent:pctpubliccoverage + 
     ##     povertypercent:pctpubliccoveragealone + povertypercent:pctbach + 
     ##     pctpubliccoverage:pctpubliccoveragealone + pctpubliccoverage:pctbach + 
     ##     pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - percentmarried:povertypercent             1     151.6 683634 11085
-    ## - percentmarried:pctpubliccoveragealone     1     199.4 683681 11085
-    ## - percentmarried:pctpubliccoverage          1     203.0 683685 11085
-    ## - incidencerate:pcths                       1     226.1 683708 11085
-    ## - incidencerate:medincome                   1     301.4 683783 11085
-    ## - pctpubliccoverage:pctbach                 1     689.5 684171 11086
-    ## - pcths:pctpubliccoverage                   1     714.5 684196 11086
-    ## - incidencerate:povertypercent              1     772.2 684254 11086
-    ## - pctpubliccoveragealone:pctbach            1     862.8 684345 11086
-    ## - incidencerate:pctbach                     1    1098.4 684580 11087
-    ## - medincome:pcths                           1    1131.2 684613 11087
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1409.0 684891 11088
-    ## - medincome:pctpubliccoverage               1    1654.2 685136 11089
-    ## - incidencerate:pctpubliccoverage           1    1827.4 685309 11089
-    ## - percentmarried:medincome                  1    2005.6 685488 11090
-    ## - medincome:pctbach                         1    2076.3 685558 11090
-    ## - pcths:pctpubliccoveragealone              1    2512.5 685994 11091
-    ## - percentmarried:incidencerate              1    2803.2 686285 11092
-    ## <none>                                                  683482 11092
-    ## - povertypercent:pctpubliccoveragealone     1    3209.4 686691 11093
-    ## - percentmarried:pctbach                    1    4195.3 687677 11095
-    ## - medincome:pctpubliccoveragealone          1    4696.3 688178 11097
-    ## - incidencerate:pctpubliccoveragealone      1    5033.4 688515 11098
-    ## - povertypercent:pctbach                    1    5213.0 688695 11098
-    ## - povertypercent:pctpubliccoverage          1    5774.7 689257 11100
+    ## - incidencerate:pcths                       1      90.0 683745 11092
+    ## - pcths:pctbach                             1     132.7 683788 11092
+    ## - percentmarried:povertypercent             1     144.5 683800 11093
+    ## - percentmarried:pctpubliccoverage          1     204.5 683860 11093
+    ## - percentmarried:pctpubliccoveragealone     1     221.0 683876 11093
+    ## - incidencerate:medincome                   1     380.4 684035 11093
+    ## - pcths:pctpubliccoverage                   1     726.0 684381 11094
+    ## - pctpubliccoverage:pctbach                 1     765.4 684420 11094
+    ## - incidencerate:povertypercent              1     765.6 684421 11094
+    ## - incidencerate:pctbach                     1     816.4 684471 11094
+    ## - pctpubliccoveragealone:pctbach            1     962.9 684618 11095
+    ## - medincome:pcths                           1    1039.1 684694 11095
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1355.3 685010 11096
+    ## - medincome:pctpubliccoverage               1    1676.4 685331 11097
+    ## - incidencerate:pctpubliccoverage           1    1765.6 685421 11097
+    ## - percentmarried:medincome                  1    2035.5 685691 11098
+    ## - medincome:pctbach                         1    2182.2 685837 11098
+    ## <none>                                                  683655 11100
+    ## - pcths:pctpubliccoveragealone              1    2862.1 686517 11100
+    ## - percentmarried:incidencerate              1    2972.4 686628 11100
+    ## - povertypercent:pctpubliccoveragealone     1    3249.2 686904 11101
+    ## - percentmarried:pctbach                    1    3692.9 687348 11102
+    ## - medincome:pctpubliccoveragealone          1    4701.4 688356 11105
+    ## - povertypercent:pctbach                    1    4884.1 688539 11105
+    ## - incidencerate:pctpubliccoveragealone      1    5046.6 688702 11106
+    ## - povertypercent:pctpubliccoverage          1    5729.1 689384 11108
     ## 
-    ## Step:  AIC=11084.61
+    ## Step:  AIC=11092.42
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
-    ##     percentmarried:pctpubliccoverage + percentmarried:pctpubliccoveragealone + 
-    ##     percentmarried:pctbach + incidencerate:medincome + incidencerate:pcths + 
-    ##     incidencerate:povertypercent + incidencerate:pctpubliccoverage + 
-    ##     incidencerate:pctpubliccoveragealone + incidencerate:pctbach + 
-    ##     medincome:pcths + medincome:pctpubliccoverage + medincome:pctpubliccoveragealone + 
-    ##     medincome:pctbach + pcths:pctpubliccoverage + pcths:pctpubliccoveragealone + 
-    ##     povertypercent:pctpubliccoverage + povertypercent:pctpubliccoveragealone + 
-    ##     povertypercent:pctbach + pctpubliccoverage:pctpubliccoveragealone + 
-    ##     pctpubliccoverage:pctbach + pctpubliccoveragealone:pctbach
+    ##     percentmarried:povertypercent + percentmarried:pctpubliccoverage + 
+    ##     percentmarried:pctpubliccoveragealone + percentmarried:pctbach + 
+    ##     incidencerate:medincome + incidencerate:povertypercent + 
+    ##     incidencerate:pctpubliccoverage + incidencerate:pctpubliccoveragealone + 
+    ##     incidencerate:pctbach + medincome:pcths + medincome:pctpubliccoverage + 
+    ##     medincome:pctpubliccoveragealone + medincome:pctbach + pcths:pctpubliccoverage + 
+    ##     pcths:pctpubliccoveragealone + pcths:pctbach + povertypercent:pctpubliccoverage + 
+    ##     povertypercent:pctpubliccoveragealone + povertypercent:pctbach + 
+    ##     pctpubliccoverage:pctpubliccoveragealone + pctpubliccoverage:pctbach + 
+    ##     pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - percentmarried:pctpubliccoveragealone     1      92.8 683726 11077
-    ## - percentmarried:pctpubliccoverage          1     121.7 683755 11077
-    ## - incidencerate:pcths                       1     226.0 683860 11078
-    ## - incidencerate:medincome                   1     299.8 683933 11078
-    ## - incidencerate:povertypercent              1     719.7 684353 11079
-    ## - pctpubliccoverage:pctbach                 1     749.1 684383 11079
-    ## - pcths:pctpubliccoverage                   1     769.0 684403 11079
-    ## - pctpubliccoveragealone:pctbach            1     920.7 684554 11080
-    ## - medincome:pcths                           1    1037.6 684671 11080
-    ## - incidencerate:pctbach                     1    1107.4 684741 11080
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1430.9 685064 11081
-    ## - medincome:pctpubliccoverage               1    1624.7 685258 11081
-    ## - medincome:pctbach                         1    1932.1 685566 11082
-    ## - incidencerate:pctpubliccoverage           1    1935.2 685569 11082
-    ## - pcths:pctpubliccoveragealone              1    2491.7 686125 11084
-    ## - percentmarried:incidencerate              1    2810.4 686444 11085
-    ## <none>                                                  683634 11085
-    ## - povertypercent:pctpubliccoveragealone     1    3438.8 687072 11086
-    ## - percentmarried:pctbach                    1    4572.8 688206 11089
-    ## - percentmarried:medincome                  1    4979.6 688613 11090
-    ## - povertypercent:pctbach                    1    5106.3 688740 11091
-    ## - incidencerate:pctpubliccoveragealone      1    5362.8 688996 11091
-    ## - medincome:pctpubliccoveragealone          1    5587.6 689221 11092
-    ## - povertypercent:pctpubliccoverage          1    5640.0 689274 11092
+    ## - pcths:pctbach                             1     139.7 683885 11085
+    ## - percentmarried:povertypercent             1     145.3 683890 11085
+    ## - percentmarried:pctpubliccoverage          1     196.6 683942 11085
+    ## - percentmarried:pctpubliccoveragealone     1     219.1 683964 11086
+    ## - incidencerate:medincome                   1     445.3 684190 11086
+    ## - pcths:pctpubliccoverage                   1     696.9 684442 11087
+    ## - incidencerate:povertypercent              1     706.6 684452 11087
+    ## - pctpubliccoverage:pctbach                 1     754.6 684500 11087
+    ## - incidencerate:pctbach                     1     904.0 684649 11087
+    ## - pctpubliccoveragealone:pctbach            1     967.3 684712 11088
+    ## - medincome:pcths                           1    1032.4 684778 11088
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1392.0 685137 11089
+    ## - medincome:pctpubliccoverage               1    1681.7 685427 11089
+    ## - incidencerate:pctpubliccoverage           1    1701.5 685447 11090
+    ## - percentmarried:medincome                  1    2047.6 685793 11090
+    ## - medincome:pctbach                         1    2176.5 685922 11091
+    ## <none>                                                  683745 11092
+    ## - pcths:pctpubliccoveragealone              1    2846.9 686592 11092
+    ## - percentmarried:incidencerate              1    3059.6 686805 11093
+    ## - povertypercent:pctpubliccoveragealone     1    3228.5 686974 11094
+    ## - percentmarried:pctbach                    1    3709.3 687454 11095
+    ## - medincome:pctpubliccoveragealone          1    4769.4 688514 11098
+    ## - povertypercent:pctbach                    1    4906.7 688652 11098
+    ## - incidencerate:pctpubliccoveragealone      1    5129.2 688874 11099
+    ## - povertypercent:pctpubliccoverage          1    5692.5 689438 11100
     ## 
-    ## Step:  AIC=11077.35
+    ## Step:  AIC=11085.28
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
-    ##     percentmarried:pctpubliccoverage + percentmarried:pctbach + 
-    ##     incidencerate:medincome + incidencerate:pcths + incidencerate:povertypercent + 
+    ##     percentmarried:povertypercent + percentmarried:pctpubliccoverage + 
+    ##     percentmarried:pctpubliccoveragealone + percentmarried:pctbach + 
+    ##     incidencerate:medincome + incidencerate:povertypercent + 
     ##     incidencerate:pctpubliccoverage + incidencerate:pctpubliccoveragealone + 
     ##     incidencerate:pctbach + medincome:pcths + medincome:pctpubliccoverage + 
     ##     medincome:pctpubliccoveragealone + medincome:pctbach + pcths:pctpubliccoverage + 
@@ -3069,68 +3030,109 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - percentmarried:pctpubliccoverage          1      34.1 683760 11070
-    ## - incidencerate:pcths                       1     223.2 683949 11070
-    ## - incidencerate:medincome                   1     295.4 684022 11071
-    ## - incidencerate:povertypercent              1     700.3 684427 11072
-    ## - pctpubliccoverage:pctbach                 1     789.9 684516 11072
-    ## - pcths:pctpubliccoverage                   1     870.4 684597 11072
-    ## - pctpubliccoveragealone:pctbach            1     945.0 684671 11072
-    ## - medincome:pcths                           1     994.0 684720 11072
-    ## - incidencerate:pctbach                     1    1082.3 684809 11073
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1440.5 685167 11074
-    ## - medincome:pctpubliccoverage               1    1532.3 685259 11074
-    ## - medincome:pctbach                         1    1904.2 685630 11075
-    ## - incidencerate:pctpubliccoverage           1    2066.2 685792 11075
-    ## - pcths:pctpubliccoveragealone              1    2602.4 686329 11077
-    ## - percentmarried:incidencerate              1    2774.2 686501 11077
-    ## <none>                                                  683726 11077
-    ## - povertypercent:pctpubliccoveragealone     1    4577.9 688304 11082
-    ## - percentmarried:pctbach                    1    4608.3 688335 11082
-    ## - percentmarried:medincome                  1    4896.2 688622 11083
-    ## - povertypercent:pctbach                    1    5305.2 689031 11084
-    ## - medincome:pctpubliccoveragealone          1    5605.5 689332 11085
-    ## - incidencerate:pctpubliccoveragealone      1    5616.5 689343 11085
-    ## - povertypercent:pctpubliccoverage          1    6291.7 690018 11087
+    ## - percentmarried:povertypercent             1     165.0 684050 11078
+    ## - percentmarried:pctpubliccoverage          1     175.6 684060 11078
+    ## - percentmarried:pctpubliccoveragealone     1     181.7 684066 11078
+    ## - incidencerate:medincome                   1     439.7 684325 11079
+    ## - pcths:pctpubliccoverage                   1     657.5 684542 11080
+    ## - incidencerate:povertypercent              1     673.6 684558 11080
+    ## - pctpubliccoverage:pctbach                 1     702.6 684587 11080
+    ## - pctpubliccoveragealone:pctbach            1    1006.6 684891 11080
+    ## - incidencerate:pctbach                     1    1035.5 684920 11080
+    ## - medincome:pcths                           1    1292.7 685177 11081
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1626.6 685511 11082
+    ## - medincome:pctpubliccoverage               1    1678.3 685563 11082
+    ## - incidencerate:pctpubliccoverage           1    1712.4 685597 11082
+    ## - percentmarried:medincome                  1    2041.7 685926 11083
+    ## - medincome:pctbach                         1    2118.8 686004 11083
+    ## - pcths:pctpubliccoveragealone              1    2716.0 686601 11085
+    ## <none>                                                  683885 11085
+    ## - percentmarried:incidencerate              1    3005.7 686890 11086
+    ## - povertypercent:pctpubliccoveragealone     1    3152.6 687037 11086
+    ## - percentmarried:pctbach                    1    4468.4 688353 11090
+    ## - medincome:pctpubliccoveragealone          1    4931.0 688816 11091
+    ## - povertypercent:pctbach                    1    5116.9 689002 11091
+    ## - incidencerate:pctpubliccoveragealone      1    5318.6 689203 11092
+    ## - povertypercent:pctpubliccoverage          1    5793.8 689679 11093
     ## 
-    ## Step:  AIC=11069.93
+    ## Step:  AIC=11078.21
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
-    ##     percentmarried:pctbach + incidencerate:medincome + incidencerate:pcths + 
-    ##     incidencerate:povertypercent + incidencerate:pctpubliccoverage + 
-    ##     incidencerate:pctpubliccoveragealone + incidencerate:pctbach + 
-    ##     medincome:pcths + medincome:pctpubliccoverage + medincome:pctpubliccoveragealone + 
-    ##     medincome:pctbach + pcths:pctpubliccoverage + pcths:pctpubliccoveragealone + 
-    ##     povertypercent:pctpubliccoverage + povertypercent:pctpubliccoveragealone + 
-    ##     povertypercent:pctbach + pctpubliccoverage:pctpubliccoveragealone + 
-    ##     pctpubliccoverage:pctbach + pctpubliccoveragealone:pctbach
+    ##     percentmarried:pctpubliccoverage + percentmarried:pctpubliccoveragealone + 
+    ##     percentmarried:pctbach + incidencerate:medincome + incidencerate:povertypercent + 
+    ##     incidencerate:pctpubliccoverage + incidencerate:pctpubliccoveragealone + 
+    ##     incidencerate:pctbach + medincome:pcths + medincome:pctpubliccoverage + 
+    ##     medincome:pctpubliccoveragealone + medincome:pctbach + pcths:pctpubliccoverage + 
+    ##     pcths:pctpubliccoveragealone + povertypercent:pctpubliccoverage + 
+    ##     povertypercent:pctpubliccoveragealone + povertypercent:pctbach + 
+    ##     pctpubliccoverage:pctpubliccoveragealone + pctpubliccoverage:pctbach + 
+    ##     pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - incidencerate:pcths                       1     215.5 683976 11063
-    ## - incidencerate:medincome                   1     290.1 684050 11063
-    ## - incidencerate:povertypercent              1     721.0 684481 11064
-    ## - pctpubliccoverage:pctbach                 1     830.7 684591 11065
-    ## - pcths:pctpubliccoverage                   1     855.8 684616 11065
-    ## - pctpubliccoveragealone:pctbach            1     949.9 684710 11065
-    ## - medincome:pcths                           1    1051.0 684811 11065
-    ## - incidencerate:pctbach                     1    1114.4 684875 11065
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1464.1 685224 11066
-    ## - medincome:pctpubliccoverage               1    1499.5 685260 11066
-    ## - medincome:pctbach                         1    1876.9 685637 11067
-    ## - incidencerate:pctpubliccoverage           1    2135.0 685895 11068
-    ## - pcths:pctpubliccoveragealone              1    2639.4 686400 11070
-    ## <none>                                                  683760 11070
-    ## - percentmarried:incidencerate              1    2835.4 686596 11070
-    ## - povertypercent:pctpubliccoveragealone     1    4561.7 688322 11075
-    ## - percentmarried:pctbach                    1    4623.3 688384 11075
-    ## - povertypercent:pctbach                    1    5314.5 689075 11077
-    ## - incidencerate:pctpubliccoveragealone      1    5705.8 689466 11078
-    ## - medincome:pctpubliccoveragealone          1    5859.4 689620 11078
-    ## - povertypercent:pctpubliccoverage          1    7072.9 690833 11081
-    ## - percentmarried:medincome                  1    8366.7 692127 11085
+    ## - percentmarried:pctpubliccoveragealone     1      75.1 684125 11071
+    ## - percentmarried:pctpubliccoverage          1      96.3 684146 11071
+    ## - incidencerate:medincome                   1     435.8 684486 11072
+    ## - incidencerate:povertypercent              1     621.0 684671 11072
+    ## - pcths:pctpubliccoverage                   1     707.2 684757 11073
+    ## - pctpubliccoverage:pctbach                 1     762.3 684812 11073
+    ## - incidencerate:pctbach                     1    1046.9 685097 11074
+    ## - pctpubliccoveragealone:pctbach            1    1072.9 685123 11074
+    ## - medincome:pcths                           1    1191.2 685241 11074
+    ## - medincome:pctpubliccoverage               1    1648.6 685698 11075
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1654.2 685704 11075
+    ## - incidencerate:pctpubliccoverage           1    1823.2 685873 11076
+    ## - medincome:pctbach                         1    1964.8 686015 11076
+    ## - pcths:pctpubliccoveragealone              1    2692.1 686742 11078
+    ## <none>                                                  684050 11078
+    ## - percentmarried:incidencerate              1    3016.1 687066 11079
+    ## - povertypercent:pctpubliccoveragealone     1    3388.6 687438 11080
+    ## - percentmarried:pctbach                    1    4879.8 688930 11084
+    ## - povertypercent:pctbach                    1    5006.6 689056 11084
+    ## - percentmarried:medincome                  1    5175.7 689225 11084
+    ## - povertypercent:pctpubliccoverage          1    5651.3 689701 11086
+    ## - incidencerate:pctpubliccoveragealone      1    5671.6 689721 11086
+    ## - medincome:pctpubliccoveragealone          1    5888.2 689938 11086
     ## 
-    ## Step:  AIC=11062.99
+    ## Step:  AIC=11070.9
+    ## target_deathrate ~ percentmarried + incidencerate + medincome + 
+    ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
+    ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
+    ##     percentmarried:pctpubliccoverage + percentmarried:pctbach + 
+    ##     incidencerate:medincome + incidencerate:povertypercent + 
+    ##     incidencerate:pctpubliccoverage + incidencerate:pctpubliccoveragealone + 
+    ##     incidencerate:pctbach + medincome:pcths + medincome:pctpubliccoverage + 
+    ##     medincome:pctpubliccoveragealone + medincome:pctbach + pcths:pctpubliccoverage + 
+    ##     pcths:pctpubliccoveragealone + povertypercent:pctpubliccoverage + 
+    ##     povertypercent:pctpubliccoveragealone + povertypercent:pctbach + 
+    ##     pctpubliccoverage:pctpubliccoveragealone + pctpubliccoverage:pctbach + 
+    ##     pctpubliccoveragealone:pctbach
+    ## 
+    ##                                            Df Sum of Sq    RSS   AIC
+    ## - percentmarried:pctpubliccoverage          1      25.8 684151 11064
+    ## - incidencerate:medincome                   1     429.8 684555 11064
+    ## - incidencerate:povertypercent              1     605.1 684730 11065
+    ## - pcths:pctpubliccoverage                   1     795.9 684921 11066
+    ## - pctpubliccoverage:pctbach                 1     799.6 684924 11066
+    ## - incidencerate:pctbach                     1    1021.9 685147 11066
+    ## - pctpubliccoveragealone:pctbach            1    1098.7 685224 11066
+    ## - medincome:pcths                           1    1152.9 685278 11066
+    ## - medincome:pctpubliccoverage               1    1576.3 685701 11068
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1665.1 685790 11068
+    ## - incidencerate:pctpubliccoverage           1    1942.4 686067 11069
+    ## - medincome:pctbach                         1    1942.6 686067 11069
+    ## - pcths:pctpubliccoveragealone              1    2805.4 686930 11071
+    ## <none>                                                  684125 11071
+    ## - percentmarried:incidencerate              1    2982.4 687107 11071
+    ## - povertypercent:pctpubliccoveragealone     1    4610.9 688736 11076
+    ## - percentmarried:pctbach                    1    4916.0 689041 11076
+    ## - percentmarried:medincome                  1    5105.2 689230 11077
+    ## - povertypercent:pctbach                    1    5190.2 689315 11077
+    ## - incidencerate:pctpubliccoveragealone      1    5915.7 690041 11079
+    ## - medincome:pctpubliccoveragealone          1    5957.4 690082 11079
+    ## - povertypercent:pctpubliccoverage          1    6380.3 690505 11080
+    ## 
+    ## Step:  AIC=11063.46
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3144,29 +3146,29 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - incidencerate:medincome                   1     387.9 684364 11056
-    ## - incidencerate:povertypercent              1     618.6 684594 11057
-    ## - pcths:pctpubliccoverage                   1     806.4 684782 11058
-    ## - pctpubliccoverage:pctbach                 1     811.8 684788 11058
-    ## - pctpubliccoveragealone:pctbach            1     960.2 684936 11058
-    ## - medincome:pcths                           1    1039.0 685015 11058
-    ## - incidencerate:pctbach                     1    1042.0 685018 11058
-    ## - medincome:pctpubliccoverage               1    1518.9 685495 11060
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1536.3 685512 11060
-    ## - medincome:pctbach                         1    1873.8 685850 11060
-    ## - incidencerate:pctpubliccoverage           1    2014.6 685990 11061
-    ## - pcths:pctpubliccoveragealone              1    2593.2 686569 11062
-    ## <none>                                                  683976 11063
-    ## - percentmarried:incidencerate              1    3036.9 687013 11064
-    ## - povertypercent:pctpubliccoveragealone     1    4528.5 688504 11068
-    ## - percentmarried:pctbach                    1    4711.2 688687 11068
-    ## - povertypercent:pctbach                    1    5380.7 689357 11070
-    ## - incidencerate:pctpubliccoveragealone      1    5916.0 689892 11071
-    ## - medincome:pctpubliccoveragealone          1    6003.9 689980 11072
-    ## - povertypercent:pctpubliccoverage          1    7048.0 691024 11074
-    ## - percentmarried:medincome                  1    8382.4 692358 11078
+    ## - incidencerate:medincome                   1     423.6 684574 11057
+    ## - incidencerate:povertypercent              1     625.0 684776 11058
+    ## - pcths:pctpubliccoverage                   1     785.4 684936 11058
+    ## - pctpubliccoverage:pctbach                 1     837.7 684988 11058
+    ## - incidencerate:pctbach                     1    1090.8 685241 11059
+    ## - pctpubliccoveragealone:pctbach            1    1101.2 685252 11059
+    ## - medincome:pcths                           1    1199.3 685350 11059
+    ## - medincome:pctpubliccoverage               1    1550.5 685701 11060
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1684.1 685835 11060
+    ## - medincome:pctbach                         1    1933.8 686084 11061
+    ## - incidencerate:pctpubliccoverage           1    2004.8 686155 11061
+    ## <none>                                                  684151 11064
+    ## - pcths:pctpubliccoveragealone              1    2836.9 686987 11064
+    ## - percentmarried:incidencerate              1    3033.7 687184 11064
+    ## - povertypercent:pctpubliccoveragealone     1    4597.9 688749 11068
+    ## - percentmarried:pctbach                    1    4964.1 689115 11069
+    ## - povertypercent:pctbach                    1    5218.9 689369 11070
+    ## - incidencerate:pctpubliccoveragealone      1    5992.6 690143 11072
+    ## - medincome:pctpubliccoveragealone          1    6193.5 690344 11072
+    ## - povertypercent:pctpubliccoverage          1    7239.5 691390 11075
+    ## - percentmarried:medincome                  1    8554.8 692705 11079
     ## 
-    ## Step:  AIC=11056.51
+    ## Step:  AIC=11057.08
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3179,28 +3181,28 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoverage:pctbach + pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - incidencerate:povertypercent              1     273.5 684637 11050
-    ## - pcths:pctpubliccoverage                   1     691.0 685055 11051
-    ## - pctpubliccoverage:pctbach                 1     799.0 685163 11051
-    ## - pctpubliccoveragealone:pctbach            1    1100.2 685464 11052
-    ## - medincome:pcths                           1    1300.1 685664 11052
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1453.0 685817 11053
-    ## - incidencerate:pctbach                     1    1531.1 685895 11053
-    ## - medincome:pctpubliccoverage               1    1866.3 686230 11054
-    ## - medincome:pctbach                         1    2089.6 686453 11055
-    ## - pcths:pctpubliccoveragealone              1    2520.0 686884 11056
-    ## <none>                                                  684364 11056
-    ## - percentmarried:incidencerate              1    3049.1 687413 11057
-    ## - incidencerate:pctpubliccoverage           1    4482.7 688846 11061
-    ## - percentmarried:pctbach                    1    4780.1 689144 11062
-    ## - povertypercent:pctpubliccoveragealone     1    4808.3 689172 11062
-    ## - povertypercent:pctbach                    1    5164.4 689528 11063
-    ## - medincome:pctpubliccoveragealone          1    6307.8 690672 11066
-    ## - povertypercent:pctpubliccoverage          1    7527.3 691891 11069
-    ## - incidencerate:pctpubliccoveragealone      1    8315.0 692679 11071
-    ## - percentmarried:medincome                  1    8460.6 692824 11072
+    ## - incidencerate:povertypercent              1     258.2 684832 11050
+    ## - pcths:pctpubliccoverage                   1     665.9 685240 11051
+    ## - pctpubliccoverage:pctbach                 1     825.5 685400 11052
+    ## - pctpubliccoveragealone:pctbach            1    1253.9 685828 11053
+    ## - medincome:pcths                           1    1451.6 686026 11053
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1587.2 686161 11054
+    ## - incidencerate:pctbach                     1    1616.1 686190 11054
+    ## - medincome:pctpubliccoverage               1    1913.6 686488 11055
+    ## - medincome:pctbach                         1    2129.5 686704 11055
+    ## - pcths:pctpubliccoveragealone              1    2748.5 687323 11057
+    ## <none>                                                  684574 11057
+    ## - percentmarried:incidencerate              1    3043.2 687617 11058
+    ## - incidencerate:pctpubliccoverage           1    4531.0 689105 11062
+    ## - povertypercent:pctpubliccoveragealone     1    4889.0 689463 11063
+    ## - povertypercent:pctbach                    1    4987.5 689562 11063
+    ## - percentmarried:pctbach                    1    5028.4 689603 11063
+    ## - medincome:pctpubliccoveragealone          1    6504.4 691079 11067
+    ## - povertypercent:pctpubliccoverage          1    7729.6 692304 11070
+    ## - incidencerate:pctpubliccoveragealone      1    8475.7 693050 11072
+    ## - percentmarried:medincome                  1    8614.6 693189 11072
     ## 
-    ## Step:  AIC=11049.73
+    ## Step:  AIC=11050.26
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3213,27 +3215,27 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoverage:pctbach + pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - pcths:pctpubliccoverage                   1     748.3 685386 11044
-    ## - pctpubliccoverage:pctbach                 1     850.2 685487 11044
-    ## - pctpubliccoveragealone:pctbach            1    1139.3 685777 11045
-    ## - medincome:pcths                           1    1223.3 685861 11046
-    ## - incidencerate:pctbach                     1    1298.7 685936 11046
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1389.1 686026 11046
-    ## - medincome:pctpubliccoverage               1    1862.3 686500 11047
-    ## - medincome:pctbach                         1    1969.2 686606 11048
-    ## - pcths:pctpubliccoveragealone              1    2576.0 687213 11049
-    ## <none>                                                  684637 11050
-    ## - percentmarried:incidencerate              1    3620.7 688258 11052
-    ## - incidencerate:pctpubliccoverage           1    4410.0 689047 11054
-    ## - percentmarried:pctbach                    1    4653.2 689290 11055
-    ## - povertypercent:pctpubliccoveragealone     1    4849.6 689487 11055
-    ## - povertypercent:pctbach                    1    5090.3 689728 11056
-    ## - medincome:pctpubliccoveragealone          1    6364.2 691001 11059
-    ## - povertypercent:pctpubliccoverage          1    7587.9 692225 11062
-    ## - percentmarried:medincome                  1    8382.8 693020 11064
-    ## - incidencerate:pctpubliccoveragealone      1   12327.8 696965 11075
+    ## - pcths:pctpubliccoverage                   1     720.6 685553 11045
+    ## - pctpubliccoverage:pctbach                 1     875.5 685708 11045
+    ## - pctpubliccoveragealone:pctbach            1    1295.3 686128 11046
+    ## - medincome:pcths                           1    1378.0 686210 11046
+    ## - incidencerate:pctbach                     1    1389.0 686221 11046
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1524.0 686356 11047
+    ## - medincome:pctpubliccoverage               1    1910.1 686743 11048
+    ## - medincome:pctbach                         1    2015.3 686848 11048
+    ## - pcths:pctpubliccoveragealone              1    2807.6 687640 11050
+    ## <none>                                                  684832 11050
+    ## - percentmarried:incidencerate              1    3665.2 688498 11052
+    ## - incidencerate:pctpubliccoverage           1    4459.7 689292 11055
+    ## - percentmarried:pctbach                    1    4904.6 689737 11056
+    ## - povertypercent:pctbach                    1    4919.8 689752 11056
+    ## - povertypercent:pctpubliccoveragealone     1    4929.7 689762 11056
+    ## - medincome:pctpubliccoveragealone          1    6562.4 691395 11060
+    ## - povertypercent:pctpubliccoverage          1    7792.9 692625 11064
+    ## - percentmarried:medincome                  1    8542.8 693375 11065
+    ## - incidencerate:pctpubliccoveragealone      1   12486.5 697319 11076
     ## 
-    ## Step:  AIC=11044.22
+    ## Step:  AIC=11044.67
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3246,26 +3248,26 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - pctpubliccoverage:pctbach                 1     366.5 685752 11038
-    ## - pctpubliccoveragealone:pctbach            1     827.3 686213 11039
-    ## - incidencerate:pctbach                     1    1234.5 686620 11040
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1507.9 686893 11041
-    ## - pcths:pctpubliccoveragealone              1    1957.5 687343 11042
-    ## - medincome:pctpubliccoverage               1    2139.8 687525 11042
-    ## - medincome:pcths                           1    2313.1 687699 11043
-    ## - medincome:pctbach                         1    2676.3 688062 11044
-    ## <none>                                                  685386 11044
-    ## - percentmarried:incidencerate              1    3735.3 689121 11047
-    ## - incidencerate:pctpubliccoverage           1    4793.5 690179 11050
-    ## - povertypercent:pctbach                    1    4920.7 690306 11050
-    ## - percentmarried:pctbach                    1    5225.2 690611 11051
-    ## - povertypercent:pctpubliccoveragealone     1    5497.8 690883 11051
-    ## - medincome:pctpubliccoveragealone          1    6882.4 692268 11055
-    ## - povertypercent:pctpubliccoverage          1    8635.3 694021 11060
-    ## - percentmarried:medincome                  1    9012.1 694398 11061
-    ## - incidencerate:pctpubliccoveragealone      1   13131.1 698517 11072
+    ## - pctpubliccoverage:pctbach                 1     397.5 685951 11038
+    ## - pctpubliccoveragealone:pctbach            1     977.0 686530 11040
+    ## - incidencerate:pctbach                     1    1322.4 686875 11041
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1624.1 687177 11042
+    ## - medincome:pctpubliccoverage               1    2175.3 687728 11043
+    ## - pcths:pctpubliccoveragealone              1    2265.8 687819 11043
+    ## - medincome:pcths                           1    2626.1 688179 11044
+    ## - medincome:pctbach                         1    2772.6 688326 11044
+    ## <none>                                                  685553 11045
+    ## - percentmarried:incidencerate              1    3770.0 689323 11047
+    ## - povertypercent:pctbach                    1    4749.6 690303 11050
+    ## - incidencerate:pctpubliccoverage           1    4839.5 690393 11050
+    ## - percentmarried:pctbach                    1    5431.4 690984 11052
+    ## - povertypercent:pctpubliccoveragealone     1    5555.3 691108 11052
+    ## - medincome:pctpubliccoveragealone          1    7043.5 692597 11056
+    ## - povertypercent:pctpubliccoverage          1    8776.6 694330 11060
+    ## - percentmarried:medincome                  1    9118.7 694672 11061
+    ## - incidencerate:pctpubliccoveragealone      1   13274.7 698828 11072
     ## 
-    ## Step:  AIC=11037.69
+    ## Step:  AIC=11038.22
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3277,25 +3279,25 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoverage:pctpubliccoveragealone + pctpubliccoveragealone:pctbach
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - pctpubliccoveragealone:pctbach            1     478.4 686230 11032
-    ## - incidencerate:pctbach                     1    1115.5 686867 11033
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1267.7 687020 11034
-    ## - medincome:pctpubliccoverage               1    1815.7 687568 11035
-    ## - pcths:pctpubliccoveragealone              1    1874.0 687626 11035
-    ## - medincome:pcths                           1    2243.2 687995 11036
-    ## <none>                                                  685752 11038
-    ## - medincome:pctbach                         1    3298.2 689050 11039
-    ## - percentmarried:incidencerate              1    3874.0 689626 11040
-    ## - incidencerate:pctpubliccoverage           1    4627.4 690379 11042
-    ## - povertypercent:pctbach                    1    4857.3 690609 11043
-    ## - percentmarried:pctbach                    1    5086.9 690839 11044
-    ## - povertypercent:pctpubliccoveragealone     1    6211.0 691963 11047
-    ## - medincome:pctpubliccoveragealone          1    6702.4 692454 11048
-    ## - percentmarried:medincome                  1    8848.3 694600 11054
-    ## - povertypercent:pctpubliccoverage          1    9431.7 695184 11055
-    ## - incidencerate:pctpubliccoveragealone      1   12839.7 698592 11064
+    ## - pctpubliccoveragealone:pctbach            1     617.5 686568 11032
+    ## - incidencerate:pctbach                     1    1193.3 687144 11034
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1363.3 687314 11034
+    ## - medincome:pctpubliccoverage               1    1830.0 687781 11036
+    ## - pcths:pctpubliccoveragealone              1    2159.2 688110 11036
+    ## - medincome:pcths                           1    2525.9 688477 11037
+    ## <none>                                                  685951 11038
+    ## - medincome:pctbach                         1    3418.9 689369 11040
+    ## - percentmarried:incidencerate              1    3916.5 689867 11041
+    ## - incidencerate:pctpubliccoverage           1    4664.7 690615 11043
+    ## - povertypercent:pctbach                    1    4685.1 690636 11043
+    ## - percentmarried:pctbach                    1    5258.7 691209 11045
+    ## - povertypercent:pctpubliccoveragealone     1    6293.6 692244 11047
+    ## - medincome:pctpubliccoveragealone          1    6821.9 692773 11049
+    ## - percentmarried:medincome                  1    8910.4 694861 11054
+    ## - povertypercent:pctpubliccoverage          1    9603.6 695554 11056
+    ## - incidencerate:pctpubliccoveragealone      1   12965.2 698916 11065
     ## 
-    ## Step:  AIC=11031.45
+    ## Step:  AIC=11032.35
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3307,24 +3309,24 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoverage:pctpubliccoveragealone
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - incidencerate:pctbach                     1    1203.0 687433 11027
-    ## - pcths:pctpubliccoveragealone              1    1439.5 687670 11028
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1639.9 687870 11028
-    ## - medincome:pcths                           1    1766.6 687997 11029
-    ## - medincome:pctpubliccoverage               1    1834.0 688064 11029
-    ## <none>                                                  686230 11032
-    ## - medincome:pctbach                         1    2863.3 689094 11032
-    ## - percentmarried:incidencerate              1    3914.2 690145 11034
-    ## - incidencerate:pctpubliccoverage           1    4629.0 690859 11036
-    ## - percentmarried:pctbach                    1    4763.8 690994 11037
-    ## - povertypercent:pctbach                    1    5821.1 692051 11039
-    ## - medincome:pctpubliccoveragealone          1    6625.2 692856 11042
-    ## - povertypercent:pctpubliccoveragealone     1    6843.9 693074 11042
-    ## - percentmarried:medincome                  1    8402.8 694633 11046
-    ## - povertypercent:pctpubliccoverage          1   10044.8 696275 11050
-    ## - incidencerate:pctpubliccoveragealone      1   12877.1 699107 11058
+    ## - incidencerate:pctbach                     1    1275.4 687843 11028
+    ## - pcths:pctpubliccoveragealone              1    1563.2 688131 11029
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1835.2 688403 11030
+    ## - medincome:pctpubliccoverage               1    1851.4 688420 11030
+    ## - medincome:pcths                           1    1918.8 688487 11030
+    ## - medincome:pctbach                         1    2815.5 689384 11032
+    ## <none>                                                  686568 11032
+    ## - percentmarried:incidencerate              1    3982.8 690551 11035
+    ## - incidencerate:pctpubliccoverage           1    4664.4 691232 11037
+    ## - percentmarried:pctbach                    1    4894.9 691463 11038
+    ## - povertypercent:pctbach                    1    5771.7 692340 11040
+    ## - medincome:pctpubliccoveragealone          1    6734.6 693303 11043
+    ## - povertypercent:pctpubliccoveragealone     1    6956.4 693524 11043
+    ## - percentmarried:medincome                  1    8383.1 694951 11047
+    ## - povertypercent:pctpubliccoverage          1   10315.8 696884 11052
+    ## - incidencerate:pctpubliccoveragealone      1   12996.2 699564 11059
     ## 
-    ## Step:  AIC=11027.15
+    ## Step:  AIC=11028.24
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3336,23 +3338,23 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoverage:pctpubliccoveragealone
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - pcths:pctpubliccoveragealone              1    1661.7 689095 11024
-    ## - pctpubliccoverage:pctpubliccoveragealone  1    1749.4 689183 11024
-    ## - medincome:pcths                           1    1866.0 689299 11025
-    ## - medincome:pctpubliccoverage               1    2016.4 689450 11025
-    ## <none>                                                  687433 11027
-    ## - medincome:pctbach                         1    2891.2 690325 11027
-    ## - percentmarried:incidencerate              1    3567.2 691001 11029
-    ## - incidencerate:pctpubliccoverage           1    4547.9 691981 11032
-    ## - percentmarried:pctbach                    1    4707.6 692141 11032
-    ## - povertypercent:pctbach                    1    6087.5 693521 11036
-    ## - medincome:pctpubliccoveragealone          1    6630.3 694064 11037
-    ## - povertypercent:pctpubliccoveragealone     1    6951.9 694385 11038
-    ## - percentmarried:medincome                  1    8375.7 695809 11042
-    ## - povertypercent:pctpubliccoverage          1   10694.6 698128 11048
-    ## - incidencerate:pctpubliccoveragealone      1   11674.4 699108 11050
+    ## - pcths:pctpubliccoveragealone              1    1765.4 689609 11025
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1939.9 689783 11026
+    ## - medincome:pcths                           1    1962.3 689806 11026
+    ## - medincome:pctpubliccoverage               1    2040.0 689883 11026
+    ## - medincome:pctbach                         1    2809.5 690653 11028
+    ## <none>                                                  687843 11028
+    ## - percentmarried:incidencerate              1    3620.3 691464 11030
+    ## - incidencerate:pctpubliccoverage           1    4579.5 692423 11033
+    ## - percentmarried:pctbach                    1    4830.0 692673 11034
+    ## - povertypercent:pctbach                    1    6028.8 693872 11037
+    ## - medincome:pctpubliccoveragealone          1    6731.8 694575 11039
+    ## - povertypercent:pctpubliccoveragealone     1    7060.9 694904 11039
+    ## - percentmarried:medincome                  1    8341.5 696185 11043
+    ## - povertypercent:pctpubliccoverage          1   10969.9 698813 11050
+    ## - incidencerate:pctpubliccoveragealone      1   11721.0 699564 11052
     ## 
-    ## Step:  AIC=11024.05
+    ## Step:  AIC=11025.42
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3363,22 +3365,22 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     povertypercent:pctbach + pctpubliccoverage:pctpubliccoveragealone
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - medincome:pcths                           1     545.4 689640 11018
-    ## - pctpubliccoverage:pctpubliccoveragealone  1     896.1 689991 11019
-    ## - medincome:pctbach                         1    1947.3 691042 11022
-    ## - medincome:pctpubliccoverage               1    1964.3 691059 11022
-    ## <none>                                                  689095 11024
-    ## - percentmarried:incidencerate              1    3474.1 692569 11026
-    ## - percentmarried:pctbach                    1    4484.9 693580 11028
-    ## - incidencerate:pctpubliccoverage           1    4882.3 693977 11030
-    ## - povertypercent:pctbach                    1    4929.7 694025 11030
-    ## - medincome:pctpubliccoveragealone          1    6481.6 695577 11034
-    ## - povertypercent:pctpubliccoveragealone     1    7175.8 696271 11036
-    ## - percentmarried:medincome                  1    8389.3 697484 11039
-    ## - povertypercent:pctpubliccoverage          1    9747.7 698843 11042
-    ## - incidencerate:pctpubliccoveragealone      1   12430.8 701526 11049
+    ## - medincome:pcths                           1     549.5 690158 11019
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1031.5 690640 11021
+    ## - medincome:pctbach                         1    1838.7 691448 11023
+    ## - medincome:pctpubliccoverage               1    1986.7 691596 11023
+    ## <none>                                                  689609 11025
+    ## - percentmarried:incidencerate              1    3558.8 693168 11027
+    ## - percentmarried:pctbach                    1    4646.4 694255 11030
+    ## - povertypercent:pctbach                    1    4857.9 694467 11031
+    ## - incidencerate:pctpubliccoverage           1    4927.1 694536 11031
+    ## - medincome:pctpubliccoveragealone          1    6580.7 696190 11035
+    ## - povertypercent:pctpubliccoveragealone     1    7249.6 696858 11037
+    ## - percentmarried:medincome                  1    8430.9 698040 11040
+    ## - povertypercent:pctpubliccoverage          1    9991.6 699600 11044
+    ## - incidencerate:pctpubliccoveragealone      1   12527.9 702137 11051
     ## 
-    ## Step:  AIC=11017.99
+    ## Step:  AIC=11019.36
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3389,22 +3391,22 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     pctpubliccoverage:pctpubliccoveragealone
     ## 
     ##                                            Df Sum of Sq    RSS   AIC
-    ## - pctpubliccoverage:pctpubliccoveragealone  1     860.4 690501 11013
-    ## - medincome:pctbach                         1    1420.6 691061 11014
-    ## - medincome:pctpubliccoverage               1    1988.1 691629 11016
-    ## <none>                                                  689640 11018
-    ## - percentmarried:incidencerate              1    3506.4 693147 11020
-    ## - percentmarried:pctbach                    1    4453.0 694094 11022
-    ## - incidencerate:pctpubliccoverage           1    4762.4 694403 11023
-    ## - povertypercent:pctbach                    1    4926.9 694567 11024
-    ## - medincome:pctpubliccoveragealone          1    6281.6 695922 11027
-    ## - povertypercent:pctpubliccoveragealone     1    6883.4 696524 11029
-    ## - percentmarried:medincome                  1    8030.2 697671 11032
-    ## - povertypercent:pctpubliccoverage          1    9583.4 699224 11036
-    ## - incidencerate:pctpubliccoveragealone      1   12131.3 701772 11042
-    ## - pcths                                     1   18102.2 707743 11058
+    ## - pctpubliccoverage:pctpubliccoveragealone  1    1001.5 691160 11014
+    ## - medincome:pctbach                         1    1331.6 691490 11015
+    ## - medincome:pctpubliccoverage               1    2016.3 692175 11017
+    ## <none>                                                  690158 11019
+    ## - percentmarried:incidencerate              1    3583.4 693742 11021
+    ## - percentmarried:pctbach                    1    4623.6 694782 11024
+    ## - incidencerate:pctpubliccoverage           1    4788.5 694947 11024
+    ## - povertypercent:pctbach                    1    4926.2 695085 11025
+    ## - medincome:pctpubliccoveragealone          1    6381.1 696539 11029
+    ## - povertypercent:pctpubliccoveragealone     1    6932.5 697091 11030
+    ## - percentmarried:medincome                  1    8094.1 698252 11033
+    ## - povertypercent:pctpubliccoverage          1    9821.7 699980 11038
+    ## - incidencerate:pctpubliccoveragealone      1   12217.4 702376 11044
+    ## - pcths                                     1   17584.4 707743 11058
     ## 
-    ## Step:  AIC=11012.76
+    ## Step:  AIC=11014.51
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3414,21 +3416,21 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     povertypercent:pctpubliccoveragealone + povertypercent:pctbach
     ## 
     ##                                         Df Sum of Sq    RSS   AIC
-    ## - medincome:pctbach                      1    1814.3 692315 11010
-    ## - medincome:pctpubliccoverage            1    2244.6 692745 11011
-    ## <none>                                               690501 11013
-    ## - percentmarried:incidencerate           1    3483.7 693985 11014
-    ## - povertypercent:pctbach                 1    4538.8 695040 11017
-    ## - percentmarried:pctbach                 1    4794.6 695295 11018
-    ## - incidencerate:pctpubliccoverage        1    4830.6 695331 11018
-    ## - medincome:pctpubliccoveragealone       1    5519.6 696020 11020
-    ## - povertypercent:pctpubliccoveragealone  1    7176.5 697677 11024
-    ## - percentmarried:medincome               1    7545.1 698046 11025
-    ## - povertypercent:pctpubliccoverage       1    8824.2 699325 11028
-    ## - incidencerate:pctpubliccoveragealone   1   12121.9 702623 11037
-    ## - pcths                                  1   19199.3 709700 11056
+    ## - medincome:pctbach                      1    1739.9 692900 11012
+    ## - medincome:pctpubliccoverage            1    2293.8 693454 11013
+    ## <none>                                               691160 11014
+    ## - percentmarried:incidencerate           1    3564.5 694724 11016
+    ## - povertypercent:pctbach                 1    4500.8 695661 11019
+    ## - incidencerate:pctpubliccoverage        1    4864.5 696024 11020
+    ## - percentmarried:pctbach                 1    5002.8 696163 11020
+    ## - medincome:pctpubliccoveragealone       1    5526.9 696687 11022
+    ## - povertypercent:pctpubliccoveragealone  1    7246.9 698407 11026
+    ## - percentmarried:medincome               1    7562.7 698723 11027
+    ## - povertypercent:pctpubliccoverage       1    8969.9 700130 11031
+    ## - incidencerate:pctpubliccoveragealone   1   12214.7 703374 11039
+    ## - pcths                                  1   18540.3 709700 11056
     ## 
-    ## Step:  AIC=11010.05
+    ## Step:  AIC=11011.6
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3438,20 +3440,20 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     povertypercent:pctpubliccoveragealone + povertypercent:pctbach
     ## 
     ##                                         Df Sum of Sq    RSS   AIC
-    ## - medincome:pctpubliccoverage            1    1226.1 693541 11006
-    ## - povertypercent:pctbach                 1    2842.8 695158 11010
-    ## <none>                                               692315 11010
-    ## - percentmarried:pctbach                 1    3537.8 695853 11012
-    ## - percentmarried:incidencerate           1    3587.6 695903 11012
-    ## - incidencerate:pctpubliccoverage        1    5071.5 697387 11016
-    ## - medincome:pctpubliccoveragealone       1    5952.7 698268 11018
-    ## - povertypercent:pctpubliccoverage       1    7114.6 699430 11021
-    ## - percentmarried:medincome               1    7261.1 699576 11022
-    ## - povertypercent:pctpubliccoveragealone  1    7357.0 699672 11022
-    ## - incidencerate:pctpubliccoveragealone   1   12763.1 705078 11036
-    ## - pcths                                  1   19448.1 711763 11053
+    ## - medincome:pctpubliccoverage            1    1288.4 694188 11008
+    ## <none>                                               692900 11012
+    ## - povertypercent:pctbach                 1    2900.8 695800 11012
+    ## - percentmarried:incidencerate           1    3665.1 696565 11014
+    ## - percentmarried:pctbach                 1    3758.5 696658 11014
+    ## - incidencerate:pctpubliccoverage        1    5100.4 698000 11018
+    ## - medincome:pctpubliccoveragealone       1    5953.8 698854 11020
+    ## - percentmarried:medincome               1    7284.7 700184 11023
+    ## - povertypercent:pctpubliccoverage       1    7311.7 700211 11023
+    ## - povertypercent:pctpubliccoveragealone  1    7427.0 700327 11024
+    ## - incidencerate:pctpubliccoveragealone   1   12842.3 705742 11038
+    ## - pcths                                  1   18863.5 711763 11053
     ## 
-    ## Step:  AIC=11005.78
+    ## Step:  AIC=11007.49
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3461,19 +3463,19 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     povertypercent:pctbach
     ## 
     ##                                         Df Sum of Sq    RSS   AIC
-    ## - povertypercent:pctbach                 1    2636.0 696177 11005
-    ## <none>                                               693541 11006
-    ## - percentmarried:pctbach                 1    3216.0 696757 11007
-    ## - percentmarried:incidencerate           1    3828.9 697370 11008
-    ## - incidencerate:pctpubliccoverage        1    5274.3 698815 11012
-    ## - percentmarried:medincome               1    6667.6 700209 11016
-    ## - povertypercent:pctpubliccoverage       1    6934.0 700475 11016
-    ## - povertypercent:pctpubliccoveragealone  1    8095.5 701637 11020
-    ## - medincome:pctpubliccoveragealone       1    9690.8 703232 11024
-    ## - incidencerate:pctpubliccoveragealone   1   12935.1 706476 11032
-    ## - pcths                                  1   19104.4 712646 11048
+    ## - povertypercent:pctbach                 1    2683.0 696871 11007
+    ## <none>                                               694188 11008
+    ## - percentmarried:pctbach                 1    3416.5 697605 11009
+    ## - percentmarried:incidencerate           1    3917.1 698105 11010
+    ## - incidencerate:pctpubliccoverage        1    5309.5 699498 11014
+    ## - percentmarried:medincome               1    6673.2 700861 11018
+    ## - povertypercent:pctpubliccoverage       1    7063.9 701252 11018
+    ## - povertypercent:pctpubliccoveragealone  1    8028.3 702216 11021
+    ## - medincome:pctpubliccoveragealone       1    9373.7 703562 11024
+    ## - incidencerate:pctpubliccoveragealone   1   13021.9 707210 11034
+    ## - pcths                                  1   18457.5 712646 11048
     ## 
-    ## Step:  AIC=11005.21
+    ## Step:  AIC=11007.04
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3482,18 +3484,18 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     povertypercent:pctpubliccoverage + povertypercent:pctpubliccoveragealone
     ## 
     ##                                         Df Sum of Sq    RSS   AIC
-    ## - percentmarried:pctbach                 1    1158.4 697336 11001
-    ## <none>                                               696177 11005
-    ## - percentmarried:incidencerate           1    3928.8 700106 11008
-    ## - percentmarried:medincome               1    4526.2 700703 11010
-    ## - incidencerate:pctpubliccoverage        1    5405.9 701583 11012
-    ## - povertypercent:pctpubliccoverage       1    5407.7 701585 11012
-    ## - medincome:pctpubliccoveragealone       1    7478.5 703656 11017
-    ## - povertypercent:pctpubliccoveragealone  1    7497.9 703675 11017
-    ## - incidencerate:pctpubliccoveragealone   1   13418.5 709596 11033
-    ## - pcths                                  1   17749.0 713926 11044
+    ## - percentmarried:pctbach                 1    1280.5 698152 11003
+    ## <none>                                               696871 11007
+    ## - percentmarried:incidencerate           1    4018.9 700890 11010
+    ## - percentmarried:medincome               1    4507.1 701378 11011
+    ## - incidencerate:pctpubliccoverage        1    5442.6 702314 11014
+    ## - povertypercent:pctpubliccoverage       1    5507.1 702378 11014
+    ## - medincome:pctpubliccoveragealone       1    7164.2 704035 11018
+    ## - povertypercent:pctpubliccoveragealone  1    7430.3 704301 11019
+    ## - incidencerate:pctpubliccoveragealone   1   13512.3 710383 11035
+    ## - pcths                                  1   17055.1 713926 11044
     ## 
-    ## Step:  AIC=11000.74
+    ## Step:  AIC=11002.89
     ## target_deathrate ~ percentmarried + incidencerate + medincome + 
     ##     pcths + povertypercent + pctpubliccoverage + pctpubliccoveragealone + 
     ##     pctbach + percentmarried:incidencerate + percentmarried:medincome + 
@@ -3502,16 +3504,16 @@ full_selected_model_step <- step(full_selected_model, k=log(nrow(df)))
     ##     povertypercent:pctpubliccoveragealone
     ## 
     ##                                         Df Sum of Sq    RSS   AIC
-    ## <none>                                               697336 11001
-    ## - percentmarried:medincome               1    3415.9 700752 11002
-    ## - percentmarried:incidencerate           1    4204.3 701540 11004
-    ## - incidencerate:pctpubliccoverage        1    5453.1 702789 11008
-    ## - povertypercent:pctpubliccoverage       1    6143.4 703479 11009
-    ## - medincome:pctpubliccoveragealone       1    6672.1 704008 11011
-    ## - povertypercent:pctpubliccoveragealone  1    7482.8 704818 11013
-    ## - pctbach                                1   13489.2 710825 11028
-    ## - incidencerate:pctpubliccoveragealone   1   13692.5 711028 11029
-    ## - pcths                                  1   18589.9 715926 11041
+    ## <none>                                               698152 11003
+    ## - percentmarried:medincome               1    3248.4 701400 11004
+    ## - percentmarried:incidencerate           1    4317.9 702470 11007
+    ## - incidencerate:pctpubliccoverage        1    5494.4 703646 11010
+    ## - povertypercent:pctpubliccoverage       1    6290.3 704442 11012
+    ## - medincome:pctpubliccoveragealone       1    6316.9 704468 11012
+    ## - povertypercent:pctpubliccoveragealone  1    7413.3 705565 11015
+    ## - incidencerate:pctpubliccoveragealone   1   13808.0 711960 11031
+    ## - pctbach                                1   14679.5 712831 11034
+    ## - pcths                                  1   17773.9 715926 11041
 
 ``` r
 #Last model: 
@@ -3534,47 +3536,47 @@ summary(full_selected_model)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -88.620 -11.014  -0.178  10.694 139.208 
+    ## -88.668 -11.052  -0.135  10.745 138.769 
     ## 
     ## Coefficients:
     ##                                            Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                               3.611e+02  1.774e+02   2.035 0.041973
-    ## percentmarried                           -8.913e-01  1.866e+00  -0.478 0.632890
-    ## incidencerate                            -2.503e-01  1.781e-01  -1.406 0.160010
-    ## medincome                                -5.975e-05  1.732e-03  -0.035 0.972479
-    ## pcths                                    -1.943e+00  6.268e+00  -0.310 0.756586
-    ## povertypercent                           -7.016e+00  2.994e+00  -2.343 0.019243
-    ## pctpubliccoverage                        -7.294e-01  3.521e+00  -0.207 0.835881
-    ## pctpubliccoveragealone                   -1.194e-01  4.252e+00  -0.028 0.977600
-    ## pctbach                                  -5.945e+00  1.630e+00  -3.648 0.000272
-    ## percentmarried:incidencerate              3.601e-03  1.329e-03   2.709 0.006816
-    ## percentmarried:medincome                 -4.046e-05  1.783e-05  -2.269 0.023374
-    ## percentmarried:pcths                     -2.385e-02  5.320e-02  -0.448 0.654039
-    ## percentmarried:povertypercent             1.408e-02  2.267e-02   0.621 0.534517
-    ## percentmarried:pctpubliccoverage          1.985e-02  2.773e-02   0.716 0.474172
-    ## percentmarried:pctpubliccoveragealone    -2.765e-02  3.364e-02  -0.822 0.411295
-    ## percentmarried:pctbach                    4.131e-02  1.661e-02   2.487 0.012968
-    ## incidencerate:medincome                   1.294e-06  1.657e-06   0.781 0.434794
-    ## incidencerate:pcths                       3.199e-03  4.726e-03   0.677 0.498508
-    ## incidencerate:povertypercent              4.783e-03  3.388e-03   1.412 0.158247
-    ## incidencerate:pctpubliccoverage          -5.984e-03  2.698e-03  -2.218 0.026689
-    ## incidencerate:pctpubliccoveragealone      1.300e-02  3.652e-03   3.559 0.000382
-    ## incidencerate:pctbach                     2.423e-03  1.489e-03   1.627 0.103899
-    ## medincome:pcths                           6.796e-05  5.122e-05   1.327 0.184718
-    ## medincome:povertypercent                 -8.289e-06  2.271e-05  -0.365 0.715201
-    ## medincome:pctpubliccoverage               4.272e-05  1.992e-05   2.145 0.032090
-    ## medincome:pctpubliccoveragealone         -9.887e-05  3.046e-05  -3.246 0.001191
-    ## medincome:pctbach                         2.256e-05  1.074e-05   2.100 0.035831
-    ## pcths:povertypercent                     -1.286e-03  1.026e-01  -0.013 0.989996
-    ## pcths:pctpubliccoverage                  -9.657e-02  8.554e-02  -1.129 0.259050
-    ## pcths:pctpubliccoveragealone              2.144e-01  1.167e-01   1.836 0.066453
-    ## pcths:pctbach                             8.178e-03  3.416e-02   0.239 0.810827
-    ## povertypercent:pctpubliccoverage          1.707e-01  4.549e-02   3.752 0.000181
-    ## povertypercent:pctpubliccoveragealone    -1.425e-01  4.808e-02  -2.963 0.003086
-    ## povertypercent:pctbach                    8.893e-02  2.979e-02   2.985 0.002870
-    ## pctpubliccoverage:pctpubliccoveragealone -3.163e-02  1.955e-02  -1.618 0.105882
-    ## pctpubliccoverage:pctbach                -3.208e-02  2.390e-02  -1.343 0.179533
-    ## pctpubliccoveragealone:pctbach            4.344e-02  3.365e-02   1.291 0.196902
+    ## (Intercept)                               3.581e+02  1.576e+02   2.272 0.023219
+    ## percentmarried                           -1.080e+00  1.720e+00  -0.628 0.529870
+    ## incidencerate                            -2.303e-01  1.698e-01  -1.357 0.175003
+    ## medincome                                 2.000e-04  1.622e-03   0.123 0.901852
+    ## pcths                                    -3.868e-01  1.025e+00  -0.377 0.706032
+    ## povertypercent                           -7.048e+00  2.761e+00  -2.553 0.010774
+    ## pctpubliccoverage                        -1.207e+00  3.285e+00  -0.367 0.713398
+    ## pctpubliccoveragealone                    8.764e-01  3.942e+00   0.222 0.824093
+    ## pctbach                                  -5.946e+00  1.594e+00  -3.731 0.000197
+    ## percentmarried:incidencerate              3.674e-03  1.324e-03   2.775 0.005574
+    ## percentmarried:medincome                 -4.065e-05  1.783e-05  -2.280 0.022697
+    ## percentmarried:pcths                     -3.324e-03  8.633e-03  -0.385 0.700267
+    ## percentmarried:povertypercent             1.440e-02  2.259e-02   0.637 0.524067
+    ## percentmarried:pctpubliccoverage          1.928e-02  2.773e-02   0.695 0.487036
+    ## percentmarried:pctpubliccoveragealone    -2.769e-02  3.360e-02  -0.824 0.409930
+    ## percentmarried:pctbach                    4.208e-02  1.644e-02   2.560 0.010543
+    ## incidencerate:medincome                   1.453e-06  1.648e-06   0.882 0.378074
+    ## incidencerate:pcths                       3.398e-04  7.742e-04   0.439 0.660758
+    ## incidencerate:povertypercent              4.697e-03  3.380e-03   1.389 0.164860
+    ## incidencerate:pctpubliccoverage          -5.899e-03  2.698e-03  -2.186 0.028924
+    ## incidencerate:pctpubliccoveragealone      1.315e-02  3.645e-03   3.608 0.000317
+    ## incidencerate:pctbach                     2.143e-03  1.463e-03   1.465 0.143024
+    ## medincome:pcths                           1.193e-05  8.514e-06   1.402 0.161222
+    ## medincome:povertypercent                 -8.423e-06  2.264e-05  -0.372 0.709866
+    ## medincome:pctpubliccoverage               4.287e-05  1.991e-05   2.153 0.031437
+    ## medincome:pctpubliccoveragealone         -9.970e-05  3.042e-05  -3.277 0.001069
+    ## medincome:pctbach                         2.280e-05  1.051e-05   2.171 0.030078
+    ## pcths:povertypercent                      8.380e-04  1.663e-02   0.050 0.959809
+    ## pcths:pctpubliccoverage                  -1.602e-02  1.399e-02  -1.145 0.252311
+    ## pcths:pctpubliccoveragealone              3.687e-02  1.894e-02   1.947 0.051749
+    ## pcths:pctbach                             3.101e-03  5.869e-03   0.528 0.597297
+    ## povertypercent:pctpubliccoverage          1.701e-01  4.538e-02   3.749 0.000183
+    ## povertypercent:pctpubliccoveragealone    -1.420e-01  4.802e-02  -2.957 0.003144
+    ## povertypercent:pctbach                    8.804e-02  2.940e-02   2.994 0.002788
+    ## pctpubliccoverage:pctpubliccoveragealone -3.262e-02  1.949e-02  -1.674 0.094375
+    ## pctpubliccoverage:pctbach                -3.349e-02  2.381e-02  -1.406 0.159787
+    ## pctpubliccoveragealone:pctbach            4.675e-02  3.334e-02   1.402 0.161000
     ##                                             
     ## (Intercept)                              *  
     ## percentmarried                              
@@ -3610,15 +3612,15 @@ summary(full_selected_model)
     ## povertypercent:pctpubliccoverage         ***
     ## povertypercent:pctpubliccoveragealone    ** 
     ## povertypercent:pctbach                   ** 
-    ## pctpubliccoverage:pctpubliccoveragealone    
+    ## pctpubliccoverage:pctpubliccoveragealone .  
     ## pctpubliccoverage:pctbach                   
     ## pctpubliccoveragealone:pctbach              
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Residual standard error: 19.52 on 1794 degrees of freedom
-    ## Multiple R-squared:  0.5214, Adjusted R-squared:  0.5118 
-    ## F-statistic: 54.28 on 36 and 1794 DF,  p-value: < 2.2e-16
+    ## Multiple R-squared:  0.5212, Adjusted R-squared:  0.5116 
+    ## F-statistic: 54.25 on 36 and 1794 DF,  p-value: < 2.2e-16
 
 In this section, we are building a series of linear regression models to
 predict the target death rate. We started with a simple model (m1) that
@@ -3767,20 +3769,20 @@ summary(m3)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -110.706  -11.818    0.317   11.728  136.687 
+    ## -114.310  -11.810    0.294   11.810  135.278 
     ## 
     ## Coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)    -1.722217   5.148202  -0.335    0.738    
-    ## pcths           3.504566   0.218176  16.063   <2e-16 ***
-    ## incidencerate   0.207268   0.008582  24.152   <2e-16 ***
-    ## povertypercent  1.689318   0.075608  22.343   <2e-16 ***
+    ## (Intercept)    17.781265   4.512788    3.94 8.45e-05 ***
+    ## pcths           0.568193   0.035899   15.83  < 2e-16 ***
+    ## incidencerate   0.207240   0.008598   24.10  < 2e-16 ***
+    ## povertypercent  1.689400   0.075770   22.30  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 20.44 on 1827 degrees of freedom
-    ## Multiple R-squared:  0.4654, Adjusted R-squared:  0.4646 
-    ## F-statistic: 530.2 on 3 and 1827 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 20.47 on 1827 degrees of freedom
+    ## Multiple R-squared:  0.4635, Adjusted R-squared:  0.4626 
+    ## F-statistic: 526.1 on 3 and 1827 DF,  p-value: < 2.2e-16
 
 ``` r
 plot(m3)
@@ -3796,9 +3798,9 @@ anova(m1,m3)
     ## 
     ## Model 1: target_deathrate ~ incidencerate
     ## Model 2: target_deathrate ~ pcths + incidencerate + povertypercent
-    ##   Res.Df     RSS Df Sum of Sq   F    Pr(>F)    
-    ## 1   1829 1139089                               
-    ## 2   1827  763150  2    375939 450 < 2.2e-16 ***
+    ##   Res.Df     RSS Df Sum of Sq      F    Pr(>F)    
+    ## 1   1829 1139089                                  
+    ## 2   1827  765911  2    373178 445.09 < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -3812,20 +3814,20 @@ anova(m2,m3)
     ## Model 2: target_deathrate ~ pcths + incidencerate + povertypercent
     ##   Res.Df    RSS Df Sum of Sq      F    Pr(>F)    
     ## 1   1828 870928                                  
-    ## 2   1827 763150  1    107777 258.02 < 2.2e-16 ***
+    ## 2   1827 765911  1    105016 250.51 < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
 # target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent
-m4 <- lm(target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + povertypercent, data= df)
+m4 <- lm(target_deathrate ~ incidencerate + pcths_raised + pctpubliccoveragealone + povertypercent, data= df)
 summary(m4)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
-    ##     povertypercent, data = df)
+    ## lm(formula = target_deathrate ~ incidencerate + pcths_raised + 
+    ##     pctpubliccoveragealone + povertypercent, data = df)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
@@ -3835,7 +3837,7 @@ summary(m4)
     ##                         Estimate Std. Error t value Pr(>|t|)    
     ## (Intercept)            -0.312697   5.142539  -0.061 0.951520    
     ## incidencerate           0.205297   0.008566  23.967  < 2e-16 ***
-    ## pcths                   3.258983   0.226714  14.375  < 2e-16 ***
+    ## pcths_raised            3.258983   0.226714  14.375  < 2e-16 ***
     ## pctpubliccoveragealone  0.534798   0.140264   3.813 0.000142 ***
     ## povertypercent          1.294877   0.127972  10.118  < 2e-16 ***
     ## ---
@@ -3859,7 +3861,7 @@ anova(m1,m4)
     ## Analysis of Variance Table
     ## 
     ## Model 1: target_deathrate ~ incidencerate
-    ## Model 2: target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
+    ## Model 2: target_deathrate ~ incidencerate + pcths_raised + pctpubliccoveragealone + 
     ##     povertypercent
     ##   Res.Df     RSS Df Sum of Sq      F    Pr(>F)    
     ## 1   1829 1139089                                  
@@ -3874,7 +3876,7 @@ anova(m2,m4)
     ## Analysis of Variance Table
     ## 
     ## Model 1: target_deathrate ~ povertypercent + incidencerate
-    ## Model 2: target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
+    ## Model 2: target_deathrate ~ incidencerate + pcths_raised + pctpubliccoveragealone + 
     ##     povertypercent
     ##   Res.Df    RSS Df Sum of Sq      F    Pr(>F)    
     ## 1   1828 870928                                  
@@ -3889,11 +3891,11 @@ anova(m3,m4)
     ## Analysis of Variance Table
     ## 
     ## Model 1: target_deathrate ~ pcths + incidencerate + povertypercent
-    ## Model 2: target_deathrate ~ incidencerate + pcths + pctpubliccoveragealone + 
+    ## Model 2: target_deathrate ~ incidencerate + pcths_raised + pctpubliccoveragealone + 
     ##     povertypercent
-    ##   Res.Df    RSS Df Sum of Sq      F   Pr(>F)    
-    ## 1   1827 763150                                 
-    ## 2   1826 757123  1    6027.7 14.537 0.000142 ***
+    ##   Res.Df    RSS Df Sum of Sq      F    Pr(>F)    
+    ## 1   1827 765911                                  
+    ## 2   1826 757123  1    8788.4 21.195 4.434e-06 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -3920,7 +3922,7 @@ bptest(m4)
 vif(m4)
 ```
 
-    ##          incidencerate                  pcths pctpubliccoveragealone 
+    ##          incidencerate           pcths_raised pctpubliccoveragealone 
     ##               1.009780               1.124244               3.185215 
     ##         povertypercent 
     ##               2.970894
@@ -4079,6 +4081,9 @@ test$pcths <- test$pcths18_24 + test$pcths25_over
 test$pctbach <- test$pctbachdeg18_24 + test$pctbachdeg25_over
 test$racindex <- test$pctblack + test$pctasian + test$pctotherrace
 test$social_welfare <- test$pctpubliccoverage + test$povertypercent
+
+# Raising to the optimal lambda
+test$pcths_raised <- test$pcths^optimal_lambda_pcths
 ```
 
 ## Model Evaluation
@@ -4095,13 +4100,13 @@ r_squared <- 1 - mse / var(test$target_deathrate)
 cat("Mean Squared Error:", mse, "\n")
 ```
 
-    ## Mean Squared Error: 31862.95
+    ## Mean Squared Error: 402.7498
 
 ``` r
 cat("R-squared:", r_squared, "\n")
 ```
 
-    ## R-squared: -41.16434
+    ## R-squared: 0.4670399
 
 The model has an R-squared value of 0.46 on the test dataset, indicating
 that it explains 46% of the variance in the target death rate.
