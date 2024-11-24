@@ -24,17 +24,11 @@ jobs:
       with:
         r-version: '4.4.1'
 
+    - name: Install Pandoc
+      uses: r-lib/actions/setup-pandoc@v2
+
     - name: Install dependencies
       run: Rscript .github/scripts/install_packages.R
-
-    - name: Install Pandoc
-      run: |
-        choco install pandoc -y
-        pandoc --version
-
-    - name: Install PdfLatex
-      run: |
-        choco install miktex -y
 
     - name: Render Rmd to md
       run: Rscript -e 'rmarkdown::render("${{ env.RMD_FILE }}", output_format = "pdf_document", output_file = "${{ env.TARGET_PDF }}.pdf")'
