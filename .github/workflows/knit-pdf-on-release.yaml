@@ -12,6 +12,10 @@ jobs:
   knit-pdf:
     runs-on: windows-latest
 
+    permissions:
+      contents: write
+      actions: write
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -36,7 +40,6 @@ jobs:
     - name: Render Rmd to md
       run: Rscript -e 'rmarkdown::render("${{ env.RMD_FILE }}", output_format = "pdf_document", output_file = "${{ env.TARGET_PDF }}.pdf")'
        
-
     - name: Upload PDF to release
       uses: actions/upload-release-asset@v1
       env:
