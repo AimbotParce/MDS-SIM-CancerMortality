@@ -1591,39 +1591,70 @@ the R-squared value.
 ```{r}
 test$predicted_deathrate <- predict(model, newdata = test)
 
-mse <- mean((test$target_deathrate - test$predicted_deathrate)^2)
+test$predicted_residuals <- test$target_deathrate - test$predicted_deathrate
+mse <- mean((test$predicted_residuals)^2)
 r_squared <- 1 - mse / var(test$target_deathrate)
 cat("Mean Squared Error:", mse, "\n")
 cat("R-squared:", r_squared, "\n")
 ```
 
-The model has an R-squared value of 0.46 on the test dataset, indicating that it
-explains 46% of the variance in the target death rate.
+The model has an R-squared value of 0.47 on the test dataset, indicating that it
+can account for 47% of the variance in the target death rate.
 
-Looking at the residuals, we can see that they are correctly centered around 0,
-which is expected for a well-fitted model. However, there's one clear indicator
-of the necessity of a more complex model: The residuals do not seem to follow a
-normal distribution independent of the actual death rate. Looking at the plot,
-there's a clear trend of the residuals being higher for higher death rates.
+Another interesting metric to look at for determining the model's performance is
+the mean absolute error (MAE), which gives a better sense of the model's
+accuracy in predicting the target variable.
+
+```{r}
+mae <- mean(abs(test$predicted_residuals))
+cat("Mean Absolute Error:", mae, "\n")
+```
+
+The model has a mean absolute error of 15.2 on the test dataset, which means 
+that, on average, the model's predictions are off by 15.2 units from the actual
+death rate.
+
+This becomes more evident when plotting the predicted death rate against the
+actual death rate, as well as the residuals against the actual death rate.
 
 ```{r}
 par(mfrow = c(2, 2))
-plot(test$target_deathrate, test$predicted_deathrate, 
-  main = "Predicted vs. Actual Death Rate", 
+plot(test$target_deathrate, test$predicted_deathrate,
+  main = "Predicted vs. Actual Death Rate",
   xlab = "Actual Death Rate", ylab = "Predicted Death Rate"
 )
 abline(0, 1, col = "red")
 
-plot(test$target_deathrate, test$target_deathrate - test$predicted_deathrate, 
-  main = "Residuals vs. Actual Death Rate", 
+plot(test$predicted_residuals, test$predicted_deathrate,
+  main = "Predicted Death Rate vs. Residuals",
+  ylab = "Actual Death Rate", xlab = "Residuals"
+)
+abline(v = 0, col = "red")
+
+plot(test$target_deathrate, test$predicted_residuals,
+  main = "Residuals vs. Actual Death Rate",
   xlab = "Actual Death Rate", ylab = "Residuals"
 )
 abline(h = 0, col = "red")
 
-plot(1, type = "n", axes = F, xlab = "", ylab = "")
-
-hist(test$target_deathrate - test$predicted_deathrate, 
-  main = "Histogram of Residuals", 
-  xlab = "Residuals"
+hist_data = hist(test$predicted_residuals, plot = FALSE)
+barplot(hist_data$counts,
+  names.arg = hist_data$breaks[-length(hist_data$breaks)],
+  axes= TRUE,
+  space = 0,
+  xlab = "Residuals", main = "Histogram of Residuals"
 )
+
+
+# Check whether the residuals are centered around 0 (if p>0.01, we can reject
+# the null hypothesis that the residuals are centered around 0)
+t.test(test$predicted_residuals)
 ```
+
+As expected from an Ordinary Least Squares (OLS) model, the residuals are 
+centered around 0, and the predicted death rate is close to the actual death
+rate. However, there is a clear trend in the residuals when plotting them 
+against the actual death rate. The residuals are higher for higher death rates,
+indicating that the model is not capturing all the variance in the target 
+variable and may need further refinement.
+
