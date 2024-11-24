@@ -1,4 +1,8 @@
-name: Update README
+name: Knit MD on Push
+
+env:
+  RMD_FILE: CancerMortality.Rmd
+  TARGET_MD: README.md
 
 on:
   push:
@@ -6,10 +10,10 @@ on:
       - main
     paths:
       - CancerMortality.Rmd
-      - .github/workflows/knit-on-push.yaml # This file (for dev purposes)
+      - .github/workflows/knit-md-on-push.yaml # This file (for dev purposes)
 
 jobs:
-  update-readme:
+  knit-md:
     
     permissions:
       contents: write
@@ -37,17 +41,17 @@ jobs:
         choco install pandoc -y
         pandoc --version
 
-    - name: Remove old README.md
-      run: rm README.md
+    - name: Remove old $TARGET_MD
+      run: rm $TARGET_MD
 
     - name: Render Rmd to md
-      run: Rscript -e 'rmarkdown::render("CancerMortality.Rmd", output_format = "md_document", output_file = "README.md")'
+      run: Rscript -e 'rmarkdown::render("$RMD_FILE", output_format = "md_document", output_file = "$TARGET_MD")'
 
     - name: Commit changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add README.md
+        git add $TARGET_MD
         git add images/*
-        git commit -m 'Update README.md with contents of CancerMortality.Rmd'
+        git commit -m 'Update $TARGET_MD with contents of $RMD_FILE'
         git push

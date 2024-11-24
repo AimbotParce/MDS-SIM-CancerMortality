@@ -1,0 +1,47 @@
+name: Knit PDF on Release
+
+env:
+    RMD_FILE: CancerMortality.Rmd
+    TARGET_PDF: CancerMortality
+  
+on:
+  release:
+    types: [created]
+
+jobs:
+  knit-pdf:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        lfs: true
+
+    - name: Install R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '4.4.1'
+
+    - name: Install dependencies
+      run: Rscript .github/scripts/install_packages.R
+
+    - name: Install Pandoc
+      run: |
+        choco install pandoc -y
+        pandoc --version
+
+    - name: Render Rmd to md
+      run: Rscript -e 'rmarkdown::render("$RMD_FILE", output_format = "pdf_document", output_file = "$(TARGET_PDF).pdf")'
+       
+
+    - name: Upload PDF to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./$(TARGET_PDF).pdf
+        asset_name: $(TARGET_PDF)_${{ github.event.release.tag_name }}.pdf
+        asset_content_type: application/pdf
